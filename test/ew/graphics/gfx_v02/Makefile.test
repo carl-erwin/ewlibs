@@ -1,0 +1,20 @@
+#
+#
+#
+
+SRC = \
+test.cpp
+
+include ../Makefile.build.test
+
+LIB += \
+-lew.Platform.Linux \
+-lew.core.maths \
+-lew.graphics \
+-lew.graphics.renderer.OpenGL	\
+-lglut
+
+#-lew.Platform.Linux.Graphics.Gui
+
+LPATH += -L/usr/lib -L/usr/X11R6/lib/
+IPATH += -I/usr/include -I/usr/X11R6/include/

@@ -1,0 +1,133 @@
+--- editor design ---
+
+[Index]:
+
+- Vocabulary
+- Startup
+- Apis
+
+--------------------------------------------------------------------------------
+
+[Vocabulary]:
+
+[ file ]
+[ byte_buffer ]
+[ editor_buffer ]
+[ editor_view ]
+[ editor_event ]
+[ codec +
+[ codec_id ]
+[ codec_ctx ]
+[ editor_event ]
+[ mark ]
+[ selection ]
+[ region ]
+[ core ]
+
+--------------------------------------------------------------------------------
+
+--
+file   -> a regular file on disk
+
+--
+byte buffer -> see "api/include/byte_buffer.h"
+
+a byte buffer represent a memory snapshot of a given file/editor_buffer.
+
+byte buffers can be loaded from a file
+byte buffers can be saved to a file
+byte buffers can be dettached from file
+byte buffers can be created whitout any file
+
+
+byte_buffer_id_t are use to represent byte_buffer instance
+
+aka bid : unsigned 64 bits integer that represent a given byte buffer
+
+--
+editor_buffer -> a buffer and it's configuration
+
+There is one and only one editor_buffer per byte_buffer (TODO)
+
+an editor_buffer is always bound to a byte_buffer
+
+it encapsulate :
++ a byte_buffer
++ editor_views
++ "shared" marks (the cursor is a mark)
++ font configuration (TODO)
++ selections (TODO)
++ regions (TODO)
+
+--
+mark -> see "api/include/mark.h"
+
+a mark represent a position in an editor_buffer
+example: the cursor is a mark 
+
+marks can be fixed (it is up to the module managing the marks)
+
+marks can be "local" to a given editor_view  (wich is attached to an editor_buffer)
+marks can be "shared" to editor_buffers
+
+
+--
+selections: TODO
+
+- there are 2 kinds of selection:
+
+- range selection : from one mark to an other mark
+- block selection (visual selection) : represent a rectangular selection depending on the displayed screen
+
+
+--
+regions: TODO
+ ( a tree of selections )
+ nested blocks
+
+--
+editor_view ->
+
+an editor_view contains:
++ bid (byte_buffer id)
++ view_id
++ codec
++ codec_ctx
++ editor_input_map
++ local marks
+
+--
+codec -> see "api/include/codec.h"
+
+the codec is reposible of the byte_buffer interpretation
+
+text_codec emits codepoints
+video_codec emits pictures
+audio_codec emits audio samples
+
+--
+codec_id ->
+a unique integer thar represent the codec
+
+codec_ctx ->
+a codec specific data
+
+
+--
+editor_event -> (TODO)
+
+
+
+--------------------------------------------------------------------------------
+
+[Startup]
+
+- parse command line arguments
+- store special options flags
+- create/restore/merge file list ()
+- start core
+- start ui(s)
+
+--------------------------------------------------------------------------------
+
+[Apis]

@@ -1,0 +1,7 @@
+ADD_SUBDIRECTORY(ew/core/types)
+ADD_SUBDIRECTORY(ew/core/object)
+ADD_SUBDIRECTORY(ew/core/threading)
+ADD_SUBDIRECTORY(ew/core/time)
+ADD_SUBDIRECTORY(ew/filesystem)
+ADD_SUBDIRECTORY(ew/graphics)
+ADD_SUBDIRECTORY(ew/network)

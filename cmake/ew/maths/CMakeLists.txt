@@ -1,0 +1,22 @@
+
+ADD_DEFINITIONS(-DDO_EW_MATHS_EXPORT)
+
+SET(MOD_SRC_DIR ${EW_PROJECT_ROOT}/implementation/common/maths)
+
+ADD_LIBRARY(ew.core.maths SHARED
+${MOD_SRC_DIR}/constants.cpp
+)
+
+IF(UNIX)
+TARGET_LINK_LIBRARIES(ew.core.maths
+m
+)
+
+
+INSTALL(TARGETS ew.core.maths
+        LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+)
+
+
+
+ENDIF(UNIX)

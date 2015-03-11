@@ -1,0 +1,1034 @@
+-------------------------------------------------------------------
+
+add an api :
+- to restart the layout pipeline @ a given offset
+- to set a resync flag + direction
+
+-------------------------------------------------------------------
+
+handle line indexer -> line-wrap-mode (off)
+
+text-indexer -> get-line-number(uint64_t line_num) // 1 -> N
+
+int register_buffer_event_callback(bid, void cb(bid, ctx, event_type: create|destroy|insert|remove, uint6'_t offset, uint8_t * data, size_t data_size), ctx)
+int register_view_event_callback(sid, void cb(vid, ctx, event_type: create|destroy|resize, uint8_t * data, size_t data_size), ctx)
+
+
+-------------------------------------------------------------------
+
+Fix editor init:
+
+***) parse command line / env
+
+***) build file   list
+     add support to syntax path/to/file:XX:YY
+
+     consider 'path/to/file:XX:YY' to be a comple pathname first and so on
+         'path/to/file:XX:line'
+         'path/to/file:line:colmun'
+
+***) load configuration file (json ?)
+
+
+***) build buffer list : (from file list) , *scratch* , *message*, *debug*
+
+at this step there is no {view/mode/inputmap} configured yet
+just the buffer_info list
+
+***) allocate core thread message queue
+
+***) start core thread (core_msg_queue)
+
+***) read from configuration the type ui to be launched.
+    will allow multiple type at the same type
+    example  :
+      -ui ew -ui qt -ui cons -ui web -ui debug
+      or
+      -ui ew,qt,cons,web,debug
+
+    .1) allocate a message queue for each ui thread
+
+
+***) start ui thread(s)
+   .1) run ui loop
+   .2) query buffer list
+   .3) select buffer to be displayed,
+   .4) for each buffer:
+        setup view(sid)/modes/input map
+        (the sid allocation is up to the ui thread)
+   .5) process ui<->core events
+
+***) wait for ui thread(s) to stop
+
+***) wait for core thread stop
+
+----------------------------
+
+byte_buffer_id_t
+editor_buffer_info
+editor_buffer_view
+  .1) add prev/next editor_buffer_view * -> follow mode
+editor_buffer_view_config
+
+----------------------------
+code cleanup
+
+byte_buffer_id_t  -> low level buffer
+
+buffer_log_id_t -> undo/redo
+
+editor_buffer_id_t -> { bid, log_id, marks[] }
+
+----------------------------
+prefix all module function with namespace ? 
+ex 
+ "save_buffer" -> "core::save_buffer"
+ "buffer_undo" -> "core::buffer_undo"
+
+--------------------------
+create dll for text_mode -> prepare dll loading configuration path
+-------------------------
+create dll for undo_mode
+---------------------------------------------
+a mode is collection of functions + (default input map ?) (not necessarrily enabled)
+------------------------------------------------------
+the message queue can be improved by counting the number of pending message
+that will potentialy trigger layout rebuilding; as we process message we can avoid
+expensive redraw if pending message are left in the message queue.
+-----------------------------------------------------
+screen cp info could be expressed in relative offset (from the previous once or upper if next line)
+and a function "freeze_codepoint" : this will make them relative to (0,0) before the rendering
+
+using "un-freezed" line/codepoints can allow fast line moves
+like scroll_up/down of screen
+------------------------------------------------------
+add flag : resync on move
+-------------------------------------------------------
+do not push event in rpc .., prefer an internal api 
+-------------------------------------------------------
+add mutilple fonts
+
+rpc : get_buffer_font_list { id, 'url:file:///...' }
+
+ the ui load the url
+ the font id is added to the screen class -> this will allow multiple fonts
+ the renderer will sort items per font_id to avoid ctx switch
+
+-------------------------------------------------------
+undo system :-) : lowest possible level , record mark moves ?
+  if modified externally / clear buffer_log ?
+
+buffer_log {
+
+lastRev     u64
+
+buffer_tags : list of rev + name ?
+
+buffer_commit
+{
+ parentRev   u64; // branch
+ previousRev u64; // time
+ revN        u64;
+
+ write  offset  : len  : payload
+ remove offset : len  : payload
+ set    pos     // flag:record_moves
+};
+
+}
+
+on_insert
+
+-------------------------------------------------------
+modules:
+  modname.unlim.json + .so or bin (stdin/stdout)
+
+  module {
+    namespace:
+    function a -> a  desc json
+  }
+
+  .so : unlimited_module_init -> register all public function
+  .so : unlimited_module_quit
+
+-------------------------------------------------------
+to quit properly : add/check modified_buffer_count()
+-------------------------------------------------------
+syntax highlight info in pipeline in/out
+ fg / bg / colors/ face / bold / itlaic / underline
+
+must provide a
+"begin" setup resync / load ctx / etc..
+"run"   filter
+"end"
+
+indexer pass -> gen highlight info -> store to nodes slot[] ->
+
+-------------------------------------------------------
+split core.cpp: introduce text-mode / update keyboard mapping (add stack api, etc..)
+-----------------------------------------------------
+extend flexible array node_private data api:
+
+use private slot index (per module)
+
+flex_arr::slot_index_t flex_arr->allocate_user_slot(void); { flex_array->max_user_lost = XXX; }
+
+bool flex_arr->node->get_user_slot_data(const flex_arr::slot_index_t idx, user_data **);
+bool flex_arr->node->set_user_slot_data(const flex_arr::slot_index_t idx, user_data *);
+
+when new nodes are created updated the data slots are reserved/copied/merged/splitted/etc ...
+
+-----------------------------------------------------
+use std::regex for config parser
+-----------------------------------------------------
+the ui must ask the core to create/release
+screen / window / split / resize etc...
+-----------------------------------------------------
+more work on mark(s)
+change the "screen line behavior"
+add next-screen-line
+add previous-screen-line
+-----------------------------------------------------
+eedit : next design
+
+
+class Entity {name, x,y, w,h };
+class Pixel { x, y, Color3ub }
+class Canvas : public Entity
+
+---------
+class Screen : Entity { the screen is composed of lines }
+class Line; { a line is composed primarily of codepoints }
+
+class CodepointInfo {
+  Line * parent;
+  source : buffer : offset
+  u32 cp
+  Font * , fg color, bg color
+  Attributes { bold, italic, underline, blink, deleted }
+};
+
+class Font { file, face , etc};
+
+class Region;
+class RectangleularRegion;
+
+------------------------------------------------
+add ncurses ui : this will force us to split ui from logic
+------------------------------------------------
+replace pointers by object id :
+
+get_buffer_list -> list of buffer desc
+
+todo use json ?
+{
+  "id" : "1"
+  "name" : "*scratch*"
+  "filename" : "/path/to/file"
+  "major modes" : { "fundamental",  "", ""}
+  "minor modes" : { "c++-mode",  "ide-mode", ""}
+
+}
+
+------------------------------------------------
+functional chain ...
+
+[ui thread]   : device external event -> (keyboard/mouse/joystick/touch/midi/sound/whathever) -> ui controller -> eedit::event(widget)   => sent to core thread
+[core thread] : eedit::event(widget) -> parse_event -> function (builtin/plugin) ... -> ui_event                                          => sent to ui thread
+
+------------------------------------------------
+build a custom web-server on a predefined port (local bin wrapper  xdg-open http://127.0.0.1:ide_port)
+use http // proxy for https // to target local port
+this will be a custom web application that runs locally(only?)
+
+------------------------------------------------
+mvc with different frontend // html/json/ keepalive, qt, ncurses, ew ... json/xml ?
+------------------------------------------------
+
+how to implement cursor move , scrolling
+
+the scrolling depends on text layout (chars expansion/folds) etc ...
+
+when scrolling up : must recompute N "screen lines" above the start of the screen
+
+user press "page up"   -> core translate to function -> "page-up"   -> screen_scrool(dir=UP,   N) -> build_layout
+user press "page down" -> core translate to function -> "page-down" -> screen_scrool(dir=DOWN, N) -> build_layout
+
+the screen_scroll must be part of core apis ?
+
+This is a special "build layout" with a rewind pre-condition
+must use the same major/minor mode (per view) as normal buid_layout + a screen line start buffer/accum (accum)
+
+there is a screen issue
+
+the screen must bufferize N "screen lines"
+
+build_layout(from_offset) = scrool_layout(down, 0, from_offset)
+
+scrool_layout(up/down, N, from_offset)
+
+algo : get offset off (N_to_scrool) * C +/- start offset
+
+bufferize and when the condition are ok flush to screen ? or the screen as a reset context ? (complicated)
+
+*) cursor moves ...
+   must be screen edge aware
+
+   move up)
+    if cursor is  on first line  , exec scroll(dir=UP, 1) + read new screen and move to column
+
+  move down)
+------------------------------------------------
+while saving the buffer , reject by notification the editing ...
+
+toggle the buffer read-only mark
+
+------------------------------------------------
+block selection:
+ in emacs it is harcolumn based ie: it uses the real line posisition
+ we must provide a screen block selection  -> an other screen mode -> (public screen api)
+------------------------------------------------
+create the C apis for filters
+------------------------------------------------
+add interline for better layout (see freetype apis) , use all ascii chars on multiple lines
+------------------------------------------------
+uses a tree for view representation
+the main window is the parent
+and contains the children (leafs)
+json ?
+------------------------------------------------
+the ideal case: the editor does not know about the active regions/ marks/fold etc...
+the cursor(s) is a "core" plugin... + hooks
+when building the layout we must provide a way to setup the start offset in mode_init:
+new api
+  set_layout_start_offset(u64 offset) -> set the pipeline starting offset
+
+  screen_cache_mode_init :
+   *) check the screen/buffer dimension/revision -> clear screen line cache
+   *) save the 'old_screen_start_offset'
+   *) get the beginnig of line that contains 'old_screen_start_offset'
+   *) if no change if buffer and screen -> read line cache
+   *) if line cache  contains the 'old_screen_start_offset'
+   *) call set_layout_start_offset() with the cached value of the screen line start offset
+
+the screen-cache-filter will emit codepoints when old_screen_start_offset is reached and pass them to final screen
+
+( cat | txt decode ) | ... | (tab expand) | ... | (screen line cache) | (screen)
+
+( multibuffer ) | ... | (tab expand) | ... | (screen line cache) | (screen)
+------------------------------------------------
+a follow-mode like emacs
+the main window is scan
+ and all buffers displaying the current one are relayed-out (left-to-right top-to-bottom)
+ the cursors move to the next/previous view when the border are reached
+
+the "scene" is organized in a tree-like manner
+
+ root(editor_root_window) // the children share the editor_root_window space
+ root(editor_child_window)
+
+------------------------------------------------
+screen_line cache:
+ (special pass ?)
+ remember the start offset of physical lines:
+ and the following "screen" lines using the currently active layout modes
+------------------------------------------------
+virtual buffer:
+ buffer that maps one or more buffer :
+  used to implement contiguous rotated log presentation
+  special inserts : file in file in file ... difficult but possible
+  this will use a special tree
+
+meta flexible_array ?
+
+------------------------------------------------
+create modes :
+  we split the text editor in two (or more ?) modes
+
+ *) the editing_mode :
+
+     (one major mode per view or per buffer?) + minor modes -> modify the lowlevel buffer -> must provide basic "C" apis
+
+      and maintains context accross editting session: cursors/regions/selections/folds
+
+      buffer indexes ? (mode)
+
+      user ui event -> core : ((rw) unicode(utf8) encode/remove) -> ( call layout mode code)
+
+ *) layout_mode
+    ui/core event |  (major layout mode ((ro) unicode(utf8) decode))  | ... | (min mode: tab expansion) | ... | (screen mode) | ( screen cache ) -> new layout notification -> ui
+
+------------------------------------------------
+try : special logrotate_mode (minor? major multibuffer)
+open { process.log + process.log.1.gz + ... + process.log.n.gz } -> virtual buffer + seemless inflate } ONLY READ ONLY
+------------------------------------------------
+at init scan font to look for the smaller horizontal advance (32 ... 126 ascii range) -> compute the maximun number of character for a "screen" line
+------------------------------------------------
+merge core/layout.hpp and core/text_layout.hpp
+
+provide a "mode" to compute a screen line cache :
+
+internal apis:
+
+build_screen_lines_layout_info(scr, rdr_begin, rdr_end, array<line_layout_info> & out)
+
+given:
+  - a screen + font(s) + w/h + interline size,
+  - a rdr start iterator
+  - a rdr end   iterator
+
+1)    let line_begin (an iterator) be
+      the beginning of the line the iterator is currently on
+      line_begin = beginning_of_line(rdr_start)
+
+2)    tmp_it(line_begin)
+      until tmp_it < rdr end (!= ? faster) // use buffer()->read to speed up things
+      wrap in a get_cp functions + ctx
+
+      compute line_layout_info {
+         iterators{ line_start, line_end }
+         u64 nr_cp,
+         u32 cp_max_height
+      }
+
+3) the array<line_layout_info>> will be used as a cache for the screen
+
+   it will speed up scroll up(/scroll down ?)
+   if we provide too many functions it will be difficult to maintain
+
+   we must set a limit in the number of "screen line" the cache covers
+
+   we must discard the cache
+   when :
+    - the screen is resized
+    - the font configuration change
+    - a non linear move is done (goto ...)
+
+ provide functions to manipulate a given array<line_layout_info>
+   - find(offset)
+   - join(start_index, end_index)
+   - split(start_index, end_index)
+
+------------------------------------------------
+multiple cursors :
+
+must have a "master" cursor
+that will spawn to implement multiple cursors
+the master cursor could be swapped with the spawned ones
+
+kill-current-cursor
+kill-next-spawned-cursor
+kill-prev-spawned-cursor
+create-spawned-cursor
+move-to-next-spawned-cursor
+move-to-previous-spawned-cursor
+
+the internal apis must expose
+the list/array of cursors
+
+must provide an api
+to only move the master-cursor (call functions on the master cursor only)
+to move all cursors (call functions on each cursor internally)
+
+------------------------------------------------
+move/rework/move
+------------------------------------------------
+
+rework the font coordinate system:
+ map the texture coordinate system to the window coordinate system
+
+  (0,0)---------------->(w,0)  (s,0)
+   |
+   |  ------     ------
+   |  |          |
+   |  |---       |---
+   |  |          |
+   |  |_____     |
+   |
+  (0,h) (0,t)
+
+
+----------------------------------------
+the text indexer must be a sub "mode + thread"
+it depends on internal page size
+it will create its own binary tree to index the text
+ and provide an api to get the nth \r or \n or \r\n
+
+better: its configuration will tell with byte sequence(s) to index and internally
+in editting mode it will get events like
+  on_remove(from_offset, size)
+  on_insert(from_offset, size)
+
+----------------------------------------
+remove cursor drawing to new screen class put this in layout code
+----------------------------------------
+the editor_buffer class  // ui inherits from/encapsultes it
+{
++ a raw_buffer class pointer
++ a keymap (filled by the loading of modes)
+
++ list of modes:
+   ~ the modes fill the keymap at init
+   ~ store per editor class context
+   ~ store per view   class context
+
++ list of sorted  marks
++ list of actived marks (funtions that manipulate the mark are called for each one of them) -> multiple cursors
++ list of sorted regions
+
++ a font family (normal/italic/bold) // editor_font (hadvance/vadvance)
++ a screen wpx/hpx -> (l,c)
+}
+
+emacs uses a single list of modes per buffer // simpler
+
+-----------------------------------------------
+message : core  -> ui (deferred ui)
+ pop-up         -> (completion/etc...)
+ refresh-view   -> (screen ?)
+ hsplit-view(%) -> (screen ?)
+ vsplit-view(%) -> (screen ?)
+ remove-view    -> (screen ?)
+
++effects ?
+ (v,h)scroll-view(vec2i direction, screen before, screen after, scroll info)    -> (the ui is responsible of the animations)
+    the scroll info tells the common/overlapped regions
+    ~ one line   scrolling for example)
+    ~ one column scrolling for example)
+
+ fade-in(screen before, scrren after)  -> (the ui is responsible of the anmation)
+ fade-out(screen before, scrren after) -> (the ui is responsible of the anmation)
+
+message : ui         -> core
+ key                 ->
+ pointer motions     -> (screen ?)
+ pointer clicks      -> (screen ?)
+ pointer wheel event -> (screen ?)
+
+----------------------------------------
+prepare goto line keymap
+prepare incremental search mode (ie: start @, current needle to look for eof_hit_flag)
+
+remove this from text view
+----------------------------------------
+split ui thread from core thread:
+
+ - ui event are sent to core thread
+
+  a given event acts on a given
+  eedit::buffer + context { mark, region, marks ... }
+
+ - core thread push redraw events to ui :
+          the redraw event contains a payload with the view/screen descriptions/screen/layout/fold/etc..
+----------------------------------------
+
+new classes
+
+ number of line
+ for each line a glyph/codepoint descriptor : ex can represent '\n' with a specific texture
+
+ screen {
+   // provide api to get reference to entity descriptor
+
+   line_array[] {
+
+        line {
+
+          codepoint/ui_object descriptor_array[] (contains ptr to descriptors) {
+
+             descriptor {
+                bounding box ( rect ) + filled flag
+                font
+                underline/bold/italic ( enum mask )
+                bg color      : ( bounding box corners )
+                entity color  : ( bounding box corners )
+                blink flags   :
+
+                or
+
+                file_image to render : special representation   '\n' -> (image with arrow)
+
+                + action when / mouse enter/ leave / (double)clicked /
+
+          }
+        }
+    }
+ }
+
+----------------------------------------
+default focused widget
+ add widget->set_group_leader(child)
+ add widget * widget->get_group_leader()
+----------------------------------------
+update and plug the new keyboard mechanism
+introduce key_event/keymaps
+----------------------------------------
+create struct editor_event to abstract the external/internal events
+
+enum editor_event_type
+{
+ key_event;
+ mouse_event;
+ process_event;
+ thread_event;
+ signal_event;
+ timer_event;
+ ...
+
+ action_event;
+};
+
+the core reads editor_event_type
+and dispatch them
+
+something like that ?
+
+eedit_msg {
+  id     src    // ui,web_ui,pipe,named_fifo
+  id     dst    // core
+  string action = "add-to-selection @start @end"
+  string result = "ok"
+};
+
+
+eedit_msg {
+  id     src    // ui,web_ui,pipe,named_fifo
+  id     dst    // core
+  string action[] = { "core/register", "function", "core/save-as" }
+  string result = "ok"
+};
+
+
+// json + utf8 ?
+
+// utf8 for communication
+string action = "insert : utf8_string"
+string action = "remove @start @end"
+string action = "paste @start"
+string action = "replace @start @end by [text:]"
+string action = "replace @start @end by [file:]"
+string action = "replace @start @end by [command: /path/to/cmd]"
+string action = "read buffer @start nr_cp"
+
+--> ui module provides -->
+string action = "copy  @start @end"
+string action = "set start @start"
+string action = "to next codepoint @start"
+string action = "to previous char @start"
+string action = "highlight @start @end with [r/g/b]"
+string action = "underline @start @end with [r/g/b]"
+string action = "blink     @start @end with [r/g/b]"
+
+
+// the replay/redo will be simple
+
+----------------------------------------
+binary regex
+
+unicode regex -> codec encode all cp | dfa -> binary regex
+ex:
+ 10+[ ]€.*$ -> utf8 putc -> '1','0+','xe2 x82 xac','.*','(\r|\n|\r\n)'
+bool codec::resync(iterator in, iterator out);
+----------------------------------------
+bool codec::memory_align() = 1 (utf8)
+bool codec::memory_align() = 2 (utf16)
+bool codec::memory_align() = 4 (utf32)
+
+will be used in reverse decode
+random decode etc...
+internal ?
+----------------------------------------
+cursor :
+ must maintain if indexed (+event ?)
+physical line/column handling
+screen line/column handling
+
+default:
+ text_buffer::iterator.d.line = 0
+ text_buffer::iterator.d.column = 0
+only screen coords are displayed
+
+new iterator
+ by offset()                    : abs move
+ by next/prev begin/end of line : relatieve move
+ by screen movements()          : screen move
+
+to compute column :
+  iterator tmp(it_cursor)
+  goto beginning of line
+  set column to 1
+  decode + count while (tmp != it_cursor)
+  set column to count (nr_ok+nr_err)
+
+  update/create
+  template <class ByteIterator>
+  bool codec::count(const ByteIterator first, const ByteIterator last, u64 & nr_ok, u64 & nr_err, u64 & total)
+  {
+     nr_ok  = 0;
+     nr_err = 0;
+     total  = 0;
+     while (first != last && !forced_stop) {
+
+    }
+
+  }
+
+  This action should be processed in a worker thread
+  an MUST be interruptible
+  this will allow very long line indexing
+
+create a column cache ?
+every 10000 cp save offset() ?
+
+----------------------------------------
+redo font/pixel based layout
+----------------------------------------
+framer
+
+typedef text_buffer::iterator cursor_t;
+
+phlX -> physical lineX
+sclX -> screen   lineX
+
+the screen is { 13L * 8C }   13*8 cp (mono fonts)
+
+            [ 1 ][ 2 ][ 3 ][ 4 ][ 5 ][ 6 ][ 7 ][ 8 ]
+8<--------------------------------------------------
+scl01 |phl1 [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl02 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl03 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl04 |     [xxx][xxx][xxx][xxx][\n ]
+scl05 |phl2 [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl06 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl07 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl08 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl09 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl10 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl11 |     [xxx][xxx][xxx][xex][xxx][xxx][xxx][xxx]
+scl12 |     [xxx][xxx][xxx][xxx][\n ]
+scl13 |phl3 [xxx][xxx][xxx][xxx][\n ]
+8<--------------------------------------------------
+scl14 |phl4 [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl15 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl16 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl17 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl18 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl19 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl20 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl21 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl22 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl23 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl24 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl25 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl26 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+8<--------------------------------------------------
+scl27 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl28 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl29 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl30 |     [xxx][xxx][xxx][xxx][\n ]
+scl31 |phl5 [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl32 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl33 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl34 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl35 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl36 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl37 |     [xxx][xxx][xxx][xxx][xxx][xxx][xxx][xxx]
+scl38 |     [xxx][xxx][xxx][xxx][\n ]
+scl39 |phl3 [xxx][xxx][xxx][xxx][\n ]
+8<--------------------------------------------------
+
+multi lang context ie: web pages
+
+html / css / javascript / php / etc...
+
+enter_lang leave_lang ( stack ? )
+
+----------------------------------------
+
+always use indirect calls
+ pointer h = call to "plugin-func-name arg1 arg2 arg3 -> bool"; // RPC ?
+
+[ python ]  [ "C/C++" ] [ common-lisp ]
+ |
+[ plugin manager "C" hooks ]
+ |
+
+(editor CORE APIs in "C"  (allow plugins to push app events, acces to core, (load/unload/inject) new apis ()) )
+     ( app events: key / mouse / timers / signals / thread / process / plugin / network ] )
+ {
+   app event dispatcher
+    map event to api calls (internal or external)
+ }
+ {
+        editor ui
+            menu api
+            window + scroll bar api
+            frame api
+            status bar api
+
+        codec  apis : register new one ? get/put
+
+        semantic apis : (over mark / region apis)
+
+        text_buffer  apis
+               provide text_buffer
+               set/detect codec
+               provide text_buffer list
+                       undo/redo sub-system
+                       insert
+                       delete
+                       cut/copy/paste
+                       marks/regions/selections
+
+        graphics     apis
+               provide graphic_buffer
+
+          OpenGL wrapper
+
+        audio/codec  apis
+               provide audio_buffer
+          OpenAL wrapper
+
+        network      apis
+        filesystem   apis
+ }
+ |
+ |
+ |
+[ mapped_buffer ( + file ) ]
+ |
+[ disk ( file? ) ]
+
+----------------------------------------
+create the key commands/actions rules
+
+the commands/actions will be represented in a tree-like structure
+the first node contains the first dispatch table
+
+
+config says
+
+key_type unicode => self-insert(current_buffer(), s32 codepoint)
+
+C Api : global_set_key("...", "function_name")
+
+unicode(0x00000000)<=>unicode(0xffffffff) => noop
+unicode(0x00000000)<=>unicode(0xffffffff) => self-insert
+unicode('e') => self-insert
+unicode(' ') => self-insert
+ctrl+a => goto-end-of-line
+ctrl+e => goto-end-of-line
+ctrl+x ctrl+s => save-current-buffer
+ctrl+x ctrl+q => quit-editor
+ctrl+unicode('x') ctrl+unicode('q') => quit-editor
+ctrl+unicode(' ') => toggle-mark
+ctrl+g => abort_command
+
+----------------------------------------
+new idea web ui
+- create an internal web server that listen on arbitrary port
+- let the browser render the ui the web server send
+- html + css + ajax
+--------------------------
+widget :
+
+when a widget is a container
+ we should provided a default behavior for unhandled events
+ ex
+   <wid1>
+
+    wid1->set_event_fallback_route(u32/u64 ? event_mask, widget * w = wid3) // must provide function to map coord from one widget to another
+
+    <wid2 type=line_numbner />
+    <wid3 type=text_view />
+    <wid4 type=scroolbar />
+    <wid3/>
+   <wid1/>
+
+or (combine with)
+
+ when a given callbacks returns false
+ pass the event (whith translated coords , ...) to the parent and so on...
+ this will be the fallback event handling
+
+--------------------------
+init/open fonts before opening files
+
+split the init
+ init the graphics / ctx etc ...
+ init fonts
+ init startup buffers (yank/message/buffer list/etc..)
+ init buffer list
+--
+the editor MUST have a right and left column a la emacs for split line indication
+---
+remove text buffer iterator dynamic allocation
+---
+button / menu / tabs
+---
+there is a limitation if the line is too long
+it will take "forever" to build the layout.
+we must limit the time to find the starting point of a given line
+based on the number of character we can display
+
+if the line is too long >=1000000 (config value) cp
+we just display a special glyph at begin of screen  to indicate the display split : ie
+   [...]xxxxxxxxxxxxxxx
+   xxxxxxxxxxxxxxxxxxxx
+   xxxxxxxxxxxxxxx[...]
+
+and use linear move
+
+---
+
+
+--- better codec usage
+
+add indexing_mode
+
+while walking through the pages
+
+call a (chain of) functor for every byte
+
+this functor can do indexing at the same time and will avoid an other walk
+
+we can attach to a line info a line_layout_info_t
+
+must have a line_layout_info_t for the current line
+and update it as the user move / insert / delete
+
+----
+global scene rendering (the final mode)
+
+ must build a scene
+ scene.clear();
+
+ // light
+ txtr font.get_texture_id();
+ vtx font.get_vertex();
+
+ scene.add_vertex( vertex attrib , texid,  tex coord );
+ {
+  scene.bind_texture( text id );
+  // populate the scene
+ }
+
+ scene.render()
+ {
+  for each layer
+   for each texture in scene ,
+    draw vertex material ... etc
+    draw vertex arrays
+    .. etc
+ }
+
+----
+one color per regex match , multiple regex (grouping)
+
+-----------------------
+needs mutex in flex array/ mapped buffer as template parameter (lock policy)
+-----------------------
+have a chromium like interface and implementation
+process to render the views
+process to render the windows
+process to index  the buffers
+etc ...
+
+an api to pilot the diffrent processes and objects
+
+"C" bridge api to the editor public interface
+
+The diffrent task can be merged in on process + threads
+
+[ eedit::process:process_monitor (main proc) ] : restart crashed process
+            ^
+            |
+[ eedit::process:window_manager (user interface) ] x (N) : tab/split view etc ...
+            ^
+            |
+[ eedit::process:view_manager ] x (N) : text mode / c-mode / mail
+            ^
+            |
+[ eedit::process:semantic_manager ] x (N) : syntax analysis
+            ^
+            |
+[ eedit::process:buffer_manager ]
+            ^
+            |
+[ low level medium: disk / network ]
+
+-------------------------------------
+
+bool TextBuffer::get_offset_coords(offset, u64 & line, u64 & column);
+this function will compute the line and column
+only if the TextBuffer is indexed
+
+--------------
+add a mutex in textbuffer:
+ lock while indexing page ?
+ lock while inserting data ?
+--------------
+regex op : (complex)
+
+if the op touch a page :
+ append the op to the page op list + revision
+
+and when entering a page : redo the ops
+
+--------------
+command | eedit.exe
+to allow copy of command output in the scratch buffer
+build the editor like a client/server on a unix/tcp socket ?
+
+--------------
+
+when drawing/modifying/... the textbuffer
+we must mesure the time taken by any operation
+an set actions based on (use defined) limits
+ex:
+the textbufferindexer slows down the typing
+we must pause/slow it. (cond var ?)
+
+must have timerEvent class to perform action based one timeouts
+
+like:
+
+class Timer {
+  ...
+protected:
+  virtual timeout();
+};
+
+class TimedAction : public Timer {
+ virtual timeout();
+
+private:
+  arg1
+  arg2
+  ...
+};
+
+
+Have a timer list per thread
+
+A global time/date/timer thread that dispatch timer event to the coresponding thread event queue
+or takes the action directly
+it can be instancied many time
+
+will be responsible for
+network event ?
+
+---------------------------------------------------------------------------------
+must divide editor impl
+
+see http://www.multicians.org/mepap.html ( IV. Multics Emacs: The Embryonic Phase and Basic Decisions )
+
+---------------------------------------------------------------------------------
+
+when doing high-light search
+The highlight/search "plugin" will patch the TextViewCells style data
+while maintaining a list of buffer offset + size of region to highlight
++
+
+---------------------------------------------------------------------------------
+when updating the view moving must support a range based update

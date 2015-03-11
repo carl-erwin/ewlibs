@@ -1,0 +1,49 @@
+*) implements make install for 
+  <prefix>/include/ew
+  <prefix>/lib/*.so
+  <prefix>/bin/*.exe
+  <prefix>/share/ew/*
+
+needed by 3rd parties
+
+
+*) implement event watcher
+     
+     fd/handle events
+     timer     events
+
+event->direction = input|output
+
+expected api
+
+class ew::core::events::watcher {
+  watcher()
+  ~watcher()
+
+  run(timeout);
+
+  add(file *    | connection * | msg_queue *, input_ready|output_ready);
+  remove(file * | connection * | msg_queue *, input_ready|output_ready);
+
+  add(timer *);
+  remove(timer *);
+
+  size_t wait_4_events(size_t timeout_ms, std::vector<events *> & evs);
+  size_t next_timeout_expiration() const;
+
+  remove(file * | connection * | msg_queue *, input_ready|output_ready);
+};
+
+
+timer->timeout(...);
+
+
+*) implement timers
+
+
+*) build static libraries along dynamic ones
+
+*) replace custom thread/mutex by std:: ones
+
+
+*) use Egl instread of glx/wgl/...

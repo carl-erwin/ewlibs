@@ -1,0 +1,101 @@
+#!/bin/sh
+
+set -e
+
+build_dir=$PWD
+
+cd $(dirname $0)
+
+prefix=$HOME
+CMAKE_BUILD_TYPE=DEBUG
+VERBOSE=0
+
+usage()
+{
+ echo "
+usage : $0 [options]
+--prefix=/path/to/install ( default: ${HOME} )
+-d|--debug                ( default )
+-r|--release
+-v|--verbose
+-rs|--minsize_release
+-ru|--release_unstripped
+--ekopath
+--clang
+--check_memory
+" >&2
+}
+
+CMAKE_DEFINES=""
+
+while [ $# -gt 0 ]
+do
+echo checking $1 option
+case $1 in
+	--help)
+		usage
+		exit 0
+	;;
+
+	--prefix=*) prefix=${1#--prefix=}
+		if [ -z $prefix ] ; then echo "prefix is missing"; exit 1 ; fi
+	;;
+
+	--prefix)
+		shift
+		if [ -z $1 ] ; then echo "prefix is missing"; exit 1 ; fi
+		prefix=$1
+	;;
+
+	-d|--debug)
+		CMAKE_BUILD_TYPE=DEBUG
+	;;
+
+	-r|--release)
+		CMAKE_BUILD_TYPE=RELEASE
+	;;
+
+	-ru|--release_unstripped)
+		CMAKE_BUILD_TYPE=RELWITHDEBINFO
+	;;
+
+	-rs|--minsize_release)
+		CMAKE_BUILD_TYPE=MINSIZEREL
+	;;
+
+	-v|--verbose)
+		VERBOSE=1
+	;;
+
+
+	--ekopath)
+		export CC=pathcc
+		export CXX=pathCC
+	;;
+
+	--clang)
+		export CC=clang
+		export CXX=clang++
+	;;
+
+	--check_memory)
+		CMAKE_DEFINES="${CMAKE_DEFINES} -DEW_CHECK_MEMORY=1"
+	;;
+
+
+
+    *)
+	echo "warning unknow option $1" >&2
+	;;
+
+esac
+
+shift
+done
+
+src_dir=$PWD
+
+cd $build_dir
+
+
+cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_VERBOSE_MAKEFILE="${VERBOSE}" -DCMAKE_INSTALL_PREFIX=$prefix ${CMAKE_DEFINES} $src_dir

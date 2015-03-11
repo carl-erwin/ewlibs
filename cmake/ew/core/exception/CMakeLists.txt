@@ -1,0 +1,19 @@
+
+SET(MOD_SRC_DIR ${EW_PROJECT_ROOT}/implementation/common/core/exception)
+
+IF(UNIX)
+ADD_DEFINITIONS(-D_REENTRANT)
+ENDIF(UNIX)
+
+ADD_DEFINITIONS(-DDO_EW_CORE_EXCEPTION_EXPORT)
+
+
+ADD_LIBRARY(ew.core.exception SHARED
+${MOD_SRC_DIR}/exception.cpp
+)
+
+IF(UNIX)
+INSTALL(TARGETS ew.core.exception
+        LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+)
+ENDIF(UNIX)
