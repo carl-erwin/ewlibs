@@ -12,10 +12,10 @@
 #include <ew/ew_config.hpp>      // holds system specific includes and #define
 //
 #include <ew/maths/maths.hpp>
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/condition_variable.hpp>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 #include <ew/core/time/time.hpp>
 #include <ew/core/application/simple_application.hpp>
 #include <ew/maths/maths.hpp>
@@ -37,7 +37,6 @@
 
 
 using namespace ew::core::types;
-using namespace ew::core::threading;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 using namespace ew::implementation::graphics::rendering::opengl;
@@ -52,8 +51,8 @@ namespace graphics
 using ew::console::cerr;
 
 
-mutex nrRuningthreads_mtx;
-condition_variable nrRuningthreads_cond(&nrRuningthreads_mtx);
+std::mutex nrRuningthreads_mtx;
+std::condition_variable nrRuningthreads_cond;
 
 u32 nrRuningthreads = 0; // will inc/dec by threads
 u32 nrthreads = 0; // will be filled by args
@@ -203,14 +202,8 @@ void windowthread()
 	if (useRenderthread == false) {
 		renderthreadFunc(win);
 	} else {
-
-		thread * renderthread = new thread((thread::func_t) renderthreadFunc, (thread::arg_t) win,
-						   "renderthread");
-		if (renderthread->start() != true) {
-			// thread_exit();
-			// win->event_thread()->stop();
-		}
-		renderthread->join();
+		auto renderthread = std::thread(renderthreadFunc, win);
+		renderthread.join();
 	}
 
 	dpy->lock();
@@ -219,9 +212,12 @@ void windowthread()
 
 	nrRuningthreads_mtx.lock();
 	--nrRuningthreads;
-	if (!nrRuningthreads)
-		nrRuningthreads_cond.signal();
 	nrRuningthreads_mtx.unlock();
+
+	if (!nrRuningthreads) {
+		std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+		nrRuningthreads_cond.notify_one();
+	}
 
 	cerr << "void  windowthread() :: done" << "\n";
 }
@@ -264,17 +260,15 @@ int main(int ac, char ** av)
 	nrthreads = atoi(av[ 1 ]);
 	nrRuningthreads = nrthreads;
 	if (nrthreads) {
-		thread ** windowthreadsVec = new thread * [ nrthreads ];
+		auto windowthreadsVec = new std::thread * [ nrthreads ];
 
 		for (u32 count = 0; count < nrthreads; ++count)
-			windowthreadsVec[ count ] = new thread((thread::func_t) windowthread,
-							       (thread::arg_t) 0, "windowthread");
-		for (u32 count = 0; count < nrthreads; ++count) {
-			windowthreadsVec[ count ] ->start();
-		}
-
+			windowthreadsVec[ count ] = new std::thread(windowthread);
 		// we should have an app quit on last window ??
-		nrRuningthreads_cond.wait();
+		{
+			std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+			nrRuningthreads_cond.wait(lock);
+		}
 	}
 
 	cerr << "delete dpy..." << "\n";

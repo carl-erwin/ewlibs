@@ -10,8 +10,7 @@
 
 
 // Ew
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
+#include <mutex>
 
 #include <ew/graphics/gui/widget/window/window.hpp>
 
@@ -22,7 +21,7 @@ namespace graphics
 namespace rendering
 {
 
-class rendering_context::private_data : public ew::core::threading::mutex   // add lock ?
+class rendering_context::private_data : public std::mutex   // add lock ?
 {
 
 	friend class ew::graphics::gui::window;
@@ -50,7 +49,7 @@ public:
 
 	::GLXDrawable _glxDrawable; // the current ly bound drawable
 
-	ew::core::threading::thread * _th_owner;
+	std::thread::id _th_owner;
 	ew::core::types::u32 _nrLock;
 };
 

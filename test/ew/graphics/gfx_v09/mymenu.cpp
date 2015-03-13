@@ -56,8 +56,6 @@ myMenu::myMenu(ew::graphics::gui::display * dpy, widget * parent, window_propert
 	window(dpy, static_cast<window *>(parent), properties)
 {
 	std::cerr << "class myMenu::myMenu(......) ok" << "\n";
-	renderthread = new thread((thread::func_t) myMenu::renderFunc,
-				  (thread::arg_t) this, "myMenu::Renderthread");
 }
 
 myMenu::~myMenu()
@@ -83,8 +81,9 @@ bool myMenu::show()
 
 	on_draw(nullptr);
 	isActive = true;
-	renderthread->start();
 
+	if (renderthread == nullptr)
+		renderthread = new std::thread(myMenu::renderFunc, this);
 	//isActive = false;
 
 	return true;

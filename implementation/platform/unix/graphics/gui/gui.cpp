@@ -1,10 +1,11 @@
 #include <iostream>
+#include <mutex>
+
 
 #include <ew/ew_config.hpp>
 #include <ew/graphics/gui/gui.hpp>
 
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
+
 
 
 
@@ -19,15 +20,14 @@ namespace gui
 {
 
 using namespace ew::core::objects;
-using namespace ew::core::threading;
 
 // should handle multiple gui objects ?
 static bool   wasInit = false;
-static mutex  gui_mtx;
+  static std::mutex  gui_mtx;
 
 bool  init()
 {
-	mutex_locker mTxLock(gui_mtx);
+  std::lock_guard<std::mutex> mTxLock(gui_mtx);
 
 	if (wasInit == true)
 		return false;
@@ -43,7 +43,7 @@ bool  init()
 
 bool  quit()
 {
-	mutex_locker mTxLock(gui_mtx);
+    std::lock_guard<std::mutex> mTxLock(gui_mtx);
 
 	if (wasInit == false)
 		return false;

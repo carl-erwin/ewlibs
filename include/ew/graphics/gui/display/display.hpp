@@ -1,9 +1,11 @@
 #pragma once
 
+#include <thread>
+
 #include <ew/ew_config.hpp>
 #include <ew/core/object/object.hpp>
 #include <ew/core/interface/lock_interface.hpp>
-#include <ew/core/threading/thread.hpp>
+
 #include <ew/graphics/gui/gui.hpp>
 #include <ew/video/ivideo.hpp>
 #include <ew/user/iuser_input.hpp>
@@ -26,7 +28,7 @@ class  event_dispatcher;
 
 using namespace ew::video;
 using namespace ew::user;
-using namespace ew::core::threading;
+
 
 class EW_GRAPHICS_EXPORT display :
 	public ew::core::object,
@@ -65,7 +67,7 @@ public:
 
 	//          virtual bool isLocked();
 
-	virtual ew::core::threading::thread * is_locked_by();
+	virtual std::thread::id  is_locked_by();
 
 	virtual bool open();    // first method to call
 	virtual bool close();   // last method to call implicitly called in destructor

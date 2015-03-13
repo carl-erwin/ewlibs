@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <mutex>
 
 #include <ew/console/console.hpp>
 #include <ew/core/exception/exception.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
 
 #include <ew/core/program/environment.hpp>
 
@@ -29,16 +28,16 @@ EW_CONSOLE_EXPORT  console cerr(STDERR);
 EW_CONSOLE_EXPORT  console dbg(DEBUG);
 
 using namespace ew::core::syscall::unix_system;
-using namespace ew::core::threading;
+
 
 /* global console lock */
-mutex      console_mutex;
+std::mutex      console_mutex;
 
 // TODO: move to CONCURRENT
-class  conditional_mutex_locker
+class  conditional_mutex
 {
 public:
-	conditional_mutex_locker(mutex * mutex, bool use_lock = false)
+  conditional_mutex(std::mutex * mutex, bool use_lock = false)
 		: _mutex(mutex),
 		  _use_lock(use_lock)
 	{
@@ -46,13 +45,13 @@ public:
 			_mutex->lock();
 	}
 
-	~conditional_mutex_locker()
+	~conditional_mutex()
 	{
 		if (_use_lock)
 			_mutex->unlock();
 	}
 private:
-	mutex * _mutex;
+        std::mutex * _mutex;
 	bool    _use_lock;
 };
 
@@ -96,7 +95,7 @@ public:
 			return 0;
 
 		// TODO: add mutex use flag
-		conditional_mutex_locker con_lock(&console_mutex);
+		conditional_mutex con_lock(&console_mutex);
 		return sys_write(fd, buf, count);
 	}
 

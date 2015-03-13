@@ -2,15 +2,13 @@
 
 #include "mywindow.hpp"
 
-#include <ew/core/threading/thread.hpp>
+#include <thread>
 
 namespace test
 {
 namespace graphics
 {
 
-using namespace ew::core::threading;
-using namespace ew::graphics::gui;
 
 class myMenu : public window
 {
@@ -35,7 +33,7 @@ public:
 
 	virtual bool hide();
 
-	thread * anim_th;
+	std::thread * anim_th;
 	bool do_anim;
 
 	s32 rel_x;

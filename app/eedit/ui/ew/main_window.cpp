@@ -1,11 +1,12 @@
 #include <list>
 
 #include <ew/core/program/environment.hpp>
-#include <ew/core/threading/mutex.hpp>
+#include <mutex>
+#include <condition_variable>
+
+
 #include <ew/utils/utils.hpp>
 
-#include <ew/core/threading/condition_variable.hpp>
-using namespace ew::core::threading;
 
 
 #include <ew/graphics/graphics.hpp>

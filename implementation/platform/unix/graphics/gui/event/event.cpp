@@ -2,13 +2,13 @@
 
 #include <iostream>
 #include <list>
+#include <mutex>
+#include <condition_variable>
 
 #include <ew/graphics/gui/event/event.hpp>
 #include <ew/core/object/object_locker.hpp>
 
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/condition_variable.hpp>
+
 
 #include <ew/core/time/time.hpp>
 
@@ -35,7 +35,6 @@ namespace events
 {
 
 using namespace ew::core::types;
-using namespace ew::core::threading;
 using namespace ew::core::objects;
 
 using ew::console::cerr;
@@ -61,12 +60,10 @@ public:
 	private_data()
 		:
 		event_list_mutex(0),
-		have_event_cond(0),
 		timeout(100),
 		dpy(0)
 	{
-		event_list_mutex = new mutex(); // (Mutex::RECURSIVE_MUTEX);
-		have_event_cond = new condition_variable(event_list_mutex);
+                event_list_mutex = new std::mutex();
 
 		for (size_t count = 32; count > 0; --count) {
 			pending_event_counters[ count - 1 ] = 0;
@@ -76,16 +73,15 @@ public:
 
 	~private_data()
 	{
-		delete have_event_cond;
 		delete event_list_mutex;
 	}
 
-	mutex * event_list_mutex;
+        std::mutex * event_list_mutex;
 	std::list<event *> event_list;
 	u32 pending_event_counters[ __nr_events ];
 	u32 pending_event_ticks_filter[ __nr_events ];
 
-	condition_variable  * have_event_cond;
+        std::condition_variable  have_event_cond;
 	u32 timeout;
 	display * dpy;
 };
@@ -116,7 +112,7 @@ event_dispatcher::~event_dispatcher()
 bool event_dispatcher::push(event ** event, u32 nrEvents)
 {
 	{
-		mutex_locker lock(d->event_list_mutex);
+	  std::lock_guard<std::mutex> lock(*d->event_list_mutex);
 		for (u32 i = 0; i < nrEvents; i++) {
 			if (event[i]) {
 				event[i]->pending = d->pending_event_counters[ event[i]->type ];
@@ -124,7 +120,7 @@ bool event_dispatcher::push(event ** event, u32 nrEvents)
 				d->event_list.push_back(event[i]);
 			}
 		}
-		d->have_event_cond->signal();
+		d->have_event_cond.notify_one();
 	}
 
 	return true;
@@ -135,7 +131,7 @@ u32 event_dispatcher::get_nr_pending_events(event_type type) const
 	u32 ret;
 
 	if (d) {
-		mutex_locker lock(d->event_list_mutex);
+	  std::lock_guard<std::mutex> lock(*d->event_list_mutex);
 		ret = d->pending_event_counters[ type ];
 	} else {
 		ret = 0;
@@ -156,7 +152,8 @@ bool event_dispatcher::push(event * event)
 
 event * event_dispatcher::pop()
 {
-	mutex_locker lock(d->event_list_mutex);
+    std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+
 
 	if (! d->event_list.size())
 		return 0;
@@ -169,14 +166,16 @@ event * event_dispatcher::pop()
 
 u32 event_dispatcher::get_queue_size()
 {
-	mutex_locker lock(d->event_list_mutex);
+      std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+
 	u32 sz = d->event_list.size();
 	return sz;
 }
 
 bool  event_dispatcher::remove_widget_events(widget * widget)
 {
-	mutex_locker lock(d->event_list_mutex);
+        std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+
 
 	std::list<event *>::iterator it = d->event_list.begin();
 	while (it != d->event_list.end()) {
@@ -196,15 +195,17 @@ bool  event_dispatcher::remove_widget_events(widget * widget)
 
 bool event_dispatcher::stop()
 {
-	d->have_event_cond->signal();
+	d->have_event_cond.notify_one();
 	return true;
 }
 
 bool event_dispatcher::dispatch_all_events()
 {
 	{
-		mutex_locker lock(d->event_list_mutex);
-		d->have_event_cond->timed_wait(d->timeout);
+               std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+	       //   d->have_event_cond.wait(lock, [this]{ this->get_queue_size(); });
+	       // d->have_event_cond.wait(lock);
+	       abort();
 	}
 
 	u32 nr = get_queue_size();
@@ -289,7 +290,7 @@ bool event_dispatcher::dispatch_event(event * event)
 		return false;
 	}
 
-	object_locker<ew::graphics::gui::window> widget_lock(window);
+	std::lock_guard<std::mutex> widget_lock(* window);
 
 	if (! window->isAvailable()) {
 		// TODO: set unavailable widget flag

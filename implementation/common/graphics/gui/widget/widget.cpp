@@ -2,6 +2,10 @@
 #include <memory>
 #include <vector>
 
+#include <mutex>
+#include <thread>
+
+
 // Ew
 #include <ew/ew_config.hpp>
 
@@ -10,8 +14,6 @@
 #include <ew/core/time/time.hpp>
 
 #include <ew/core/object/object.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/thread.hpp>
 #include <ew/graphics/gui/gui.hpp>
 #include <ew/graphics/gui/display/display.hpp>
 

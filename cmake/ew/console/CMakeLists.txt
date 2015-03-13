@@ -10,7 +10,6 @@ ${EW_PROJECT_ROOT}/implementation/platform/unix/console/console.cpp
 TARGET_LINK_LIBRARIES(ew.console
 ew.core.syscall
 ew.core.program
-ew.core.threading
 )
 
 
@@ -29,7 +28,6 @@ ${EW_PROJECT_ROOT}/implementation/platform/win32/console/console.cpp
 
 
 TARGET_LINK_LIBRARIES(ew.console
-ew.core.threading
 )
 
 

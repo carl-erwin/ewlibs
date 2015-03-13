@@ -2,6 +2,9 @@
 #include <cstring>
 #include <list>
 
+#include <mutex>
+#include <thread>
+
 //
 // X11 specific
 //
@@ -11,8 +14,7 @@
 //
 // Ew
 //
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/thread.hpp>
+
 #include <ew/core/time/time.hpp>
 #include <ew/core/interface/lock_interface.hpp>
 #include <ew/video/ivideo.hpp>
@@ -46,7 +48,6 @@ namespace gui
 
 using namespace ew::core;
 using namespace ew::core::types;
-using namespace ew::core::threading;
 using namespace ew::graphics::gui::events;
 
 using ew::console::dbg;
@@ -153,22 +154,23 @@ void display::release_user_input_interface(user_input_interface * iuser_input_in
 bool display::lock()
 {
 	d->lock();
-	assert(d->_dpy_owner != ew::core::threading::self());
-	d->_dpy_owner = ew::core::threading::self();
+	assert(d->_dpy_owner != std::this_thread::get_id());
+	d->_dpy_owner = std::this_thread::get_id();
 	XLockDisplay(d->_x11_dpy);
 	return true;
 }
 
 bool display::unlock()
 {
-	assert(d->_dpy_owner == ew::core::threading::self());
+	assert(d->_dpy_owner == std::this_thread::get_id());
 	XUnlockDisplay(d->_x11_dpy);
-	d->_dpy_owner = 0;
+
+	d->_dpy_owner = std::thread::id();
 	d->unlock();
 	return true;
 }
 
-ew::core::threading::thread * display::is_locked_by()
+std::thread::id display::is_locked_by()
 {
 	return d->_dpy_owner;
 }
@@ -244,9 +246,7 @@ bool display::open()
 	// setup threading model
 	if (singlethreadEventPollingIsEnabled() == false) {
 
-		d->_event_poller_thread = new thread((thread::func_t) display::private_data::event_poller_thread_function,
-						     (thread::arg_t)this, "Display event thread");
-		d->start_event_poller_thread();
+		d->_event_poller_thread = new std::thread(display::private_data::event_poller_thread_function, this);
 	} else {
 
 		// create display event dispatcher

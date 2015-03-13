@@ -64,7 +64,6 @@ ${EW_PROJECT_ROOT}/app/eedit/ui/ncurses/ncurses.cpp
 TARGET_LINK_LIBRARIES(${EW_APP_NAME}.exe
 ew.core.exception
 ew.core.system
-ew.core.threading
 ew.core.object
 ew.core.time
 ew.console

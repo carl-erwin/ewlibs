@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <thread>
 
 // rename this
 #include <cstdio>
@@ -18,9 +19,8 @@
 
 
 // Ew
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/thread.hpp>
+#include <mutex>
+#include <thread>
 
 #include <ew/core/object/object_locker.hpp>
 
@@ -84,7 +84,6 @@ extern "C" char * __progname;
 
 
 using namespace ew::core::objects;
-using namespace ew::core::threading;
 using namespace ew::graphics::gui::events;
 using namespace ew::implementation::graphics::rendering::opengl;
 using ew::console::cerr;
@@ -150,12 +149,12 @@ window::window_private_data::window_private_data(window * parent)
 // add destroy_window();
 window::window_private_data::~window_private_data()
 {
-	mutex_locker mTxLock(this);
+	std::lock_guard<std::mutex> mTxLock(*this);
 
 	_isAvailable = false;
 	_inDestroyProcess = true;
 
-	assert(_guiDpy->is_locked_by() == ew::core::threading::self());
+	assert(_guiDpy->is_locked_by() == std::this_thread::get_id());
 	_guiDpy->d->del_widget(_owner);
 
 	// input
@@ -222,7 +221,7 @@ bool window::window_private_data::build_Window(ew::graphics::gui::display * dpy,
 	}
 	this->_guiDpy = dpy;
 
-	assert(dpy->is_locked_by() == ew::core::threading::self());
+	assert(_guiDpy->is_locked_by() == std::this_thread::get_id());
 
 	// copy x11 info
 	_x11_dpy = _guiDpy->d->get_x11_display();
@@ -824,21 +823,6 @@ const char * window::getName() const
 	return "X11_Window";
 }
 
-//ew::core::object | Window
-bool window::lock()
-{
-	return d->lock();
-}
-
-bool window::trylock()
-{
-	return d->trylock();
-}
-
-bool window::unlock()
-{
-	return d->unlock();
-}
 
 bool window::isAvailable()
 {

@@ -1,9 +1,8 @@
 #include <string>
+#include <mutex>
 
 #include <ew/core/object/object.hpp>
 
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
 
 // for DEBUG
 #include <ew/console/console.hpp>
@@ -22,11 +21,10 @@ namespace core
 {
 
 using namespace ew::core::types;
-using namespace ew::core::threading;
 
 using ew::console::cerr;
 
-class object::private_data : public ew::core::threading::mutex
+class object::private_data : public std::mutex
 {
 public:
 	std::string _name;
@@ -78,7 +76,7 @@ object::object()
 object::~object()
 {
 	{
-		mutex_locker locker(*d);
+	  std::lock_guard<std::mutex> locker(*d);
 
 		// TODO: add to prevent usage
 		// this->d->valid = true;
@@ -153,12 +151,12 @@ bool object::set_parent(object * obj)
 	if (this == obj)
 		return false;
 
-	mutex_locker child_locker(*this->d);
+	std::lock_guard<std::mutex> child_locker(*this->d);
 
 	// remove previous parent
 	object * parent = d->_parent;
 	if (parent) {
-		mutex_locker parent_locker(*parent->d);
+		std::lock_guard<std::mutex> parent_locker(*parent->d);
 
 		parent->d->children_array()[ d->_parent_index ] = nullptr;
 		--parent->d->_nrChildren;
@@ -170,7 +168,7 @@ bool object::set_parent(object * obj)
 
 	// select new parent
 	parent = obj;
-	mutex_locker parent_locker(*parent->d);
+	std::lock_guard<std::mutex> parent_locker(*parent->d);
 
 	if (parent->d->_children_vec == nullptr) {
 		// parent->d->_children_vec = new ew::core::container::simple_array<object *>();
@@ -241,7 +239,7 @@ size_t  object::number_of_children() const
 
 object * object::get_child(u64 nr) const
 {
-	mutex_locker me(*d);          // needed ?
+	std::lock_guard<std::mutex> me(*d);          // needed ?
 
 	if (has_children() == false) {
 		return nullptr;
@@ -269,24 +267,24 @@ bool object::remove_child(object * child)
 
 bool object::is_parent_of(object * obj)
 {
-	mutex_locker me(*d);         // needed ?
-	mutex_locker child(*obj->d); // needed ?
+	std::lock_guard<std::mutex> me(*d);         // needed ?
+	std::lock_guard<std::mutex> child(*obj->d); // needed ?
 
 	return (this == obj->d->_parent);
 }
 
 bool object::is_child_of(object * obj)
 {
-	mutex_locker me(*d);          // needed ?
-	mutex_locker parent(*obj->d); // needed ?
+	std::lock_guard<std::mutex> me(*d);          // needed ?
+	std::lock_guard<std::mutex> parent(*obj->d); // needed ?
 
 	return (d->_parent == obj);
 }
 
 bool object::is_sibling_of(object * obj)
 {
-	mutex_locker me(*d);            // needed ?
-	mutex_locker sibling(*obj->d);  // needed ?
+	std::lock_guard<std::mutex> me(*d);            // needed ?
+	std::lock_guard<std::mutex> sibling(*obj->d);  // needed ?
 
 	return (this->d->_parent == obj->d->_parent);
 }

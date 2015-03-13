@@ -3,7 +3,7 @@
 #include <list>
 #include <ew/filesystem/file.hpp>
 
-#include <ew/core/threading/condition_variable.hpp>
+#include <condition_variable>
 
 #include <ew/graphics/graphics.hpp>
 #include <ew/graphics/gui/widget/window/window.hpp>
@@ -17,7 +17,6 @@
 
 #include "editor_buffer.h"
 
-using namespace ew::core::threading; // TODO remove
 using namespace ew::filesystem; // TODO::remove
 
 namespace  eedit

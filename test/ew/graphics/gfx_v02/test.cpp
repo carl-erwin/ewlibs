@@ -10,10 +10,10 @@
 #include <ew/system/system.hpp>
 
 #include <ew/core/object/object_locker.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/condition_variable.hpp>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+
 #include <ew/core/time/time.hpp>
 #include <ew/maths/maths.hpp>
 
@@ -40,7 +40,6 @@ namespace test
 using namespace ew::core;
 using namespace ew::core::types;
 using namespace ew::core::objects;
-using namespace ew::core::threading;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 
@@ -62,8 +61,8 @@ extern GLfloat view_rotz;
 extern void gears_init(void);
 extern void draw(void);
 
-mutex nrRuningthreads_mtx;
-condition_variable nrRuningthreads_cond(&nrRuningthreads_mtx);
+std::mutex nrRuningthreads_mtx;
+std::condition_variable nrRuningthreads_cond;
 
 u32 nrRuningthreads = 0; // will inc/dec by threads
 u32 nrthreads = 0; // will be filled by args
@@ -268,11 +267,11 @@ void windowthread()
 	delete win;
 	guiDpy->unlock();
 
-	mutex_locker lock(nrRuningthreads_mtx);
+	std::lock_guard<std::mutex> lock(nrRuningthreads_mtx);
 	--nrRuningthreads;
 
 	if (nrRuningthreads == 0)
-		nrRuningthreads_cond.signal();
+		nrRuningthreads_cond.notify_one();
 
 	cerr << "void  windowthread() :: done" << "\n";
 }
@@ -318,22 +317,15 @@ int main(int ac, char ** av)
 		nrthreads = atoi(av[ 1 ]);
 		nrRuningthreads = nrthreads;
 		if (nrthreads) {
-			thread ** windowthreadsVec = new thread * [ nrthreads ];
+			std::thread ** windowthreadsVec = new std::thread * [ nrthreads ];
 
 			for (u32 count = 0; count < nrthreads; ++count) {
-				char name[32];
-#ifdef WIN32
-				::_snprintf(name, 32, "windowthread no %d", count);
-#else
-				::snprintf(name, 32, "windowthread no %d", count);
-#endif
-				windowthreadsVec[ count ] = new thread((thread::func_t) windowthread , 0, name);
-				windowthreadsVec[ count ] ->start();
+				windowthreadsVec[ count ] = new std::thread(windowthread);
 			}
 
 			cerr << "wait for threads\n";
-			mutex_locker lock(&nrRuningthreads_mtx);
-			nrRuningthreads_cond.wait();
+			std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+			nrRuningthreads_cond.wait(lock);
 
 			cerr << "no more thread running\n";
 

@@ -42,7 +42,6 @@ ${FREETYPE_INCLUDE_DIRS}
 TARGET_LINK_LIBRARIES(ew.graphics
 ew.core.exception
 ew.core.system
-ew.core.threading
 ew.core.dll
 ew.core.device
 ew.core.object
@@ -85,7 +84,6 @@ TARGET_LINK_LIBRARIES(ew.graphics
 opengl32
 glu32
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.device
 ew.core.object

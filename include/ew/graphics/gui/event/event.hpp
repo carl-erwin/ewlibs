@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ew/core/types/types.hpp>
-#include <ew/core/threading/thread.hpp>
+#include <thread>
 
 #include <ew/graphics/gui/display/display.hpp>
 #include <ew/graphics/gui/widget/widget.hpp>
@@ -18,7 +18,6 @@ namespace events
 {
 
 using namespace ew::core::types;
-using namespace ew::core::threading;
 
 typedef   enum event_type {
 	Unknow = 0,

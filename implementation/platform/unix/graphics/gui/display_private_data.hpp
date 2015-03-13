@@ -1,5 +1,9 @@
 #pragma once
 
+#include <mutex>
+#include <thread>
+
+
 //
 #include <iostream>
 #include <list>
@@ -17,9 +21,6 @@
 #include <ew/core/interface/lock_interface.hpp>
 #include <ew/core/object/object_locker.hpp>
 
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/thread.hpp>
 
 #include <ew/core/time/time.hpp>
 
@@ -40,7 +41,6 @@ namespace gui
 {
 
 using namespace ew::core::objects;
-using namespace ew::core::threading;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // EXPERIMENTAL
@@ -49,7 +49,7 @@ using namespace ew::core::threading;
 using ew::graphics::gui::display;
 using ew::graphics::gui::window;
 
-class display::private_data : public ew::core::threading::mutex
+class display::private_data : public std::mutex
 {
 public:
 
@@ -114,7 +114,6 @@ public:
 	void                  set_running(bool val);
 	bool                  is_running();
 
-	bool                  start_event_poller_thread();
 
 	::Display      *      get_x11_display();  // return the XWindow display connection
 	::Window              get_x11_root_window();  // return the XWindow root Window Id
@@ -126,7 +125,7 @@ public:
 	u32   get_widget_number();
 
 	// Display DATA
-	ew::core::threading::thread * _dpy_owner; // the locking thread
+	std::thread::id _dpy_owner; // the locking thread
 
 	// TODO:
 	// move to class X11 instance
@@ -141,7 +140,7 @@ public:
 	bool        _is_running;      // replace by isAvailable()
 
 	// EVENT HANDLING //
-	ew::core::threading::thread * _event_poller_thread; // this thread will launch the dispatcher thread
+	std::thread * _event_poller_thread; // this thread will launch the dispatcher thread
 
 	ew::graphics::gui::events::event_dispatcher * _default_event_dispatcher;
 	ew::graphics::gui::events::event_dispatcher * get_event_dispatcher()
@@ -158,7 +157,7 @@ public:
 	// widget container for the display
 	// widget list  for this display
 	std::list<ew::graphics::gui::widget *> _widget_list;
-	ew::core::threading::mutex _widget_list_mtx;
+	std::mutex _widget_list_mtx;
 
 	// decoration handling ...
 	// common to all display ?
@@ -198,14 +197,14 @@ inline ::Window     display::private_data::get_x11_root_window()
 
 inline void  display::private_data::add_widget(ew::graphics::gui::widget * widget)
 {
-	mutex_locker lock(_widget_list_mtx);
+        std::lock_guard<std::mutex> lock(_widget_list_mtx);
 	_widget_list.push_back(widget);
 }
 
 inline void  display::private_data::del_widget(ew::graphics::gui::widget * widget)
 {
 	{
-		mutex_locker lock(_widget_list_mtx);
+               std::lock_guard<std::mutex> lock(_widget_list_mtx);
 		_widget_list.remove(widget);
 	}
 
@@ -217,7 +216,7 @@ inline void  display::private_data::del_widget(ew::graphics::gui::widget * widge
 
 inline u32   display::private_data::get_widget_number()
 {
-	mutex_locker lock(_widget_list_mtx);
+        std::lock_guard<std::mutex> lock(_widget_list_mtx);
 	return _widget_list.size();
 };
 

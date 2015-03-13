@@ -92,7 +92,6 @@ SET(EW_VERSION ${EW_MAJOR_VERSION}.${EW_MINOR_VERSION}.${EW_PATCH_VERSION})
 SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${EW_PROJECT_ROOT}/cmake/CMakeModules")
 
 
-INCLUDE(FindThreads)
 INCLUDE(CheckCCompilerFlag)
 INCLUDE(CheckCXXCompilerFlag)
 
@@ -101,7 +100,6 @@ INCLUDE(FindOpenGL)
 
 
 IF(UNIX)
-FIND_PACKAGE(Threads REQUIRED)
 FIND_PACKAGE(X11 REQUIRED)
 
 INCLUDE_DIRECTORIES(/usr/include/qt5/)
@@ -355,7 +353,6 @@ ADD_SUBDIRECTORY(cmake/ew/core/syscall)
 ADD_SUBDIRECTORY(cmake/ew/core/program)
 ENDIF(UNIX)
 
-ADD_SUBDIRECTORY(cmake/ew/core/threading)
 ADD_SUBDIRECTORY(cmake/ew/core/object)
 ADD_SUBDIRECTORY(cmake/ew/core/dll)
 ADD_SUBDIRECTORY(cmake/ew/core/device)

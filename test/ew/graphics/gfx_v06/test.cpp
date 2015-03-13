@@ -10,10 +10,10 @@
 #include <ew/ew_config.hpp>      // holds system specific includes and #define
 //
 #include <ew/maths/maths.hpp>
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/condition_variable.hpp>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 #include <ew/core/time/time.hpp>
 #include <ew/core/application/simple_application.hpp>
 #include <ew/maths/maths.hpp>
@@ -36,7 +36,6 @@ namespace graphics
 using namespace ew::core::types;
 
 /* ----------------------------------------------- */
-using namespace ew::core::threading;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 
@@ -45,7 +44,7 @@ using namespace ew::graphics::rendering;
 
 
 
-mutex nrRuningthreads_mtx;
+std::mutex nrRuningthreads_mtx;
 u32 nrRuningthreads = 0; // will inc/dec by threads
 u32 nrthreads = 0; // will be filled by args
 
@@ -58,8 +57,8 @@ s32 WIN_Y = 0;
 s32 last_pointer_x = -10; // if < 0 NA
 s32 last_pointer_y = -10; // if < 0 NA
 
-mutex app_quit_mtx;
-condition_variable app_quit_cond(&app_quit_mtx);
+std::mutex app_quit_mtx;
+std::condition_variable app_quit_cond;
 
 display * dpy;
 
@@ -445,7 +444,7 @@ class main_window : public ew::graphics::gui::window
 public:
 	bool loop;
 	mutex quit_mtx;
-	condition_variable * quit_cond;
+	std::condition_variable quit_cond;
 
 	int nb_slider;
 	Slider ** slider;
@@ -489,15 +488,12 @@ public:
 	{
 
 		loop = true;
-		quit_cond = new condition_variable(&quit_mtx);
 		build_sliders();
 	}
 
 	~main_window()
 	{
 		destroy_sliders();
-		delete quit_cond;
-		quit_cond = 0;
 	}
 
 
@@ -549,8 +545,8 @@ public:
 		switch (key) {
 		case 9: { /* esc */
 			loop = false;
-			mutex_locker lock(quit_mtx);
-			quit_cond->signal();
+			std::unique_lock<std::mutex> lock(quit_mtx);
+			quit_cond.notify_one();
 		}
 		break ;
 		}
@@ -591,8 +587,8 @@ public:
 	virtual bool on_close(const widget_event * ev)
 	{
 
-		mutex_locker lock(quit_mtx);
-		quit_cond->signal();
+		std::lock_guard<std::mutex> lock(quit_mtx);
+		quit_cond.notify_one();
 
 		loop = false;
 		return true;
@@ -725,8 +721,8 @@ void renderthreadFunc(main_window * win)
 	}
 	*/
 
-	mutex_locker cond_mtx_lock(win->quit_mtx);
-	win->quit_cond->wait();
+	std::unique_lock<std::mutex> cond_mtx_lock(win->quit_mtx);
+	win->quit_cond.notify_one();
 }
 
 
@@ -753,15 +749,8 @@ void windowthread()
 	if (useRenderthread == false) {
 		renderthreadFunc(win);
 	} else {
-		thread * renderthread = new thread((thread::func_t) renderthreadFunc,
-						   (thread::arg_t) win,
-						   "renderthread");
-		if (renderthread->start() != true) {
-			// thread_exit();
-			// win->event_thread()->stop();
-		}
-		renderthread->join();
-		delete renderthread;
+		auto renderthread = std::thread(renderthreadFunc, win);
+		renderthread.join();
 	}
 
 	dpy->lock();
@@ -773,8 +762,10 @@ void windowthread()
 	--nrRuningthreads;
 	nrRuningthreads_mtx.unlock();
 
-	if (nrRuningthreads == 0)
-		app_quit_cond.signal();
+	if (nrRuningthreads == 0) {
+		std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+		app_quit_cond.wait(lock);
+	}
 
 	// std::cerr << "void  windowthread() :: done" << "\n";
 }
@@ -817,18 +808,20 @@ int main(int ac, char ** av)
 
 	nrRuningthreads = nrthreads;
 	if (nrthreads) {
-		thread ** windowthreadsVec = new thread * [ nrthreads ];
+		auto windowthreadsVec = new std::thread * [ nrthreads ];
 
 		for (u32 count = 0; count < nrthreads; ++count) {
-			windowthreadsVec[count] = new thread((thread::func_t)windowthread, 0, "windowthread");
-			windowthreadsVec[count]->start();
+			windowthreadsVec[count] = new std::thread(windowthread);
 		}
 
 		// we should have an app quit on last window ??
-		app_quit_cond.wait();
+		{
+			std::unique_lock<std::mutex> lock(app_quit_mtx);
+			app_quit_cond.wait(lock);
+		}
 
 		for (u32 count = 0; count < nrthreads; ++count) {
-			windowthreadsVec[ count ] ->join();
+			windowthreadsVec[ count ]->join();
 			dpy->lock();
 			delete windowthreadsVec[ count ];
 			dpy->unlock();

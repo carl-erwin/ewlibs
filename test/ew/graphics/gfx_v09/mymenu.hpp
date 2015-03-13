@@ -1,10 +1,9 @@
 #pragma once
 
-#include <ew/core/threading/thread.hpp>
+#include <thread>
 
 #include "mywindow.hpp"
 
-using namespace ew::core::threading;
 
 namespace test
 {
@@ -35,7 +34,7 @@ public:
 
 	bool isActive;
 
-	thread * renderthread;
+	std::thread * renderthread = nullptr;
 
 	static void renderFunc(myMenu * menu);
 };

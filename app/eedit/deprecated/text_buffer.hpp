@@ -6,7 +6,7 @@
 
 using namespace ew::core::types;
 using namespace ew::core::threading;
-#include <ew/core/threading/mutex_locker.hpp>
+#include <ew/core/threading/std::lock_guard<std::mutex>.hpp>
 
 #include <ew/core/time/time.hpp>
 using namespace ew::core::time;
@@ -114,7 +114,7 @@ public:
 	~text_buffer()
 	{
 		{
-			mutex_locker lock(this);
+			std::lock_guard<std::mutex> lock(this);
 			d.is_valid = false;
 		}
 
@@ -177,7 +177,7 @@ public:
 
 	bool start_indexer()
 	{
-		mutex_locker lock(this);
+		std::lock_guard<std::mutex> lock(this);
 
 		if (d.th_indexer)
 			return true;
@@ -196,7 +196,7 @@ public:
 			// bool ret = d.th_indexer->stop();
 			d.th_indexer->join();
 
-			mutex_locker lock(this);
+			std::lock_guard<std::mutex> lock(this);
 			delete d.th_indexer;
 			d.th_indexer = nullptr;
 		}

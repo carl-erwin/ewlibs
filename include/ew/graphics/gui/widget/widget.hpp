@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
+#include <thread>
 
 // Ew
 #include <ew/ew_config.hpp>
@@ -8,8 +10,8 @@
 // Ew Core
 #include <ew/core/types/types.hpp>
 #include <ew/core/object/object.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/thread.hpp>
+
+
 
 //
 #include <ew/unit/unit.hpp>
@@ -301,8 +303,9 @@ public:
 
 
 class EW_GRAPHICS_EXPORT widget :
+	public std::mutex,
 	public ew::core::object,
-	public ew::core::objects::lock_interface,
+//	public ew::core::objects::lock_interface, // FIXME remove this
 	public widget_event_callbacks,
 	public positionable_2d_object,
 	public resizeable_2d_object
@@ -320,20 +323,6 @@ public:
 	virtual const char * getName() const
 	{
 		return "";
-	}
-
-	// ILockableObject
-	virtual bool lock()
-	{
-		return false;
-	}
-	virtual bool trylock()
-	{
-		return false;
-	}
-	virtual bool unlock()
-	{
-		return false;
 	}
 
 	virtual bool is_enabled();

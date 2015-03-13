@@ -6,13 +6,6 @@
 #include <algorithm>
 #include <functional>
 
-
-//
-#include <ew/core/object/object_locker.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/condition_variable.hpp>
-
 #include <ew/core/time/time.hpp>
 
 ///

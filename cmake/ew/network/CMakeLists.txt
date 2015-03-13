@@ -11,7 +11,6 @@ ${EW_PROJECT_ROOT}/implementation/platform/unix/network/connection.cpp
 
 TARGET_LINK_LIBRARIES(ew.network
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.object
 )
@@ -34,7 +33,6 @@ ${EW_PROJECT_ROOT}/implementation/platform/win32/network/network.cpp
 
 TARGET_LINK_LIBRARIES(ew.network
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.object
 )

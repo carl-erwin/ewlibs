@@ -1,5 +1,9 @@
 #pragma once
 
+#include <thread>
+#include <mutex>
+
+
 // X11 specific
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -15,8 +19,7 @@
 
 
 // Ew
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/mutex.hpp>
+
 #include <ew/maths/functions.hpp>
 
 
@@ -50,7 +53,7 @@ public:
 };
 
 
-class window::window_private_data : public ew::core::threading::mutex
+class window::window_private_data : public std::mutex
 {
 private:
 	window_private_data(const window_private_data &);

@@ -11,8 +11,9 @@
 
 #include <ew/system/system.hpp>
 
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/mutex.hpp>
+#include <thread>
+#include <mutex>
+
 #include <ew/core/application/simple_application.hpp>
 #include <ew/maths/maths.hpp>
 #include <ew/graphics/graphics.hpp>
@@ -48,11 +49,10 @@ namespace graphics
 using namespace ew::core::types;
 
 /* ----------------------------------------------- */
-using namespace ew::core::threading;
 using namespace ew::graphics::gui;
 
 
-mutex nrRuningthreads_mtx;
+std::mutex nrRuningthreads_mtx;
 u32 nrRuningthreads = 0; // will inc/dec by threads
 u32 nrthreads = 0; // will be filled by args
 
@@ -184,18 +184,10 @@ void windowthread()
 	win = new main_window(winProperties);
 	win->show();
 	dpy->unlock();
-
-	thread * renderthread = new thread((thread::func_t) renderthreadFunc, (thread::arg_t) win, "renderthread");
-	if (renderthread->start() != true) {
-		delete renderthread;
-		dpy->lock();
-		delete win;
-		dpy->unlock();
-		return ;
+	{
+		std::thread renderthread = std::thread(renderthreadFunc, win);
+		renderthread.join();
 	}
-	renderthread->join();
-	delete renderthread;
-
 	dpy->lock();
 	delete win; // destroy
 	dpy->unlock();
@@ -265,11 +257,10 @@ int main(int ac, char ** av)
 	} else {
 		nrRuningthreads = nrthreads;
 		if (nrthreads) {
-			thread ** windowthreadsVec = new thread * [ nrthreads ];
+			auto windowthreadsVec = new std::thread * [ nrthreads ];
 
 			for (u32 count = 0; count < nrthreads; ++count) {
-				windowthreadsVec[ count ] = new thread((thread::func_t) windowthread, 0, "windowthread");
-				windowthreadsVec[ count ] ->start();
+				windowthreadsVec[ count ] = new std::thread(windowthread);
 			}
 
 			// we should have an app quit on last window ??

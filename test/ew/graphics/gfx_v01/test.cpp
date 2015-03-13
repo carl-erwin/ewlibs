@@ -1,3 +1,7 @@
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -6,10 +10,8 @@
 #include <ew/ew_config.hpp>     // holds system specific includes and #define
 #include <ew/core/time/time.hpp>
 #include <ew/maths/maths.hpp>
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/mutex_locker.hpp>
-#include <ew/core/threading/condition_variable.hpp>
+
+
 #include <ew/core/application/simple_application.hpp>
 #include <ew/maths/maths.hpp>
 #include <ew/graphics/graphics.hpp>
@@ -32,12 +34,11 @@ namespace test
 
 using namespace ew::core;
 using namespace ew::core::types;
-using namespace ew::core::threading;
 using namespace ew::graphics::gui;
 using namespace ew::implementation::graphics::rendering::opengl;
 
-mutex nrRuningthreads_mtx;
-condition_variable nrRuningthreads_cond(&nrRuningthreads_mtx);
+std::mutex nrRuningthreads_mtx;
+std::condition_variable nrRuningthreads_cond;
 
 u32 nrRuningthreads = 0; // will inc/dec by threads
 u32 nrthreads = 0; // will be filled by args
@@ -312,10 +313,10 @@ void        windowthread()
 	delete win;
 	guiDpy->unlock();
 
-	mutex_locker lock(&nrRuningthreads_mtx);
+	std::lock_guard<std::mutex> lock(nrRuningthreads_mtx);
 	--nrRuningthreads;
 	if (!nrRuningthreads)
-		nrRuningthreads_cond.signal();
+		nrRuningthreads_cond.notify_one();
 }
 
 int        main(int ac, char ** av)
@@ -356,17 +357,14 @@ int        main(int ac, char ** av)
 	nrthreads = atoi(av[1]);
 	nrRuningthreads = nrthreads;
 	if (nrthreads) {
-		thread ** windowthreadsVec = new thread * [nrthreads];
+		std::thread ** windowthreadsVec = new std::thread * [nrthreads];
 
 		for (u32 count = 0; count < nrthreads; ++count)
-			windowthreadsVec[count] = new thread((thread::func_t)windowthread, 0, 0);
-		for (u32 count = 0; count < nrthreads; ++count) {
-			windowthreadsVec[count]->start();
-		}
+			windowthreadsVec[count] = new std::thread(windowthread);
 
 		// we should have an app quit on last window ??
-		mutex_locker lock(&nrRuningthreads_mtx);
-		nrRuningthreads_cond.wait();
+		std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+		nrRuningthreads_cond.wait(lock);
 	}
 
 	delete guiDpy;

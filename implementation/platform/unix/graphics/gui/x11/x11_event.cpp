@@ -17,16 +17,12 @@ int display::private_data::X11::get_event(::Display * dpy, ::XEvent * xevent)
 
 void display::private_data::event_poller_thread_function(ew::graphics::gui::display * dpy)
 {
-
 	// move this to display
 	dpy->d->set_event_dispatcher(new events::event_dispatcher(dpy));
 	dpy->d->_is_running = true;
 
-	threading::thread * event_dispatcher_thread;
+	auto event_dispatcher_thread = std::thread(display::private_data::event_dispatcher_thread_function, dpy);
 
-	event_dispatcher_thread = new thread((thread::func_t)display::private_data::event_dispatcher_thread_function, dpy, "Event Dispatcher");
-
-	event_dispatcher_thread->start();
 	ew::core::time::sleep(10);
 	// do not lock
 	while (dpy->d->_is_running == true) {
@@ -34,17 +30,10 @@ void display::private_data::event_poller_thread_function(ew::graphics::gui::disp
 	}
 
 	dpy->d->get_event_dispatcher()->stop();
-	event_dispatcher_thread->join();
-	delete event_dispatcher_thread;
-	event_dispatcher_thread = 0;
+	event_dispatcher_thread.join();
 
 	delete dpy->d->get_event_dispatcher();
 	dpy->d->set_event_dispatcher(0);
-}
-
-bool display::private_data::start_event_poller_thread()
-{
-	return _event_poller_thread->start();
 }
 
 bool display::private_data::X11::get_event_queue_size(ew::graphics::gui::display * dpy, u32 * nr)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ew/core/types/types.hpp>
-#include <ew/core/threading/mutex.hpp>
+#include <mutex>
 
 namespace ew
 {
@@ -45,7 +45,7 @@ enum level {
 /*
   TODO: hide mutex in priv data ?
 */
-class EW_CONSOLE_EXPORT console : public ew::core::threading::mutex
+class EW_CONSOLE_EXPORT console : public std::mutex
 {
 public:
 	explicit console(ew::console::type type);

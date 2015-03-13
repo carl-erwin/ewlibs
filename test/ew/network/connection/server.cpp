@@ -1,15 +1,17 @@
+#include <thread>
+#include <condition_variable>
+#include <mutex>
+
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <list>
 #include <unistd.h>
 
-
 #include <ew/core/Types.hpp>
 #include <ew/core/Time.hpp>
 #include <ew/Console.hpp>
 #include <ew/Network.hpp>
-#include <ew/core/Threading.hpp>
 
 
 namespace test
@@ -19,12 +21,11 @@ namespace network
 
 using std::size_t;
 using namespace ew::network;
-using namespace ew::core::threading;
 using ew::console::cerr;
 
 u32 nr_client;
-mutex nr_client_mtx;
-condition_variable nr_client_condvar(&nr_client_mtx);
+std::mutex nr_client_mtx;
+std::condition_variable nr_client_condvar;
 
 void clientthreadFunc(connection * cl)
 {
@@ -121,7 +122,7 @@ int main(int ac, char ** av)
 	ew::core::time::init();
 	ew::network::init();
 
-	std::list<thread *> cl_list;
+	std::list<std::thread *> cl_list;
 
 	connection * server_conn = 0;
 	if (is_udp)
@@ -142,15 +143,14 @@ int main(int ac, char ** av)
 
 	while (true) {
 		connection * client_conn = server_conn->accept();
-		thread * client_thd = new thread((thread::func_t) clientthreadFunc,
-						 (thread::arg_t) client_conn,
-						 "clientthread");
-		if (client_thd->start() == true) {
-			cl_list.push_back(client_thd);
-		} else {
+		std::thread * client_thd = new std::thread(clientthreadFunc, client_conn);
+		cl_list.push_back(client_thd);
+		/* FIXME: catch error
+		 * {
 			delete client_thd;
 			delete client_conn;
 		}
+		*/
 	}
 	// wait for each thread
 

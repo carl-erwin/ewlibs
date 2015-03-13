@@ -2,7 +2,10 @@
 #include <vector>
 #include <list>
 
-#include "ew/core/threading/condition_variable.hpp"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 #include "ew/core/Time.hpp"
 #include "ew/maths/functions.hpp" // form min
 
@@ -10,7 +13,6 @@
 
 
 using namespace ew::core::time;
-using namespace ew::core::threading;
 
 namespace test
 {
@@ -63,7 +65,7 @@ public:
 
 	Private()
 	{
-		timeout_cond = new condition_variable(&timeout_mutex);
+		timeout_cond = new std::condition_variable;
 		_sleep = 1000; // TODO
 
 		periodict_timers_1ms.is_periodic = true;
@@ -99,8 +101,8 @@ public:
 	Queue< std::vector<Timer *> > periodict_timers_10ms;
 	Queue< std::vector<Timer *> > periodict_timers_100ms;
 	Queue< std::list<Timer *> > simple_timers;
-	mutex timeout_mutex;
-	condition_variable  * timeout_cond;
+	std::mutex timeout_mutex;
+	std::condition_variable  * timeout_cond;
 	u32 _sleep;
 
 	template <class Container>
@@ -364,7 +366,9 @@ u32 TimerHandler::wait()
 	if (d->_sleep >= 1) {
 		// std::cerr << "-------------------------;\n";
 		// std::cerr << __FUNCTION__ << " will sleep " << _sleep << " millseconds\n";
-		d->timeout_cond->timed_wait(d->_sleep);
+		std::unique_lock<std::mutex> lock(d->timeout_mutex);
+		auto now = std::chrono::system_clock::now();
+		d->timeout_cond->wait_until(lock, now + std::chrono::milliseconds(d->_sleep));
 	}
 
 	// t0

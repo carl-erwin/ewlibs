@@ -3,8 +3,8 @@
 // REMOVE all using ...
 
 #include <assert.h>
-#include <ew/core/threading/thread.hpp>
-using namespace ew::core::threading;
+#include <thread>
+
 
 #include <ew/console/console.hpp>
 using ew::console::dbg;

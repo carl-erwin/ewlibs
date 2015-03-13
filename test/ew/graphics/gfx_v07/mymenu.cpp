@@ -66,8 +66,7 @@ myMenu::myMenu(window * parent, window_properties & properties)
 	std::cerr << "class myMenu::myMenu(......) ok" << "\n";
 	do_anim = true;
 	if (do_anim == true) {
-		anim_th = new thread((thread::func_t)do_anim_func, (thread::arg_t)this, "anim_th");
-		anim_th->start();
+		anim_th = new std::thread(do_anim_func, this);
 	} else
 		anim_th = 0;
 }

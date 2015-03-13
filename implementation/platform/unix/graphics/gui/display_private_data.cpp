@@ -70,7 +70,7 @@ bool display::private_data:: have_widget(display::private_data * d, widget * win
 window *
 display::private_data:: get_window(display::private_data * d, ::Drawable x11_widget)
 {
-	mutex_locker lock(d->_widget_list_mtx);
+	std::lock_guard<std::mutex> lock(d->_widget_list_mtx);
 
 	std::list< widget * >::iterator it = d->_widget_list.begin();
 	std::list< widget * >::iterator end = d->_widget_list.end();

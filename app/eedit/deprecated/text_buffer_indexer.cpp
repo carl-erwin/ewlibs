@@ -8,7 +8,7 @@
 #include <ew/core/time/time.hpp>
 #include <new>
 
-#include <ew/core/threading/mutex_locker.hpp>
+#include <ew/core/threading/std::lock_guard<std::mutex>.hpp>
 
 #include <ew/console/console.hpp>
 using namespace ew::console;

@@ -9,7 +9,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/common/gears.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.time
 ew.core.system
@@ -30,7 +29,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/${EW_TEST_NAME}/test.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.time
 ew.core.system
@@ -51,7 +49,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/common/gears.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.dll
 ew.core.time
 ew.core.system
@@ -71,7 +68,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/${EW_TEST_NAME}/test.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.object
 ew.core.time
 ew.core.system
@@ -93,7 +89,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/${EW_TEST_NAME}/mywindow.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.object
 ew.core.time
 ew.core.system
@@ -115,7 +110,6 @@ ${EW_PROJECT_ROOT}/test/ew/graphics/${EW_TEST_NAME}/mymenu.cpp
 
 TARGET_LINK_LIBRARIES(${EW_TEST_NAME}.exe
 ew.core.exception
-ew.core.threading
 ew.core.object
 ew.core.time
 ew.core.system

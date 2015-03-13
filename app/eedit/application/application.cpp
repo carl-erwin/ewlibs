@@ -1,10 +1,12 @@
 #include <thread>
+#include <mutex>
+
 #include <functional>
 #include <getopt.h>
 #include <string>
 #include <memory>
+#include <condition_variable>
 
-#include "ew/core/threading/condition_variable.hpp"
 #include "ew/core/program/environment.hpp"
 #include "ew/utils/utils.hpp"
 #include "ew/core/time/time.hpp"
@@ -101,7 +103,7 @@ public:
 	bool build_index_flag      = true;
 	u32  nrthreads             = 0;
 
-	mutex nr_running_threads_mtx;
+	std::mutex nr_running_threads_mtx;
 	u32   nr_running_threads = 0;
 
 	std::string ui_name;
@@ -110,10 +112,6 @@ public:
 	std::unique_ptr<user_interface> ui;
 
 	std::unique_ptr<ew::graphics::gui::display> gui_dpy;
-	mutex                app_quit_mutex;
-
-	std::unique_ptr<condition_variable> app_quit_condvar;
-
 
 	// move to user configuration: init file
 	u32 DEFAULT_FONT_SIZE   = 12;
@@ -136,8 +134,6 @@ application::application_private::  application_private()
 
 {
 	app_log << __PRETTY_FUNCTION__ << " ENTER\n";
-
-	app_quit_condvar = std::make_unique<ew::core::threading::condition_variable>(&app_quit_mutex);
 
 	app_log << __PRETTY_FUNCTION__ << " LEAVE\n";
 }

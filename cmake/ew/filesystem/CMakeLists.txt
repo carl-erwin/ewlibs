@@ -15,7 +15,6 @@ ENDIF(WIN32)
 
 TARGET_LINK_LIBRARIES(ew.filesystem
 ew.core.exception
-ew.core.threading
 ew.core.object
 )
 

@@ -1,13 +1,16 @@
 #pragma once
 
+#include <mutex>
+#include <thread>
+
 // Ew
 #include <ew/ew_config.hpp>
 
 // Ew Core
 #include <ew/core/types/types.hpp>
 #include <ew/core/object/object.hpp>
-#include <ew/core/threading/mutex.hpp>
-#include <ew/core/threading/thread.hpp>
+
+
 
 #include <ew/graphics/gui/gui.hpp>
 
@@ -50,10 +53,6 @@ public:
 	virtual const char * class_name() const;
 	virtual const char * getName() const;
 
-	// ILockableObject
-	virtual bool lock();
-	virtual bool trylock();
-	virtual bool unlock();
 
 	// env info
 	// display

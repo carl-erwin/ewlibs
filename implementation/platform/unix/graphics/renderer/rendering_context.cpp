@@ -3,8 +3,7 @@
 
 #include <ew/core/exception/exception.hpp>
 #include <ew/core/time/time.hpp>
-#include <ew/core/threading/thread.hpp>
-#include <ew/core/object/object_locker.hpp>
+#include <thread>
 
 #include "../gui/window_private_data.hpp"
 #include "../gui/pixmap_private_data.hpp"
@@ -30,8 +29,6 @@ namespace rendering
 
 using namespace ew::core::types;
 
-using namespace ew::core::threading;
-
 using namespace ew::core::objects;
 
 using namespace ew::graphics::gui;
@@ -41,7 +38,7 @@ using namespace ew::graphics::gui;
 rendering_context::rendering_context(ew::graphics::gui::window * window)
 	: d(new private_data)
 {
-	mutex_locker lock(d);
+	std::lock_guard<std::mutex> lock(*d);
 	d->window = window;
 
 	Bool direct = True;
@@ -70,7 +67,7 @@ rendering_context::rendering_context(ew::graphics::gui::window * window)
 rendering_context::~rendering_context()
 {
 	{
-		mutex_locker lock(d);
+		std::lock_guard<std::mutex> lock(*d);
 
 		// TODO: assert  gui is locked
 		ew_glXDestroyContext(d->window->d->getX11Display(),
@@ -85,7 +82,7 @@ bool rendering_context::lock()
 {
 	d->lock();
 	assert(d->window != 0);
-	assert(d->_th_owner == 0);
+	//assert(d->_th_owner == 0);
 
 	if (d->window->d->_offscreen_pixmap) {
 		d->_glxDrawable = d->window->d->_offscreen_pixmap->d->_glx_pixmap;
@@ -100,7 +97,7 @@ bool rendering_context::lock()
 		ew::core::time::sleep(1);
 	}
 
-	d->_th_owner = ew::core::threading::self();
+	d->_th_owner = std::this_thread::get_id();
 
 	return true;
 }
@@ -111,13 +108,13 @@ bool rendering_context::unlock()
 {
 	assert(d->window != 0);
 
-	assert(d->_th_owner == ew::core::threading::self());
+	assert(d->_th_owner == std::this_thread::get_id());
 
 	// commented : because on nvidia cause flickering
 	// ew_glXMakeCurrent(d->window->d->_x11_dpy, None, NULL);
 	// assert(ret == True);
 
-	d->_th_owner = 0;
+	d->_th_owner = std::thread::id();
 	d->unlock();
 	return true;
 }
@@ -132,12 +129,12 @@ bool rendering_context::trylock()
 		return false;
 	}
 
-	if (d->_th_owner == ew::core::threading::self()) {
+	if (d->_th_owner == std::this_thread::get_id()) {
 		d->_nrLock++;
 		return true;
 	}
 
-	if (d->trylock() == false)
+	if (d->try_lock() == false)
 		return false;
 
 	//  ObjectLocker guilock(d->window->d->_guiDpy);
@@ -145,13 +142,13 @@ bool rendering_context::trylock()
 				    d->_glxDrawable,
 				    d->_glxCtx);
 	if (ret == True) {
-		d->_th_owner = ew::core::threading::self();
+		d->_th_owner = std::this_thread::get_id();
 		d->_nrLock++;
 		return true;
 	}
 
 	d->_nrLock = 0;
-	d->_th_owner = 0;
+	d->_th_owner = std::thread::id();
 	d->unlock();
 	return false;
 }
