@@ -1,4 +1,4 @@
-
+#include <exception>
 #include <assert.h>
 #include <cstdlib>
 #include <list>
@@ -801,6 +801,7 @@ public:
 
 		++fps;
 		u32 fps_t1 = ew::core::time::get_ticks();
+		std::cerr << "fps_t1 = " << fps_t1 << "\n";
 		if (fps_t1 - fps_t0 >= 1000) {
 			// print fps
 			snprintf(fps_str, sizeof(fps_str), "fps %d", fps);
@@ -829,7 +830,10 @@ public:
 
 		// create font
 
-		ft = std::make_shared<ew::graphics::fonts::font>("/home/ceg/.ew/config/fonts/default.ttf",  font_size, font_size);
+		ft = std::make_shared<ew::graphics::fonts::font>("/home/ceg/.ew/default.ttf",  font_size, font_size);
+                if (ft->open() == false) {
+		  throw std::runtime_error("cannot open font");
+		}
 
 		myRect * rect = nullptr;
 
@@ -1018,6 +1022,10 @@ int main(int ac, char ** av)
 
 	cerr << "usage : " << av[0] << " [text] [font_size] [nrWindow] [[width height]]]\n";
 	cerr << " ac =  " << ac << "\n";
+	if (ac == 1) {
+	  return 1;
+	}
+
 
 	cp_array = new s32[2000];
 

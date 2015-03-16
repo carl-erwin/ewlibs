@@ -202,10 +202,8 @@ bool event_dispatcher::stop()
 bool event_dispatcher::dispatch_all_events()
 {
 	{
-               std::lock_guard<std::mutex> lock(*d->event_list_mutex);
-	       //   d->have_event_cond.wait(lock, [this]{ this->get_queue_size(); });
-	       // d->have_event_cond.wait(lock);
-	       abort();
+               std::unique_lock<std::mutex> lock(*d->event_list_mutex);
+	       d->have_event_cond.wait(lock);
 	}
 
 	u32 nr = get_queue_size();

@@ -70,12 +70,10 @@ bool quit(void)
   }
 
 
-  
-
 size_t get_ticks(void)
 {
     std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
-    return  std::chrono::duration_cast<std::chrono::microseconds>(_end - _start).count();
+    return  std::chrono::duration_cast<std::chrono::milliseconds>(_end - _start).count();
 }
 
 void sleep(size_t nr_milliseconds)

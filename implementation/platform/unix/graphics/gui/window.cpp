@@ -945,7 +945,6 @@ bool window::move(s32 x, s32 y)
 bool window::on_create(const widget_event * ev)
 {
 	cerr << __FUNCTION__ << "\n";
-	assert(0);
 	return true;
 }
 
