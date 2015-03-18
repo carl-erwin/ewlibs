@@ -1745,10 +1745,10 @@ bool mouse_wheel_down(event * msg)
 void text_mode_register_modules_function()
 {
 	// text-mode
-	eedit_register_module_function("page-down",                 (module_fn)page_down);
-	eedit_register_module_function("page-up",                   (module_fn)page_up);
-	eedit_register_module_function("goto-beginning-of-buffer",  (module_fn)goto_beginning_of_buffer);
-	eedit_register_module_function("goto-end-of-buffer",        (module_fn)goto_end_of_buffer);
+	editor_register_module_function("page-down",                 (module_fn)page_down);
+	editor_register_module_function("page-up",                   (module_fn)page_up);
+	editor_register_module_function("goto-beginning-of-buffer",  (module_fn)goto_beginning_of_buffer);
+	editor_register_module_function("goto-end-of-buffer",        (module_fn)goto_end_of_buffer);
 
 
 #if 0

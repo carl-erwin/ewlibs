@@ -133,7 +133,7 @@ bool text_decoder_filter(build_layout_context_t * blctx,
 		app_log <<__PRETTY_FUNCTION__ << " start offset = " << ctx->next_offset << "\n";
 	}
 
-	int ret = text_codec_read(&io_ctx, ctx->iovc, ctx->iocnt);
+	int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
 
 	if (debug)
 		app_log <<__PRETTY_FUNCTION__ << " text_codec_read = " << ret << "\n";

@@ -67,28 +67,26 @@ struct editor_buffer_s {
 	std::string buffer_name; /* the bufer name : '*scratch*' '*Message*' etc.. ,  */
 	std::string font_file_name;
 
+	// FIXME: add file stat apis
 	// flags
 	bool buffer_changed  = false;
 	// date last changed
 	// date: last save
 
-private:
 	//{- TODO: default font : -> struct font_config.default.{normal,bold,italic,bold-italic} ?
 	std::shared_ptr<ew::graphics::fonts::font> m_font;
 	//-}
 
 	//{-           marks list   // sorted by offset, use copy_if -> to screen (if visible on screen)
-	// this list represent all the cursor found in all view to this buffer
-	std::vector<mark_t *> marks; // todo use shared_pointer of marks + special delete function
+	// this list represent the common marks visible by all views
+	std::vector<mark_t> moving_marks; // todo use shared_pointer of marks + special delete function
+	std::vector<mark_t> fixed_marks; // sorted
 	//-}
 
-	//{-           region list // sorted
+	//{-           region list // sorted // tree ? overlap ?
 	std::list<editor_region> regions;
 	//-}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,6 +109,12 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
 			eedit::get_application()->font_height());
 	if (m_font->open() == false) {
 		assert(0);
+	}
+
+	app_log << __PRETTY_FUNCTION__ << " FIXME: move mark init to proper module\n";
+	for (int i = 0; i < 10; ++i) {
+		auto m = mark_new(i, "");
+		moving_marks.push_back(m);
 	}
 }
 
@@ -235,6 +239,47 @@ extern "C" {
 
 		return edbuf->buffer_changed;
 	}
+
+	// MARKS
+	SHOW_SYMBOL
+	uint64_t editor_buffer_number_of_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type)
+	{
+		auto edbuf = table.get(editor_buffer_id);
+		if (edbuf == nullptr)
+			return 0;
+
+		switch (type) {
+			case FIXED_MARK:
+				return edbuf->fixed_marks.size();
+
+			case MOVING_MARK:
+				return edbuf->moving_marks.size();
+		}
+		return 0;
+	}
+
+
+
+	int      editor_buffer_get_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks)
+	{
+		auto edbuf = table.get(editor_buffer_id);
+		if (edbuf == nullptr)
+			return 0;
+
+		switch (type) {
+			case FIXED_MARK: {
+				auto n_copy = std::min(edbuf->fixed_marks.size(), max_number_of_marks);
+				std::copy(edbuf->fixed_marks.begin(), edbuf->fixed_marks.begin() + n_copy, marks);
+			} break;
+
+			case MOVING_MARK: {
+				auto n_copy = std::min(edbuf->moving_marks.size(), max_number_of_marks);
+				std::copy(edbuf->moving_marks.begin(), edbuf->moving_marks.begin() + n_copy, marks);
+			} break;
+		}
+		return 0;
+	}
+
 
 }
 

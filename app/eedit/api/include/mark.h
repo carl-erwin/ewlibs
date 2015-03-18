@@ -14,14 +14,28 @@ extern "C" {
 */
 
 ///
+/// \brief enum mark_type_e pointer type
+///
+typedef enum mark_type_e {
+	FIXED_MARK,
+	MOVING_MARK,
+} mark_type_t;
+
+
+///
 /// \brief mark_t pointer type
 ///
 typedef struct mark_s * mark_t;
 
 ///
-/// \brief mark_size
-/// \return the number of bytes a mark uses (used for external allocator)
-size_t  mark_size();
+/// \brief mark_new
+/// \return a new mark
+mark_t mark_new(uint64_t offset, const char * name);
+
+///
+/// \brief mark_release
+/// \return deletes a given mark
+void mark_release(mark_t m);
 
 
 ///

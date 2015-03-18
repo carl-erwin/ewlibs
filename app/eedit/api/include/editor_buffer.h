@@ -51,8 +51,9 @@ int	editor_buffer_remove_view(editor_buffer_id_t editor_buffer_id, editor_view_i
 
 
 // buffer -> marks
-uint64_t editor_buffer_number_of_marks(editor_buffer_id_t editor_buffer_id);
-int      editor_buffer_get_marks(editor_buffer_id_t editor_buffer_id, uint64_t max_number_of_view, mark_t * marks);
+uint64_t editor_buffer_number_of_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type);
+int      editor_buffer_get_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks);
+
 
 
 void editor_buffer_set_changed_flag(editor_buffer_id_t, bool);

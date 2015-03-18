@@ -36,12 +36,12 @@ int register_module_function(const char * name, module_fn fn)
 
 extern "C" {
 
-	int eedit_register_module_function(const char * name, module_fn fn)
+	int editor_register_module_function(const char * name, module_fn fn)
 	{
 		return eedit::register_module_function(name, fn);
 	}
 
-	module_fn eedit_get_module_function(const char * name)
+	module_fn editor_get_module_function(const char * name)
 	{
 		return eedit::get_module_function(name);
 	}

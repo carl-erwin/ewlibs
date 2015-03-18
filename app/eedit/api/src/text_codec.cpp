@@ -8,24 +8,41 @@
 #include "../include/text_codec.h"
 
 
+
 extern "C"
-SHOW_SYMBOL int text_codec_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_read(struct codec_io_ctx_s * io_ctx, int direction, struct text_codec_io_s * iovc, size_t iocnt)
 {
 	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
 	if (ops == nullptr)
 		return -1;
 
-	return ops->read(io_ctx, iovc, iocnt);
+	if (direction > 0)
+		return ops->read_forward(io_ctx, iovc, iocnt);
+	if (direction < 0)
+		return ops->read_backward(io_ctx, iovc, iocnt);
+
+	return -1;
+}
+
+
+extern "C"
+SHOW_SYMBOL int text_codec_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+{
+	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+	if (ops == nullptr)
+		return -1;
+
+	return ops->read_forward(io_ctx, iovc, iocnt);
 }
 
 extern "C"
-SHOW_SYMBOL int text_codec_reverse_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
 	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
 	if (ops == nullptr)
 		return -1;
 
-	return ops->reverse_read(io_ctx, iovc, iocnt);
+	return ops->read_backward(io_ctx, iovc, iocnt);
 }
 
 extern "C"

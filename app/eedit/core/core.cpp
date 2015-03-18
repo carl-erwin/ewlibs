@@ -479,12 +479,12 @@ bool quit_editor(event * msg)
 void register_core_modules_function()
 {
 	//
-	eedit_register_module_function("quit-editor",               (module_fn)quit_editor);
+	editor_register_module_function("quit-editor",               (module_fn)quit_editor);
 
 	// undo mode
-	eedit_register_module_function("undo",                      (module_fn)buffer_undo);
-	eedit_register_module_function("redo",                      (module_fn)buffer_redo);
-	eedit_register_module_function("dump-buffer-log",           (module_fn)dump_buffer_log);
+	editor_register_module_function("undo",                      (module_fn)buffer_undo);
+	editor_register_module_function("redo",                      (module_fn)buffer_redo);
+	editor_register_module_function("dump-buffer-log",           (module_fn)dump_buffer_log);
 
 }
 

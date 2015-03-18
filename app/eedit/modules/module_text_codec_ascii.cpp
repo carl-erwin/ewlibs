@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <iostream>
 #include <cstring>
 
@@ -87,10 +88,12 @@ int ascii_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, si
 	return i;
 }
 
+
+/* should we return an inverted array ? */
 extern "C"
 int ascii_reverse_read(struct codec_io_ctx_s * b, struct text_codec_io_s * iovc, size_t iocnt)
 {
-
+	assert(0);
 	return 0;
 }
 
@@ -176,8 +179,8 @@ SHOW_SYMBOL eedit_module_init_status_e  module_init()
 	ascii_ops.base_ops.get_name        = ascii_get_name;
 	ascii_ops.base_ops.get_type        = ascii_get_type;
 	//
-	ascii_ops.read         = ascii_read;
-	ascii_ops.reverse_read = ascii_reverse_read;
+	ascii_ops.read_forward         = ascii_read;
+	ascii_ops.read_backward = ascii_reverse_read;
 	ascii_ops.write        = ascii_write;
 
 	ascii_ops.sync_codepoint = ascii_sync_codepoint;

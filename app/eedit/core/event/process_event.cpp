@@ -180,7 +180,7 @@ bool eval_input_event(event * base_msg)
 	assert(msg->ev);
 
 	// TODO: cache fn in action
-	module_fn fn = eedit_get_module_function(match_found->action->fn_name);
+	module_fn fn = editor_get_module_function(match_found->action->fn_name);
 	if (fn) {
 		app_log << "'" << match_found->action->fn_name << "' is defined\n";
 		app_log << "BEGIN '" << match_found->action->fn_name << "'\n";

@@ -10,8 +10,9 @@
 
 extern "C"
 struct editor_event_s {
-	uint64_t screen_id;
 	uint64_t buffer_id;
+	uint64_t byte_buffer_id; // filled internally 0
+	uint64_t view_id;
 
 	screen_dimension  screem_dim;
 
@@ -37,10 +38,7 @@ extern "C" {
 
 	typedef int (*module_fn)(void * event); // FIXME: move to json-rpc | ac/av ?, TODO: use const editor_event_s * event
 
-	int       eedit_register_module_function(const char * name, module_fn);
-	module_fn eedit_get_module_function(const char * name);
+	int       editor_register_module_function(const char * name, module_fn);
+	module_fn editor_get_module_function(const char * name);
 
 }
-
-
-void test_module();

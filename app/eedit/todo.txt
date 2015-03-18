@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+display marks
+allays maintain a SORTED global marks table ?
+-------------------------------------------------------------------
+cleanup
+-------------------------------------------------------------------
 
 add an api :
 - to restart the layout pipeline @ a given offset
@@ -410,18 +415,22 @@ given:
    - split(start_index, end_index)
 
 ------------------------------------------------
-multiple cursors :
+multiple marks/cursors :
 
-must have a "master" cursor
-that will spawn to implement multiple cursors
-the master cursor could be swapped with the spawned ones
+must have a "master" mark/cursor (per view ?)
+that will be used to spawn multiple cursors
 
-kill-current-cursor
-kill-next-spawned-cursor
-kill-prev-spawned-cursor
-create-spawned-cursor
-move-to-next-spawned-cursor
-move-to-previous-spawned-cursor
+kill-current-mark
+kill-next-spawned-mark
+kill-prev-spawned-mark
+move-to-next-mark
+move-to-previous-mark
+
+clone-mark-and-move-to-left-char
+clone-mark-and-move-to-right-char
+clone-mark-and-move-to-previous-line
+clone-mark-and-move-to-next-line
+
 
 the internal apis must expose
 the list/array of cursors

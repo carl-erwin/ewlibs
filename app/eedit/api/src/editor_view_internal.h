@@ -9,6 +9,7 @@
 #include "editor_view.h"
 #include "editor_buffer.h"
 #include "codepoint_info.h"
+#include "mark.h"
 
 #include "codec.h"
 
@@ -45,6 +46,12 @@ struct editor_view {
 		std::string m_font_file_name;
 		ew::graphics::fonts::font * ft;
 	} font;
+
+
+	struct {
+		std::vector<mark_t> moving; // todo use shared_pointer of marks + special delete function
+		std::vector<mark_t> fixed; // sorted
+	} marks;
 
 };
 

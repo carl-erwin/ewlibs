@@ -18,9 +18,20 @@ struct mark_s {
 	char     name[MARK_NAME_MAX_SIZE];
 };
 
-size_t mark_size()
+
+mark_t mark_new(uint64_t offset, const char * name)
 {
-	return sizeof (struct mark_s);
+	mark_t m = new mark_s;
+
+	mark_set_offset(m, offset);
+	mark_set_name(m, name);
+	return m;
+}
+
+
+void mark_release(mark_t m)
+{
+	delete m;
 }
 
 size_t mark_name_max_size()

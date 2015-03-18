@@ -245,6 +245,49 @@ extern "C" {
 	}
 
 
+	// MARKS
+	SHOW_SYMBOL
+	uint64_t editor_view_number_of_marks(editor_view_id_t view_id, mark_type_t type)
+	{
+		auto v = table.find(view_id);
+		if (v == table.end())
+			return 0;
+
+		auto view = v->second;
+
+		switch (type) {
+			case FIXED_MARK:
+				return view->marks.fixed.size();
+
+			case MOVING_MARK:
+				return view->marks.moving.size();
+		}
+		return 0;
+	}
+
+	SHOW_SYMBOL
+	int      editor_view_get_marks(editor_view_id_t view_id, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks)
+	{
+		auto v = table.find(view_id);
+		if (v == table.end())
+			return 0;
+
+		auto view = v->second;
+		switch (type) {
+			case FIXED_MARK: {
+				auto n_copy = std::min(view->marks.fixed.size(), max_number_of_marks);
+				std::copy(view->marks.fixed.begin(), view->marks.fixed.begin() + n_copy, marks);
+			} break;
+
+			case MOVING_MARK: {
+				auto n_copy = std::min(view->marks.moving.size(), max_number_of_marks);
+				std::copy(view->marks.moving.begin(), view->marks.moving.begin() + n_copy, marks);
+			} break;
+		}
+		return 0;
+	}
+
+
 
 } // ! extern "C"
 
