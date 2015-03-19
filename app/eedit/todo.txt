@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+async jobs:
+
+editor_job_t editor_new_job(func, editor_event, size_t timeout_ms); // ex: syntax color, linter, external jobs/process
+editor_job_t editor_cancel_job(event, func);
+-------------------------------------------------------------------
+add editor_buffer change_count (uint64_t) incremented every time a change is made
+add editor_view   change_count (uint64_t) incremented every time a change is made
+-------------------------------------------------------------------
+add cpi->is_mark
+avoid filter in out copy field by field , prefer out[...] = in[..]
+-------------------------------------------------------------------
 display marks
 allays maintain a SORTED global marks table ?
 -------------------------------------------------------------------

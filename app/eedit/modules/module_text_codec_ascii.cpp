@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream>
+#include <algorithm>
 #include <cstring>
 
 #include "ew/ew_config.hpp"
@@ -47,7 +48,7 @@ int ascii_get_name(char buffer[], size_t buffer_size)
 
 
 extern "C"
-int ascii_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
 	// read up to iocnt codepont
 	int64_t offset = iovc->offset;
@@ -69,8 +70,6 @@ int ascii_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, si
 		}
 
 		for (size_t j = 0; j < nb_read; j++) {
-
-
 			iovc[i + j].cp = buff[j];
 			iovc[i + j].offset = offset + j;
 			iovc[i + j].size   = 1;
@@ -89,29 +88,93 @@ int ascii_read(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, si
 }
 
 
-/* should we return an inverted array ? */
+// "decode" up to iocnt codepoint in reverse order
+
+/*
+  last_offset(0)[ | | | | ]first_offset(eof)
+*/
+
 extern "C"
-int ascii_reverse_read(struct codec_io_ctx_s * b, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	assert(0);
-	return 0;
+	// start of buffer ?
+	if (iovc->offset == 0)
+		return 0;
+
+	uint64_t first_offset = iovc->offset;
+	uint64_t last_offset;
+	if (iocnt > first_offset) {
+		last_offset = 0;
+	} else {
+		last_offset = first_offset - iocnt;
+	}
+
+	uint8_t buff[16 * 1024]; // codec ctx // move this to codec ctx // and adapt, cache ?
+
+	// stop @ offset - iocv
+	struct text_codec_io_s * dest_iovc = &iovc[0];
+	while (first_offset != last_offset) {
+
+		size_t max_read = std::min<size_t>(sizeof (buff), first_offset - last_offset);
+		size_t nb_read  = 0;
+		int res = byte_buffer_read(io_ctx->bid, (first_offset - max_read), buff, max_read, &nb_read);
+		if (res != 0) {
+			return -1;
+		}
+
+		for (size_t j = nb_read; j > 0; ) {
+			--j;
+			--first_offset;
+			dest_iovc->cp     = buff[j];
+			dest_iovc->offset = first_offset;
+			dest_iovc->size   = 1;
+			dest_iovc++;
+		}
+	}
+
+	return int(dest_iovc - iovc);
 }
 
 extern "C"
-int ascii_write(struct codec_io_ctx_s * b, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	return 0;
+	auto start_offset = iovc[0].offset;
+	std::vector<uint8_t> vec;
+
+	// encode :-)
+	for (size_t i = 0; i < iocnt; i++) {
+		auto cp = iovc[i].cp;
+		if (cp < 128) {
+			vec.push_back(cp);
+		} else {
+			// cannot encode byte >= 128
+		}
+	}
+
+	size_t nb_written = 0;
+	byte_buffer_write(io_ctx->bid, start_offset, &vec[0], vec.size(), &nb_written);
+	int res = nb_written;
+
+	// fix size / offset
+	for (size_t j = 0; j < nb_written; j++) {
+		iovc[j].offset = start_offset + j;
+		iovc[j].size   = 1;
+	}
+
+	return res;
 }
 
 extern "C"
 int ascii_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
+	abort();
 	return 0;
 }
 
 extern "C"
 int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
+	abort();
 	return 0;
 }
 
@@ -120,12 +183,14 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const
 extern "C"
 int ascii_encode(int32_t codepoint, uint64_t out_size, uint8_t out[], size_t * nb_write)
 {
+	abort();
 	return 0;
 }
 
 extern "C"
 int ascii_decode(size_t in_size, uint8_t in[], int32_t * codepoint)
 {
+	abort();
 	return 0;
 }
 
@@ -179,8 +244,8 @@ SHOW_SYMBOL eedit_module_init_status_e  module_init()
 	ascii_ops.base_ops.get_name        = ascii_get_name;
 	ascii_ops.base_ops.get_type        = ascii_get_type;
 	//
-	ascii_ops.read_forward         = ascii_read;
-	ascii_ops.read_backward = ascii_reverse_read;
+	ascii_ops.read_forward         = ascii_read_forward;
+	ascii_ops.read_backward = ascii_read_backward;
 	ascii_ops.write        = ascii_write;
 
 	ascii_ops.sync_codepoint = ascii_sync_codepoint;

@@ -40,6 +40,7 @@ ${EW_PROJECT_ROOT}/app/eedit/core/filters/text_decoder.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/filters/hex_layout_mode.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/filters/unicode_layout_mode.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/filters/tab_expansion_layout_mode.cpp
+${EW_PROJECT_ROOT}/app/eedit/core/filters/mark_filter.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/filters/screen_layout.cpp
 
 ${EW_PROJECT_ROOT}/app/eedit/core/process_event_ctx.cpp  # TODO: rename in core/event/process_event_ctx.cpp ?

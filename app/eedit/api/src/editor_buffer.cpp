@@ -3,7 +3,7 @@
 #include <list>
 #include <set>
 #include <map>
-
+#include <algorithm>
 
 #include "ew/graphics/font/font.hpp"
 
@@ -111,9 +111,20 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
 		assert(0);
 	}
 
+
+	auto m = mark_new(0, "");
+	moving_marks.push_back(m);
+
+	m = mark_new(2, "");
+	moving_marks.push_back(m);
+
+	return;
+
 	app_log << __PRETTY_FUNCTION__ << " FIXME: move mark init to proper module\n";
-	for (int i = 0; i < 10; ++i) {
-		auto m = mark_new(i, "");
+	size_t max_size;
+	byte_buffer_size(bid, &max_size);
+	for (uint64_t i = 0; i < 50; i += 2) {
+		auto m = mark_new(std::min<uint64_t>(i + 10, max_size), "");
 		moving_marks.push_back(m);
 	}
 }
@@ -260,7 +271,7 @@ extern "C" {
 
 
 
-	int      editor_buffer_get_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks)
+	size_t      editor_buffer_get_marks(editor_buffer_id_t editor_buffer_id, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks)
 	{
 		auto edbuf = table.get(editor_buffer_id);
 		if (edbuf == nullptr)
@@ -268,13 +279,15 @@ extern "C" {
 
 		switch (type) {
 			case FIXED_MARK: {
-				auto n_copy = std::min(edbuf->fixed_marks.size(), max_number_of_marks);
+				size_t n_copy = std::min(edbuf->fixed_marks.size(), max_number_of_marks);
 				std::copy(edbuf->fixed_marks.begin(), edbuf->fixed_marks.begin() + n_copy, marks);
+				return n_copy;
 			} break;
 
 			case MOVING_MARK: {
-				auto n_copy = std::min(edbuf->moving_marks.size(), max_number_of_marks);
+				size_t n_copy = std::min(edbuf->moving_marks.size(), max_number_of_marks);
 				std::copy(edbuf->moving_marks.begin(), edbuf->moving_marks.begin() + n_copy, marks);
+				return n_copy;
 			} break;
 		}
 		return 0;

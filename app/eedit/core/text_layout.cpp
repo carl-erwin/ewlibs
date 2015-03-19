@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <vector>
 #include <map>
 
@@ -15,12 +16,12 @@ namespace core
 build_layout_context_s::build_layout_context_s(
 	editor_buffer_id_t editor_buffer_id_,
 	byte_buffer_id_t bid_,
-	uint64_t sid_,
+	editor_view_id_t view_,
 	const codepoint_info_s * start_cpi_, screen_t * out_)
 	:
 	editor_buffer_id(editor_buffer_id_),
 	bid(bid_),
-	sid(sid_),
+	view(view_),
 	start_cpi(start_cpi_),
 	out(out_)
 {
@@ -32,10 +33,9 @@ build_layout_context_s::build_layout_context_s(
 
 	screen_reset(out);
 
-	auto view = sid;
 	if (view == 0) {
 		// no view configured yet
-		return;
+		abort();
 	}
 
 	ft = (ew::graphics::fonts::font *)editor_view_get_font(view);  // the font used to build the layout: FIXME: break opengl dep, add bold/italic etc...
@@ -142,6 +142,9 @@ extern filter_t unicode_mode;       // takes code points -> count them -> emit c
 extern filter_t tab_expansion_mode; // takes codepoints  -> emit codepoints
 extern filter_t hex_mode;           // takes bytes       -> emit codepoints
 
+
+extern filter_t mark_filter;        // codepoint         -> set codepoint's mark flag
+
 extern filter_t screen_mode;        // takes codepoints  -> emit screen
 
 
@@ -182,6 +185,8 @@ bool build_layout(build_layout_context_t & ctx)
 	mode_list.push_back(&text_decoder);
 	mode_list.push_back(&tab_expansion_mode);
 #endif
+
+	mode_list.push_back(&mark_filter); // LAST LAYOUT FILTER  is the screen
 
 	mode_list.push_back(&screen_mode); // LAST LAYOUT FILTER  is the screen
 

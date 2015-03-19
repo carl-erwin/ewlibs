@@ -684,7 +684,6 @@ bool goto_end_of_buffer(event * msg)
 	return true;
 }
 
-
 #if 0
 
 
@@ -1756,7 +1755,6 @@ void text_mode_register_modules_function()
 	eedit_register_module_function("next-line",                 (module_fn)to_next_screen_line);
 	eedit_register_module_function("previous-screen-line",      (module_fn)to_previous_screen_line);
 	eedit_register_module_function("next-screen-line",          (module_fn)to_next_screen_line);
-	eedit_register_module_function("self-insert",               (module_fn)insert_codepoint);
 	eedit_register_module_function("insert-newline",            (module_fn)insert_newline);
 	eedit_register_module_function("delete-backward-char",      (module_fn)remove_previous_char);
 	eedit_register_module_function("delete-forward-char",       (module_fn)remove_current_char);

@@ -69,7 +69,7 @@ int     byte_buffer_read(const byte_buffer_id_t bid, const uint64_t offset,  uin
 // this function insert the 'in' array content in the buffer upto 'to_ins'
 // nb_read is filled with the number of copied bytes
 // return -1 on error
-int     byte_buffer_insert(const byte_buffer_id_t  bid, const uint64_t offset, const uint8_t in[], const size_t to_ins, size_t * nb_ins);
+int     byte_buffer_write(const byte_buffer_id_t  bid, const uint64_t offset, const uint8_t in[], const size_t to_ins, size_t * nb_ins);
 
 //   if to_rm is provided will call buffer_read before remove the bytes
 int     byte_buffer_remove(const byte_buffer_id_t  bid, const uint64_t offset, uint8_t removed[], const size_t to_rm,  size_t * nb_rm);

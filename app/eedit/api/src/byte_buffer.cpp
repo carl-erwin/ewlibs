@@ -106,10 +106,35 @@ extern "C" {
 
 		u64 nb_read_ = 0;
 		file->fd->read((u64)offset, (u8 *)out, to_read, &nb_read_);
+
+
 		*nb_read = nb_read_;
 
 		return 0;
 	}
+
+	SHOW_SYMBOL
+	int     byte_buffer_write(const byte_buffer_id_t  bid, const uint64_t offset, const uint8_t in[], const size_t to_ins, size_t * nb_ins)
+	{
+		auto file = table.get(bid);
+		if (file == nullptr)
+			return -1;
+
+		if (offset > file->fd->size()) {
+			// invalid offset
+			return -1;
+		}
+
+		// TODO: cache last offset + read size, for this bid
+
+		u64 nb_written_ = 0;
+		file->fd->write((u64)offset, (u8 *)in, to_ins, &nb_written_);
+
+		*nb_ins = nb_written_;
+
+		return 0;
+	}
+
 
 
 	SHOW_SYMBOL

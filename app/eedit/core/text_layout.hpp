@@ -110,7 +110,7 @@ struct build_layout_context_s {
 	// ctx in
 	editor_buffer_id_t	editor_buffer_id = 0;
 	byte_buffer_id_t	bid  = 0;
-	editor_view_id_t	sid  = 0;
+	editor_view_id_t	view  = 0;
 	codec_id_t              codec_id = 0;
 	codec_io_ctx_s	        io_ctx;
 
