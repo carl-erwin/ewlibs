@@ -98,8 +98,8 @@ extern "C" {
 		if (file == nullptr)
 			return -1;
 
-		if (offset > file->fd->size()) {
-			return 0;
+		if (offset >= file->fd->size()) {
+			return -1;
 		}
 
 		// TODO: cache last offset + read size, for this bid
@@ -134,6 +134,36 @@ extern "C" {
 
 		return 0;
 	}
+
+	SHOW_SYMBOL
+	int     byte_buffer_remove(const byte_buffer_id_t  bid, const uint64_t offset, uint8_t removed[], const size_t to_rm_,  size_t * nb_rm)
+	{
+		auto file = table.get(bid);
+		if (file == nullptr)
+			return -1;
+
+		if (offset >= file->fd->size()) {
+			return -1;
+		}
+
+		auto to_rm = to_rm_;
+		if (offset + to_rm_ > file->fd->size()) {
+				to_rm = file->fd->size() - offset;
+		}
+
+		if (removed)
+			byte_buffer_read(bid, offset,  removed,  to_rm, nb_rm);
+
+
+		auto first = file->fd->begin() + offset;
+		auto last  = file->fd->begin() + offset + to_rm;
+
+		file->fd->erase(first, last);
+
+		*nb_rm = to_rm;
+		return 0;
+	}
+
 
 
 

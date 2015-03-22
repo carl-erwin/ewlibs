@@ -1478,9 +1478,9 @@ inline bool setup_default_input_map(std::map<std::string, editor_input_event_map
 			    "home                = goto-beginning-of-line\n"              \
 			    "end                 = goto-end-of-line\n"                    \
 			    "ctrl + unicode('s') = incremental-search-forward\n"            \
-			    "backspace           = delete-backward-char\n"                  \
-			    "delete              = delete-forward-char\n"                   \
-			    "ctrl + unicode('d')  = delete-forward-char\n"                  \
+			    "backspace           = delete-left-char\n"                  \
+			    "delete              = delete-right-char\n"                   \
+			    "ctrl + unicode('d')  = delete-right-char\n"                  \
 			    "left         = left-char\n"                                     \
 			    "right        = right-char\n"                                    \
 			    "up           = previous-line\n"                                 \
