@@ -187,8 +187,7 @@ bool ncurses_ui_interface::main_loop()
 	// init
 	initscr();
 	m_cur_view_id = (editor_view_id_t)stdscr;
-
-
+	curs_set(0); 		// disable cursor
 	keypad(stdscr, TRUE); /* for F1, arrow etc ... */
 	clear();
 	noecho();
@@ -387,15 +386,22 @@ eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int 
 
 	case 0 ... 26: {
 		kval = keys::UNICODE;
-		mod_mask |= input_event_s::mod_ctrl ;
-		unicode = keycode + 'a' - 1;
+		switch (keycode + 'a' - 1) {
+			case 'j': {
+				unicode = '\n';
+			} break;
+			case 'i': {
+				unicode = '\t';
+			} break;
+			default: {
+				unicode = keycode + 'a' - 1;
+				mod_mask |= input_event_s::mod_ctrl;
+			} break;
+		}
 	}
 	break;
-	case 27: {
-		kval = keys::Escape;
-	}
-	break;
-	case 28 ... 127: {
+
+	case 27 ... 127: {
 		kval = keys::UNICODE;
 		unicode = keycode;
 	}
@@ -581,6 +587,9 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(eedit::core::layou
 			const codepoint_info_s * cpi;
 			screen_line_get_cpinfo(l, c, &cpi, screen_line_hint_fix_column_overflow);
 
+			if (cpi->is_selected) {
+				attron(A_REVERSE);
+			}
 			if (cpi->codepoint < 128) {
 				mvaddch(li, c, cpi->codepoint);
 			} else {
@@ -588,6 +597,10 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(eedit::core::layou
 				utf8_put_cp(cpi->codepoint, buff);
 				mvaddstr(li, c, (const char *)buff);
 			}
+			if (cpi->is_selected) {
+				attroff(A_REVERSE);
+			}
+
 		}
 	}
 
