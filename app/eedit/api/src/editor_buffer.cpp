@@ -115,9 +115,6 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
     auto m = mark_new(0, "");
     moving_marks.push_back(m);
 
-    m = mark_new(2, "");
-    moving_marks.push_back(m);
-
     return;
 
     app_log << __PRETTY_FUNCTION__ << " FIXME: move mark init to proper module\n";
