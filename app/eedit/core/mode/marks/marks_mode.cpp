@@ -50,6 +50,17 @@ enum operation_mask_e {
 	EDITOR_OP_DELETE_AT_MARK = 1 << 2,
 };
 
+
+
+/*
+  The operation are executed in this order:
+  insert
+  move
+  delete
+
+  delete is last because delete-left-char is implemented like this : move the marks to the left and then delete the codepoint(s)
+
+ */
 bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, int move_direction)
 {
 	// TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
@@ -164,8 +175,6 @@ bool mark_move_backward(eedit::core::event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// mark_move_forward(buffer, mark_index)
-
 bool mark_move_forward(eedit::core::event * msg)
 {
 	return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_FORWARD);
@@ -202,20 +211,88 @@ bool delete_left_char(eedit::core::event * _msg)
 	mark_operation(_msg, EDITOR_OP_MARK_MOVE|EDITOR_OP_DELETE_AT_MARK, INVALID_CP, MOVE_BACKWARD);
 	return true;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
+
 bool delete_right_char(eedit::core::event * _msg)
 {
 	mark_operation(_msg, EDITOR_OP_DELETE_AT_MARK, INVALID_CP, NO_MOVE);
 	return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+ * provide per mode context
+ * this will allow amrk mode to keep track of the view's main mark
+ * all clone operation depends on main mark
+ *
+ */
+bool mark_clone_and_move_left(eedit::core::event * _msg)
+{
+
+	return true;
+}
+
+bool mark_clone_and_move_right(eedit::core::event * _msg)
+{
+	return true;
+}
+
+bool mark_clone_and_move_up(eedit::core::event * _msg)
+{
+	return true;
+}
+
+bool mark_clone_and_move_down(eedit::core::event * _msg)
+{
+	return true;
+}
+
+bool mark_delete(eedit::core::event * _msg)
+{
+	return true;
+}
+
+bool mark_select_next(eedit::core::event * _msg)
+{
+	return true;
+}
+
+bool mark_select_previous(eedit::core::event * _msg)
+{
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 void mark_mode_register_modules_function()
 {
-	// TODO: cursor-mode cursor_mode.cpp
-	editor_register_module_function("left-char",                 (module_fn)mark_move_backward);
-	editor_register_module_function("right-char",                (module_fn)mark_move_forward);
-	editor_register_module_function("self-insert",               (module_fn)insert_codepoint);
-	editor_register_module_function("insert-newline",            (module_fn)insert_newline);
-	editor_register_module_function("delete-left-char",          (module_fn)delete_left_char);
-	editor_register_module_function("delete-right-char",         (module_fn)delete_right_char);
+	/* basic moves */
+	editor_register_module_function("left-char",                  (module_fn)mark_move_backward);
+	editor_register_module_function("right-char",                 (module_fn)mark_move_forward);
+	/* insert/delete */
+	editor_register_module_function("self-insert",                (module_fn)insert_codepoint);
+	editor_register_module_function("insert-newline",             (module_fn)insert_newline);
+	editor_register_module_function("delete-left-char",           (module_fn)delete_left_char);
+	editor_register_module_function("delete-right-char",          (module_fn)delete_right_char);
+	/* clone operation */
+	editor_register_module_function("mark-clone-and-move-left",   (module_fn)mark_clone_and_move_left);
+	editor_register_module_function("mark-clone-and-move-right",  (module_fn)mark_clone_and_move_right);
+	editor_register_module_function("mark-clone-and-move-up",     (module_fn)mark_clone_and_move_up);
+	editor_register_module_function("mark-clone-and-move-down",   (module_fn)mark_clone_and_move_down);
+	editor_register_module_function("mark-delete",                (module_fn)mark_delete);
+	editor_register_module_function("mark-select-next",           (module_fn)mark_select_next);
+	editor_register_module_function("mark-select-previous",       (module_fn)mark_select_previous);
 }
+
+/* TODO:
+	provide function to update the view from external modules :
+
+	ex: if sync view on mark move
+
+	editor_view_scroll(view, int scroll_n_lines); ~~ page_up page_down
+*/
+
+////////////////////////////////////////////////////////////////////////////////

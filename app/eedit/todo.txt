@@ -1,3 +1,35 @@
+fix ncurses screen size : bad interline/font
+-------------------------------------------------------------------
+split the todo in it's own directory
+ create subdirectory per modules + sub todo file
+-------------------------------------------------------------------
+input map stack apis
+-------------------------------------------------------------------
+how to implement repeat ?
+
+each view should have a repeat count + it's api
+
+view_reset_repeat_count(view)
+view_set_repeat_count(int n)
+
+-------------------------------------------------------------------
+how to handle input macro ?
+simple:
+ store list of input events in a replay queue
+ the current input map stack will be saved/pushed while recording the input events
+
+
+new function
+"keyboard-macro-record-start" :
+"keyboard-macro-record-stop" :
+"keyboard-macro-save-as" :
+"keyboard-macro-load" :
+"keyboard-macro-load" :
+
+-------------------------------------------------------------------
+store the last screen in the view implementation
+-------------------------------------------------------------------
+fix window resizing
 -------------------------------------------------------------------
 async jobs:
 
@@ -13,9 +45,6 @@ avoid filter in out copy field by field , prefer out[...] = in[..]
 display marks
 allays maintain a SORTED global marks table ?
 -------------------------------------------------------------------
-cleanup
--------------------------------------------------------------------
-
 add an api :
 - to restart the layout pipeline @ a given offset
 - to set a resync flag + direction
@@ -101,12 +130,14 @@ ex
  "save_buffer" -> "core::save_buffer"
  "buffer_undo" -> "core::buffer_undo"
 
+function alias
+
 --------------------------
 create dll for text_mode -> prepare dll loading configuration path
 -------------------------
 create dll for undo_mode
 ---------------------------------------------
-a mode is collection of functions + (default input map ?) (not necessarrily enabled)
+a mode is collection of functions + (default input map ?) (not necessarily enabled)
 ------------------------------------------------------
 the message queue can be improved by counting the number of pending message
 that will potentialy trigger layout rebuilding; as we process message we can avoid
@@ -128,7 +159,7 @@ rpc : get_buffer_font_list { id, 'url:file:///...' }
 
  the ui load the url
  the font id is added to the screen class -> this will allow multiple fonts
- the renderer will sort items per font_id to avoid ctx switch
+ the renderer will sort items per font_id to avoid context switch
 
 -------------------------------------------------------
 undo system :-) : lowest possible level , record mark moves ?
@@ -779,6 +810,7 @@ always use indirect calls
    app event dispatcher
     map event to api calls (internal or external)
  }
+
  {
         editor ui
             menu api
@@ -848,29 +880,7 @@ ctrl+g => abort_command
 new idea web ui
 - create an internal web server that listen on arbitrary port
 - let the browser render the ui the web server send
-- html + css + ajax
---------------------------
-widget :
-
-when a widget is a container
- we should provided a default behavior for unhandled events
- ex
-   <wid1>
-
-    wid1->set_event_fallback_route(u32/u64 ? event_mask, widget * w = wid3) // must provide function to map coord from one widget to another
-
-    <wid2 type=line_numbner />
-    <wid3 type=text_view />
-    <wid4 type=scroolbar />
-    <wid3/>
-   <wid1/>
-
-or (combine with)
-
- when a given callbacks returns false
- pass the event (whith translated coords , ...) to the parent and so on...
- this will be the fallback event handling
-
+- WEBSOCKET : html + css + WEBSOCKET
 --------------------------
 init/open fonts before opening files
 
@@ -1048,7 +1058,6 @@ see http://www.multicians.org/mepap.html ( IV. Multics Emacs: The Embryonic Phas
 when doing high-light search
 The highlight/search "plugin" will patch the TextViewCells style data
 while maintaining a list of buffer offset + size of region to highlight
-+
 
 ---------------------------------------------------------------------------------
-when updating the view moving must support a range based update
+
