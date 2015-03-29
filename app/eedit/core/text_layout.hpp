@@ -8,7 +8,7 @@
 
 #include "../application/application.hpp"
 
-
+#include "editor_export.h"
 #include "editor_buffer.h"
 #include "editor_view.h"
 #include "codec.h"
@@ -66,6 +66,10 @@ extern "C" {
 
     typedef struct filter_io_s filter_io_t;
 
+
+    EDITOR_EXPORT
+    bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t sid, const codepoint_info_s * start_cpi, screen_t * out);
+
 }
 
 
@@ -94,6 +98,7 @@ inline void filter_io_init(filter_io_t * io)
     io->split_flag  = 0;
     io->split_count = 0;
 };
+
 
 
 
@@ -227,7 +232,6 @@ int unput_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
 */
 
 bool build_layout(build_layout_context_t & ctx);
-bool build_screen_layout(struct codec_io_ctx_s * io_ctx, uint64_t sid, const codepoint_info_s * start_cpi, screen_t * out);
 
 } // ! namespace core
 

@@ -252,7 +252,7 @@ bool rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
 
     if (hints & rewind_screen) {
 
-        app_log << "hints & rewind_screen\n";
+        // FIXME:   define editor_log() like printf // app_log << "hints & rewind_screen\n";
 
 
         if (screen_max_cp >= near_offset) {
@@ -261,12 +261,12 @@ bool rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
             rewind_off = near_offset - screen_max_cp;
         }
 
-        app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
 
         editor_view_set_start_offset(ed_view, rewind_off);
 
         if (hints & resync_screen) {
-            app_log << "hints & resync_screen\n";
+            // FIXME:   define editor_log() like printf // app_log << "hints & resync_screen\n";
 
             // TODO: need resync here: but we don't know the used codec
             codec_io_ctx_s io_ctx {
@@ -285,7 +285,7 @@ bool rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
             // must have view_buffer->codec()->resync(offset, direction)
             // page-up/down must be brought by the text-mode
 
-            app_log << "FIXME FIXME FIXME !!!!!!!!!!!!\n";
+            // FIXME:   define editor_log() like printf // app_log << "FIXME FIXME FIXME !!!!!!!!!!!!\n";
 
             //editor_mark_to_beginnig_of_line(bid, ed_buffer->rdr_begin())
             // ed_view->rdr_begin()->toBeginningOfLine();
@@ -326,8 +326,8 @@ bool screen_list_find_offset(const std::list<screen_t *> & scr_list,
         abs_index += screen_get_number_of_used_lines(scr);
     }
 
-    app_log << __FUNCTION__ << " abs_index  " << abs_index  << "\n";
-    app_log << __FUNCTION__ << " line_index " << line_index << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " abs_index  " << abs_index  << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " line_index " << line_index << "\n";
     abs_line_index = abs_index + line_index;
     return found;
 }
@@ -362,8 +362,8 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
     u64 until_offset   = until_offset_on_screen;
     view_clip_offset(ed_buffer, ed_view, until_offset);
 
-    app_log << __FUNCTION__ << " : start_offset = " << start_offset << "\n";
-    app_log << __FUNCTION__ << " : until_offset = " << until_offset << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : start_offset = " << start_offset << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : until_offset = " << until_offset << "\n";
 
     assert(start_offset <= until_offset);
 
@@ -381,10 +381,10 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
     assert(rewind_off <= start_offset);
     assert(rewind_off <= until_offset);
 
-    app_log << __FUNCTION__ << " : after resync rdr_begin     = " << rewind_off << "\n";
-    app_log << __FUNCTION__ << " : after resync target_offset = " << until_offset << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : after resync rdr_begin     = " << rewind_off << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : after resync target_offset = " << until_offset << "\n";
 
-    app_log << "    -----------------\n";
+    // FIXME:   define editor_log() like printf // app_log << "    -----------------\n";
 
     int count = 0;
     int found = 0;
@@ -403,9 +403,9 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
         0
     };
 
-    app_log << " Build screen line list (looking for offset("<< until_offset<<"))\n";
+    // FIXME:   define editor_log() like printf // app_log << " Build screen line list (looking for offset("<< until_offset<<"))\n";
     do {
-        app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
+        // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
 
         build_screen_layout(&io_ctx, ed_view, &start_cpi,tmp_scr);
 
@@ -418,12 +418,12 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
         screen_get_last_cpinfo(tmp_scr, &last_cpinfo);
 
         // u64 last_off  = last_cpinfo->offset;
-        // app_log <<  " screen.start off = " <<  first_off << "\n";
-        // app_log <<  " target offset    = " <<  until_offset << "\n";
-        // app_log <<  " screen.end_off   = " <<  last_off <<  "\n";
-        // app_log <<  " nb used lines    = " <<  screen_get_number_of_used_lines(tmp_scr) <<  "\n";
+        // // FIXME:   define editor_log() like printf // app_log <<  " screen.start off = " <<  first_off << "\n";
+        // // FIXME:   define editor_log() like printf // app_log <<  " target offset    = " <<  until_offset << "\n";
+        // // FIXME:   define editor_log() like printf // app_log <<  " screen.end_off   = " <<  last_off <<  "\n";
+        // // FIXME:   define editor_log() like printf // app_log <<  " nb used lines    = " <<  screen_get_number_of_used_lines(tmp_scr) <<  "\n";
 
-        app_log <<  "   ----------------\n";
+        // FIXME:   define editor_log() like printf // app_log <<  "   ----------------\n";
 
         for (size_t li = 0; li != screen_get_number_of_used_lines(tmp_scr); ++li) {
             const screen_line_t * l = nullptr;
@@ -435,7 +435,7 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
             screen_line_get_first_cpinfo(l, &cpi_first, &col_index);
             screen_line_get_last_cpinfo(l, &cpi_last, &col_index);
 
-            // app_log << __FUNCTION__ << " : PUSH " << screen_line_list.size() << " " << cpi_first->offset << " , " << cpi_last->offset << "\n";
+            // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : PUSH " << screen_line_list.size() << " " << cpi_first->offset << " , " << cpi_last->offset << "\n";
             screen_line_list.emplace_back(cpi_first->offset, cpi_last->offset);
         }
 
@@ -455,14 +455,14 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
             restart_offset = cpi->offset;
             editor_view_set_start_offset(ed_view, cpi->offset);
 
-            app_log << " found restart_offset(" << restart_offset << ") on screen count "<< count << "\n";
-            app_log << " scr_line_index = "<< scr_line_index << "\n";
-            app_log << " scr_col_index   = "<< scr_col_index << "\n";
+            // FIXME:   define editor_log() like printf // app_log << " found restart_offset(" << restart_offset << ") on screen count "<< count << "\n";
+            // FIXME:   define editor_log() like printf // app_log << " scr_line_index = "<< scr_line_index << "\n";
+            // FIXME:   define editor_log() like printf // app_log << " scr_col_index   = "<< scr_col_index << "\n";
 
             break;
 
         } else {
-            app_log << " start offset (" << restart_offset << ") NOT FOUND\n";
+            // FIXME:   define editor_log() like printf // app_log << " start offset (" << restart_offset << ") NOT FOUND\n";
         }
 
         if (screen_contains_offset(tmp_scr, until_offset) == true) {
@@ -515,7 +515,7 @@ bool page_down_internal(eedit::core::event * _msg)
 
     editor_view_set_start_offset(view, cpi->offset); // TODO: return offset ?
 
-    app_log << __PRETTY_FUNCTION__ << " : cpi->offset " << cpi->offset << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : cpi->offset " << cpi->offset << "\n";
 
     set_ui_change_flag(msg->editor_buffer_id,  msg->byte_buffer_id, msg->view_id);
     set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, cpi);
@@ -549,10 +549,10 @@ bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
 
     u32 max_cp = (scr_dim.l * scr_dim.c) * 2; // 4 is codec->max_codepoint_size(); in utf8
     u64 save_start_off = editor_view_get_start_offset( view );
-    app_log << __FUNCTION__ << " : save_start_off to " << save_start_off << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : save_start_off to " << save_start_off << "\n";
 
     if (save_start_off == 0) {
-        app_log << __FUNCTION__ << " : nothing to do" << save_start_off << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : nothing to do" << save_start_off << "\n";
         // nothing to do
         return true;
     }
@@ -562,7 +562,7 @@ bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
     u64 rewind_off;
     eedit::core::rewind_and_resync_screen(buffer, view, max_cp, rewind_screen, save_start_off, &rewind_off);
 
-    app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
 
     std::vector<std::pair<uint64_t,uint64_t>> screen_line_list;
 
@@ -573,15 +573,15 @@ bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
                            screen_get_dimension(screen),
                            screen_line_list);
 
-    app_log << " screen_line_list.size() = " << screen_line_list.size() << "\n";
+    // FIXME:   define editor_log() like printf // app_log << " screen_line_list.size() = " << screen_line_list.size() << "\n";
 
     for (size_t index = screen_line_list.size(); index > 0; ) {
         --index;
 
-        /// app_log << " checking index " << index << " off {" << screen_line_list[index].first << " << " << save_start_off << " >> " << screen_line_list[index].second << "}\n";
+        /// // FIXME:   define editor_log() like printf // app_log << " checking index " << index << " off {" << screen_line_list[index].first << " << " << save_start_off << " >> " << screen_line_list[index].second << "}\n";
 
         if ((screen_line_list[index].first <= save_start_off) && (screen_line_list[index].second >= save_start_off)) {
-            //app_log  << " found offset on screen_line_list index = " << index << "\n";
+            //// FIXME:   define editor_log() like printf // app_log  << " found offset on screen_line_list index = " << index << "\n";
 
             size_t screen_h = scr_dim.l + 1;
 
@@ -590,13 +590,13 @@ bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
             else
                 index = 0;
 
-            //app_log  << " NEX START index = " << index << "\n";
+            //// FIXME:   define editor_log() like printf // app_log  << " NEX START index = " << index << "\n";
 
             codepoint_info_t cpi;
             codepoint_info_reset(&cpi);
             cpi.used = true;
             cpi.offset = screen_line_list[index].first;
-            //app_log << __PRETTY_FUNCTION__ << " NEW START : cpi.offset " << cpi.offset << "\n";
+            //// FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " NEW START : cpi.offset " << cpi.offset << "\n";
             set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
             set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
             start_cpi = cpi;
@@ -752,7 +752,7 @@ bool it_to_previous_line(text_buffer::iterator & ref)
 
 bool to_previous_line(event * _msg)
 {
-    app_log << __FUNCTION__ << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
     input_event * msg = (input_event *)_msg;
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
@@ -887,19 +887,19 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
     b = previous_screen->get_line_by_offset(screen_offset, &prev_line, saved_line, saved_column);
     if (!b) {
 
-        app_log << " cannot find offset " << screen_offset << " on screen\n";
-        app_log << " screen->first_cpinfo.offset = " << previous_screen->first_cpinfo.offset << "\n";
-        app_log << " screen->last_cpinfo.offset = " << previous_screen->last_cpinfo.offset << "\n";
-        app_log << " cannot find offset " << screen_offset << "on screen\n";
+        // FIXME:   define editor_log() like printf // app_log << " cannot find offset " << screen_offset << " on screen\n";
+        // FIXME:   define editor_log() like printf // app_log << " screen->first_cpinfo.offset = " << previous_screen->first_cpinfo.offset << "\n";
+        // FIXME:   define editor_log() like printf // app_log << " screen->last_cpinfo.offset = " << previous_screen->last_cpinfo.offset << "\n";
+        // FIXME:   define editor_log() like printf // app_log << " cannot find offset " << screen_offset << "on screen\n";
 
         // resync marks ?
         // assert(0);
         return false;
     }
 
-    app_log << " scr_line_idx " << saved_line << "\n";
-    app_log << " scr_col_idx  " << saved_column << "\n";
-    app_log << " screen->number_of_used_lines()  " <<  previous_screen->number_of_used_lines() << "\n";
+    // FIXME:   define editor_log() like printf // app_log << " scr_line_idx " << saved_line << "\n";
+    // FIXME:   define editor_log() like printf // app_log << " scr_col_idx  " << saved_column << "\n";
+    // FIXME:   define editor_log() like printf // app_log << " screen->number_of_used_lines()  " <<  previous_screen->number_of_used_lines() << "\n";
 
     size_t scr_new_line_idx = saved_line + 1;
     auto number_of_used_lines = previous_screen->number_of_used_lines();
@@ -907,17 +907,17 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
 
         // have eof ?
         if (number_of_used_lines == 1) {
-            app_log << " END OF BUFFER DETECTED\n";
+            // FIXME:   define editor_log() like printf // app_log << " END OF BUFFER DETECTED\n";
             return false;
         }
 
         // FIXME: if rdr_end on screen return
         // rebuild layout scroll down 1
         // FIXME : add function : scroll_down(screen_in, &screen_out);
-        app_log << "MUST SCROLL\n";
+        // FIXME:   define editor_log() like printf // app_log << "MUST SCROLL\n";
         b = previous_screen->get_line(1, &line);
         if (b == false) {
-            app_log << "cannot get line index 1\n";
+            // FIXME:   define editor_log() like printf // app_log << "cannot get line index 1\n";
             assert(0);
             return false;
         }
@@ -936,9 +936,9 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
 
         ed_buffer->rdr_begin()->move_to_offset(cpi->offset);
 
-        app_log << "cpi->offset " << cpi->offset << "\n";
-        app_log << "cpi->split_flag  = " << cpi->split_flag << "\n";
-        app_log << "cpi->split_count = " << cpi->split_count << "\n";
+        // FIXME:   define editor_log() like printf // app_log << "cpi->offset " << cpi->offset << "\n";
+        // FIXME:   define editor_log() like printf // app_log << "cpi->split_flag  = " << cpi->split_flag << "\n";
+        // FIXME:   define editor_log() like printf // app_log << "cpi->split_count = " << cpi->split_count << "\n";
 
         auto new_screen = new screen_t(*previous_screen);
         build_screen_layout(ed_buffer, cpi, new_screen);
@@ -951,14 +951,14 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
             return false;
         }
 
-        app_log << " new scr_line_idx " << line << "\n";
-        app_log << " new scr_col_idx  " << column << "\n"; // FIXME
-        app_log << " new_screen->number_of_used_lines()  " <<  new_screen->number_of_used_lines() << "\n";
+        // FIXME:   define editor_log() like printf // app_log << " new scr_line_idx " << line << "\n";
+        // FIXME:   define editor_log() like printf // app_log << " new scr_col_idx  " << column << "\n"; // FIXME
+        // FIXME:   define editor_log() like printf // app_log << " new_screen->number_of_used_lines()  " <<  new_screen->number_of_used_lines() << "\n";
 
         scr_new_line_idx = saved_line + 1;
 
         if (scr_new_line_idx >= new_screen->number_of_used_lines()) {
-            app_log << "ERROR\n";
+            // FIXME:   define editor_log() like printf // app_log << "ERROR\n";
             ed_buffer->rdr_begin()->move_to_offset(saved_rdr_begin);
             delete new_screen;
             return false;
@@ -997,8 +997,8 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
 
     new_screen_offset = cpi->offset;
 
-    app_log << "start_cpi->split_flag  = " << next_start_cpi.split_flag << "\n";
-    app_log << "start_cpi->split_count = " << next_start_cpi.split_count << "\n";
+    // FIXME:   define editor_log() like printf // app_log << "start_cpi->split_flag  = " << next_start_cpi.split_flag << "\n";
+    // FIXME:   define editor_log() like printf // app_log << "start_cpi->split_count = " << next_start_cpi.split_count << "\n";
 
     next_start_cpi.check_invariant();
 
@@ -1006,9 +1006,9 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
     set_ui_change_flag(process_ev_ctx);
 
     if (last_screen != previous_screen) {
-        app_log << "delete last_screen {\n";
+        // FIXME:   define editor_log() like printf // app_log << "delete last_screen {\n";
         delete last_screen;
-        app_log << "}\n\n";
+        // FIXME:   define editor_log() like printf // app_log << "}\n\n";
     }
 
     return true;
@@ -1059,7 +1059,7 @@ bool to_next_screen_line(event * _msg)
 */
 bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_start_cpi)
 {
-    app_log << __PRETTY_FUNCTION__ << " : Enter\n";
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : Enter\n";
 
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     auto screen = get_previous_screen_by_id(msg->view_id);
@@ -1073,9 +1073,9 @@ bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_star
         return true;
     }
 
-    app_log << __PRETTY_FUNCTION__ << " : target col " << scr_col_index << "\n";
-    app_log << __PRETTY_FUNCTION__ << " : current scr_line_index " << scr_line_index << "\n";
-    app_log << __PRETTY_FUNCTION__ << " : current scr_col_index " << scr_col_index << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : target col " << scr_col_index << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : current scr_line_index " << scr_line_index << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : current scr_col_index " << scr_col_index << "\n";
 
 
     // inside of screen move ?
@@ -1133,10 +1133,10 @@ bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_star
                                 &l,
                                 scr_col_index);
 
-        app_log << __PRETTY_FUNCTION__ << " : screen_index " << screen_index << "\n";
-        app_log << __PRETTY_FUNCTION__ << " : abs_line_index " << abs_line_index << "\n";
-        app_log << __PRETTY_FUNCTION__ << " : scr_line_index " << scr_line_index << "\n";
-        app_log << __PRETTY_FUNCTION__ << " : scr_col_index " << scr_col_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : screen_index " << screen_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : abs_line_index " << abs_line_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : scr_line_index " << scr_line_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : scr_col_index " << scr_col_index << "\n";
 
         screen_t * scr = nullptr;
         auto it  = scr_list.begin();
@@ -1153,8 +1153,8 @@ bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_star
             return true;
         }
 
-        app_log << __PRETTY_FUNCTION__ << " : new scr_line_index " << scr_line_index << "\n";
-        app_log << __PRETTY_FUNCTION__ << " : new scr_col_index " << scr_col_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : new scr_line_index " << scr_line_index << "\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : new scr_col_index " << scr_col_index << "\n";
 
         if (scr_line_index)
             scr_line_index--;
@@ -1194,7 +1194,7 @@ bool to_previous_screen_line(event * msg)
 /* if end - start > screen set to begin */
 bool goto_beginning_of_line(event * msg)
 {
-    app_log << __FUNCTION__ << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     auto screen = get_previous_screen_by_id(msg->view_id);
@@ -1208,10 +1208,10 @@ bool goto_beginning_of_line(event * msg)
 
     text_buffer::iterator & it = *buffer->cursor_it();
 
-    app_log << __FUNCTION__ << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     it.toBeginningOfLine();
     assert(it.column() == 0);
-    app_log << __FUNCTION__ << "\n";
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
     u64 cur_off = it.offset();
 
@@ -1219,17 +1219,17 @@ bool goto_beginning_of_line(event * msg)
 
     bool found = screen->get_line_by_offset(cur_off, &l, scr_line_index, scr_col_index);
     if (!found) {
-        app_log << __PRETTY_FUNCTION__ << " : ! found on screen\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : ! found on screen\n";
         rdr_it = it;
     } else {
-        app_log << __PRETTY_FUNCTION__ << " : found cursor @ (l="<<scr_line_index<< ", c=" << scr_col_index<< ")\n";
+        // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : found cursor @ (l="<<scr_line_index<< ", c=" << scr_col_index<< ")\n";
         start_cpi = screen->first_cpinfo;
     }
 
     while (!found) {
         found = screen->get_line_by_offset(cur_off, &l, scr_line_index, scr_col_index);
         if (found) {
-            app_log << __FUNCTION__ << " found cursor_offset("<<cur_off<<") on screen\n";
+            // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " found cursor_offset("<<cur_off<<") on screen\n";
             start_cpi = screen->first_cpinfo;
             break;
         }
@@ -1254,7 +1254,7 @@ bool goto_beginning_of_line(event * msg)
 
 bool goto_end_of_line(event * msg)
 {
-    // app_log << __FUNCTION__ << "\n";
+    // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     auto screen = get_previous_screen_by_id(msg->view_id);
@@ -1265,7 +1265,7 @@ bool goto_end_of_line(event * msg)
     it.toEndOfLine();
     u64 cur_off = it.offset();
     auto t1 = ew::core::time::get_ticks();
-    app_log << "tb = " << (t1 - t0) << " ms\n";
+    // FIXME:   define editor_log() like printf // app_log << "tb = " << (t1 - t0) << " ms\n";
 
     codepoint_info_s * start_cpi = nullptr;
 
@@ -1277,7 +1277,7 @@ bool goto_end_of_line(event * msg)
         size_t scr_col_index;
         found = screen->get_line_by_offset(cur_off, &l, scr_line_index, scr_col_index);
         if (found) {
-            app_log << __FUNCTION__ << " found cursor_offset("<<cur_off<<") on screen\n";
+            // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " found cursor_offset("<<cur_off<<") on screen\n";
             break;
         }
         bool ret = fast_page_down(buffer, screen, &start_cpi);
@@ -1290,8 +1290,8 @@ bool goto_end_of_line(event * msg)
 
     auto t2 = ew::core::time::get_ticks();
 
-    app_log << "toEndOfLine = " << (t1 - t0) << " ms\n";
-    app_log << "page down count(" << count << ") = " << (t2 - t1) << " ms\n";
+    // FIXME:   define editor_log() like printf // app_log << "toEndOfLine = " << (t1 - t0) << " ms\n";
+    // FIXME:   define editor_log() like printf // app_log << "page down count(" << count << ") = " << (t2 - t1) << " ms\n";
 
     // need centering ?
     // while !found offset page_up();
@@ -1305,7 +1305,7 @@ bool goto_end_of_line(event * msg)
 
 bool goto_beginning_of_screen_line(event * _msg)
 {
-    // app_log << __FUNCTION__ << "\n";
+    // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     return true;
 }
 
@@ -1313,7 +1313,7 @@ bool goto_beginning_of_screen_line(event * _msg)
 
 bool goto_end_of_screen_line(event * _msg)
 {
-    // app_log << __FUNCTION__ << "\n";
+    // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     return true;
 }
 
@@ -1348,7 +1348,7 @@ struct {
 
 bool begin_selection(event * msg)
 {
-    // app_log << __FUNCTION__ << "\n";
+    // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
     selection_record.use = true;
 
@@ -1368,12 +1368,12 @@ bool begin_selection(event * msg)
 
         codepoint_info_s * cpi = nullptr;
         scr->get_codepoint_by_coords(bev->ev->x, bev->ev->y, &cpi);
-        app_log << "cpi = " << cpi << "\n";
+        // FIXME:   define editor_log() like printf // app_log << "cpi = " << cpi << "\n";
         if (cpi) {
             selection_record.e_offset = selection_record.b_offset = cpi->offset;
 
 
-            app_log << "cpi->offset = " << cpi->offset << "\n";
+            // FIXME:   define editor_log() like printf // app_log << "cpi->offset = " << cpi->offset << "\n";
             buff->cursor_it()->move_to_offset(selection_record.e_offset);
             set_ui_change_flag(process_ev_ctx);
             ;
@@ -1408,7 +1408,7 @@ bool begin_selection(event * msg)
 
 bool end_selection(event * msg)
 {
-    // app_log << __FUNCTION__ << "\n";
+    // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     auto scr = get_previous_screen_by_id(msg->view_id);
     selection_record.start_cpi = scr->first_cpinfo;
@@ -1579,7 +1579,7 @@ bool to_end_of_line(event * msg)
     u64 off2 = buffer->cursor_it()->offset();
     assert(off <= off2);
     if (off == off2) {
-        app_log << __FUNCTION__  << "(off == off2)\n";
+        // FIXME:   define editor_log() like printf // app_log << __FUNCTION__  << "(off == off2)\n";
         return true;
     }
 

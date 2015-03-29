@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include "editor_export.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

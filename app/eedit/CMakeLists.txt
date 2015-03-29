@@ -29,9 +29,6 @@ ${EW_PROJECT_ROOT}/app/eedit/core/rpc/rpc.cpp
 
 ${EW_PROJECT_ROOT}/app/eedit/core/core.cpp
 
-${EW_PROJECT_ROOT}/app/eedit/core/mode/text/text_mode.cpp
-${EW_PROJECT_ROOT}/app/eedit/core/mode/marks/marks_mode.cpp
-
 ${EW_PROJECT_ROOT}/app/eedit/core/text_layout.cpp
 
 

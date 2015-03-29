@@ -95,7 +95,7 @@ void send_event_to_ui(const eedit::core::event * ev_in, eedit::core::event * ev_
 
 void send_new_layout_event_to_ui(const eedit::core::event * ev_in, screen_t * screen);
 
-bool build_screen_layout(event * msg, const codepoint_info_s * start_cpi, screen_t * scr);
+bool build_screen_layout_from_event(event * msg, const codepoint_info_s * start_cpi, screen_t * scr);
 
 
 bool save_buffer(event * msg);

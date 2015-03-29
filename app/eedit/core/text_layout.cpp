@@ -316,14 +316,21 @@ bool build_layout(build_layout_context_t & ctx)
     return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-bool build_screen_layout(struct codec_io_ctx_s * io_ctx, uint64_t sid, const codepoint_info_s * start_cpi, screen_t * out)
+} // ! namespace core
+
+} // ! namespace eedit
+
+
+// API
+bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, const codepoint_info_s * start_cpi, screen_t * out)
 {
     assert(!start_cpi || start_cpi->used);
 
-    assert(sid);
+    assert(view);
 
-    build_layout_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, sid, start_cpi, out);
+    eedit::core::build_layout_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
 
     u32 t0 = ew::core::time::get_ticks();
 
@@ -385,9 +392,3 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, uint64_t sid, const cod
 
     return true;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
-} // ! namespace core
-
-} // ! namespace eedit

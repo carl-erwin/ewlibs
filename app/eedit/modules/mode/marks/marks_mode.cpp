@@ -2,18 +2,18 @@
 #include <memory>
 #include <algorithm>
 
-#include <ew/core/Time.hpp>
 
-#include "../../../application/application.hpp"
-#include "../../../core/core.hpp"
-#include "../../../core/message_queue.hpp"
-#include "../../../core/text_layout.hpp"
-#include "../../../core/module/module.hpp"
-#include "../../../core/rpc/rpc.hpp"
+#include "../../../core/core.hpp"// FIXME: C apis
 
-//
+#include "../../../core/message_queue.hpp"// FIXME: C apis
+
+#include "../../../core/text_layout.hpp"   // FIXME: C apis
+
+#include "../../../core/module/module.hpp" // FIXME: C apis
+
 #include "../../../core/process_event_ctx.h"
 
+#include "module.h"
 #include "buffer_log.h"
 #include "screen.h"
 #include "text_codec.h"
@@ -94,7 +94,6 @@ bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, in
         .codec_ctx        = codec_ctx,
     };
 
-    auto t0 = ew::core::time::get_ticks();
     for (auto & cur_mark : marks) {
 
         // if (mark_get_type(cur_mark) == FIXED) continue;
@@ -109,7 +108,7 @@ bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, in
 
             int ret = text_codec_write(&codec_io_ctx, &write_io, 1);
             if (ret <= 0) {
-                app_log << __PRETTY_FUNCTION__ << " text_codec_write error\n";
+                // FIXME: editor_log(const char * s);
                 continue;
             }
 
@@ -164,9 +163,6 @@ bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, in
             }
         }
     }
-    auto t1 = ew::core::time::get_ticks();
-
-    app_log << __PRETTY_FUNCTION__ << " moved  " << marks.size() << " marks in " << t1 - t0 << " ms\n";
 
     // FIXME: the screen may change or not, call when there is a change
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
@@ -293,6 +289,30 @@ void mark_mode_register_modules_function()
     editor_register_module_function("mark-select-previous",       (module_fn)mark_select_previous);
 }
 
+
+void mark_mode_unregister_modules_function()
+{
+#if 0
+    /* basic moves */
+    editor_unregister_module_function("left-char",                  (module_fn)mark_move_backward);
+    editor_register_module_function("right-char",                 (module_fn)mark_move_forward);
+    /* insert/delete */
+    editor_register_module_function("self-insert",                (module_fn)insert_codepoint);
+    editor_register_module_function("insert-newline",             (module_fn)insert_newline);
+    editor_register_module_function("delete-left-char",           (module_fn)delete_left_char);
+    editor_register_module_function("delete-right-char",          (module_fn)delete_right_char);
+    /* clone operation */
+    editor_register_module_function("mark-clone-and-move-left",   (module_fn)mark_clone_and_move_left);
+    editor_register_module_function("mark-clone-and-move-right",  (module_fn)mark_clone_and_move_right);
+    editor_register_module_function("mark-clone-and-move-up",     (module_fn)mark_clone_and_move_up);
+    editor_register_module_function("mark-clone-and-move-down",   (module_fn)mark_clone_and_move_down);
+    editor_register_module_function("mark-delete",                (module_fn)mark_delete);
+    editor_register_module_function("mark-select-next",           (module_fn)mark_select_next);
+    editor_register_module_function("mark-select-previous",       (module_fn)mark_select_previous);
+#endif
+}
+
+
 /* TODO:
 
 	mode_id_t editor_register_mode(const char * name); // std::map<std::string, mode_info_t{ id, mode_ops } >
@@ -313,5 +333,49 @@ void mark_mode_register_modules_function()
 
 	editor_view_scroll(view, int scroll_n_lines); ~~ page_up page_down
 */
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Module interface
+
+extern "C"
+SHOW_SYMBOL const char * module_name()
+{
+    return "mode/marks";
+}
+
+
+extern "C"
+SHOW_SYMBOL const char * module_version()
+{
+    return "1.0.0";
+}
+
+extern "C"
+SHOW_SYMBOL eedit_module_type_e  module_type()
+{
+    return MODULE_TYPE_EDITOR_MODE;
+}
+
+extern "C"
+SHOW_SYMBOL const char * module_depends()
+{
+    return "";
+}
+
+
+extern "C"
+SHOW_SYMBOL eedit_module_init_status_e  module_init()
+{
+    mark_mode_register_modules_function();
+    return MODULE_INIT_OK;
+}
+
+extern "C"
+SHOW_SYMBOL int  module_quit()
+{
+    mark_mode_unregister_modules_function();
+    return 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -20,6 +20,8 @@
 #include "../core/module/module.hpp"
 #include "../core/rpc/rpc.hpp"
 
+#include "text_layout.hpp"
+
 #include "editor_types.h"
 #include "editor_buffer.h"
 #include "codec.h"
@@ -33,10 +35,6 @@
 
 #include "../api/include/buffer_log.h"
 #include "../api/include/text_codec.h"
-
-#include "../core/mode/text/text_mode.h"
-#include "../core/mode/marks/marks_mode.h"
-
 
 
 namespace eedit
@@ -302,11 +300,6 @@ void send_new_layout_event_to_ui(const eedit::core::event * ev_in,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// FIXME: move to proper file
-bool  build_screen_layout(struct codec_io_ctx_s * io_ctx, u64 screen_id, const codepoint_info_s *start_cpi, screen_t *scr);
-
-////////////////////////////////////////////////////////////////////////////////
-
 // use for_each
 template <class T>
 bool release_list(std::list<T> & list)
@@ -375,7 +368,7 @@ bool release_event(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // remove/rename this
-bool build_screen_layout(event * msg, const codepoint_info_s * start_cpi, screen_t * scr)
+bool build_screen_layout_from_event(event * msg, const codepoint_info_s * start_cpi, screen_t * scr)
 {
     // now the screen is opaque we must not use it
     auto buffer = editor_buffer_check_id(msg->editor_buffer_id);
@@ -429,7 +422,7 @@ bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_
         auto last_screen = get_new_screen_by_id(msg->view_id);
         assert(last_screen);
 
-        build_screen_layout(msg, start_cpi, last_screen);
+        build_screen_layout_from_event(msg, start_cpi, last_screen);
         set_last_screen(msg->view_id, last_screen);
 
         if (send_screen == true) {
@@ -506,8 +499,10 @@ void main(std::shared_ptr<application> app)
     // TODO: use .so modules
     // from config file -> load-module path/to/file.so ?
     register_core_modules_function();
-    text_mode_register_modules_function(); // move away : config file
-    mark_mode_register_modules_function(); // move away : config file
+
+    app_log << " FIXME: ad other lib*.so (mark/text)";
+    // text_mode_register_modules_function(); // move away : config file
+    // mark_mode_register_modules_function(); // move away : config file
 
     static size_t default_wait_time = 1000;
     size_t wait_time = default_wait_time;

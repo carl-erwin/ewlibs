@@ -1,5 +1,7 @@
 #pragma once
 
+#include "editor_export.h"
+
 // skeleton
 extern "C" {
 

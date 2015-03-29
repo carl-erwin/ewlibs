@@ -1,5 +1,6 @@
 #pragma once
 
+#include "editor_export.h"
 #include "editor_types.h"
 #include "mark.h"
 #include "screen.h"

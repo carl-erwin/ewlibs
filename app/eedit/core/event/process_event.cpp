@@ -79,11 +79,13 @@ bool process_event(core_context_t * core_ctx, event * msg)
     codepoint_info_s start_cpi_ref;
 
     if (view && editor_view_get_ui_must_resync(view)) {
-        resync_screen_layout(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, msg->screen_dim);
+      // set resync flag
+      abort(); // MOVE AWAY : text-mode setup ....
+      // resync_screen_layout(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, msg->screen_dim);
         //start_cpi = view->start_cpi_ptr; // temporary
     }
 
-    //    app_log <<  " call notify_buffer_changes : start_cpi = " << process_ev_ctx.start_cpi_ptr << "\n";
+
     if (view) {
         editor_view_get_start_cpi(view, &start_cpi_ref);
         if (start_cpi_ref.used) {

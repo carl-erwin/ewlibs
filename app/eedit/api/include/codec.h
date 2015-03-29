@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "editor_export.h"
 #include "editor_types.h"
 
 #include "byte_buffer.h"

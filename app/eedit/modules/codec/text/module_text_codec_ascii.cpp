@@ -14,8 +14,8 @@
 /////////////////////////////
 
 
-#include "../api/include/byte_buffer.h"
-#include "../api/include/text_codec.h"
+#include "api/include/byte_buffer.h"
+#include "api/include/text_codec.h"
 
 
 
@@ -217,15 +217,16 @@ SHOW_SYMBOL const char * module_version()
 
 
 extern "C"
-SHOW_SYMBOL const char * module_depends()
-{
-    return "";
-}
-
-extern "C"
 SHOW_SYMBOL eedit_module_type_e  module_type()
 {
     return MODULE_TYPE_CODEC;
+}
+
+
+extern "C"
+SHOW_SYMBOL const char * module_depends()
+{
+    return "";
 }
 
 

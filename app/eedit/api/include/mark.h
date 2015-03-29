@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "editor_export.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,17 +35,20 @@ typedef struct mark_s * mark_t;
 ///
 /// \brief mark_new
 /// \return a new mark
+EDITOR_EXPORT
 mark_t mark_new(uint64_t offset, const char * name);
 
 ///
 /// \brief mark_release
 /// \return deletes a given mark
+EDITOR_EXPORT
 void mark_release(mark_t m);
 
 
 ///
 /// \brief  mark_name_max_size
 /// \return the maximum number of bytes a mark name can use
+EDITOR_EXPORT
 size_t  mark_name_max_size();
 
 
@@ -52,6 +57,7 @@ size_t  mark_name_max_size();
 /// \param m the mark
 /// \param name
 ///
+EDITOR_EXPORT
 void         mark_set_name(mark_t m,   const char * name);
 
 ///
@@ -59,6 +65,7 @@ void         mark_set_name(mark_t m,   const char * name);
 /// \param m the mark
 /// \return the pointer to the the mark's name
 ///
+EDITOR_EXPORT
 const char * mark_get_name(mark_t m);
 
 ///
@@ -66,6 +73,7 @@ const char * mark_get_name(mark_t m);
 /// \param m the mark
 /// \param offset
 ///
+EDITOR_EXPORT
 void         mark_set_offset(mark_t m, const uint64_t offset);
 
 ///
@@ -73,6 +81,7 @@ void         mark_set_offset(mark_t m, const uint64_t offset);
 /// \param m the mark
 /// \return the mark's offset
 ///
+EDITOR_EXPORT
 uint64_t     mark_get_offset(mark_t m);
 
 

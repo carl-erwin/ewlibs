@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ew/ew_config.hpp>
+
 /*
   provide a way to publish module apis
 */
@@ -11,7 +13,7 @@
 extern "C"
 struct editor_event_s {
     uint64_t buffer_id;
-    uint64_t byte_buffer_id; // filled internally 0
+    uint64_t byte_buffer_id; // use internally internally 0
     uint64_t view_id;
 
     screen_dimension  screem_dim;
@@ -23,8 +25,11 @@ struct editor_event_s {
         mouse,
         paste,
         layout,
-        drag-drop,system-quit,etc..
+        drag_and_drop,
+        system_quit,
+        etc..
     };
+
     union event_data {
 
     };
@@ -34,11 +39,16 @@ struct editor_event_s {
 #endif
 
 
+// FIXME: MOVE TO APIS
+
 extern "C" {
 
-    typedef int (*module_fn)(void * event); // FIXME: move to json-rpc | ac/av ?, TODO: use const editor_event_s * event
+    typedef int (*module_fn)(void * event); // FIXME: move to editor_event_s * event
 
+    SHOW_SYMBOL
     int       editor_register_module_function(const char * name, module_fn);
+
+    SHOW_SYMBOL
     module_fn editor_get_module_function(const char * name);
 
 }

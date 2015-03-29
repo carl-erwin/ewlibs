@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../eedit/api/include/editor_types.h"
-#include "../eedit/api/include/mark.h"
+#include "editor_export.h"
+#include "editor_types.h"
+#include "mark.h"
 
 // simple enough
 struct editor_selection {

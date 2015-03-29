@@ -6,11 +6,6 @@
 
 #include "../core/core.hpp"
 
-namespace eedit
-{
-namespace core
-{
-
 void reset_buffer_view_flags(editor_buffer_id_t editor_buffer_id,  byte_buffer_id_t bid, editor_view_id_t view)
 {
     auto buffer = editor_buffer_check_id(editor_buffer_id);
@@ -148,8 +143,4 @@ bool buffer_changed_flag(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     }
 
     return  editor_buffer_get_changed_flag(editor_buffer_id);
-}
-
-}
-
 }
