@@ -26,16 +26,16 @@ namespace gui
 class pixmap::private_data
 {
 private:
-	private_data(const private_data &);
-	private_data & operator=(const private_data &);
+    private_data(const private_data &);
+    private_data & operator=(const private_data &);
 
 public:
-	private_data() {}
-	ew::graphics::gui::window * _owner;
+    private_data() {}
+    ew::graphics::gui::window * _owner;
 
-	::Pixmap _x11_pixmap;
-	::GLXPixmap _glx_pixmap;
-	bool was_init;
+    ::Pixmap _x11_pixmap;
+    ::GLXPixmap _glx_pixmap;
+    bool was_init;
 };
 
 }

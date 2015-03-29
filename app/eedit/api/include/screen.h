@@ -12,15 +12,15 @@
 extern "C" {
 #endif
 struct screen_dimension_t {
-	uint32_t l;
-	uint32_t c;
-	uint32_t w;
-	uint32_t h;
+    uint32_t l;
+    uint32_t c;
+    uint32_t w;
+    uint32_t h;
 };
 int screen_dimension_reset(screen_dimension_t * sd); // inline memset()
 enum screen_line_hints {
-	screen_line_hint_no_column_fix,
-	screen_line_hint_fix_column_overflow = 1
+    screen_line_hint_no_column_fix,
+    screen_line_hint_fix_column_overflow = 1
 };
 typedef struct screen_line_s screen_line_t;
 typedef struct screen_s      screen_t;

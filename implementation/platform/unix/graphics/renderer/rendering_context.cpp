@@ -36,141 +36,141 @@ using namespace ew::graphics::gui;
 // _____________________________________________________________
 
 rendering_context::rendering_context(ew::graphics::gui::window * window)
-	: d(new private_data)
+    : d(new private_data)
 {
-	std::lock_guard<std::mutex> lock(*d);
-	d->window = window;
+    std::lock_guard<std::mutex> lock(*d);
+    d->window = window;
 
-	Bool direct = True;
-	if (window->d->_offscreen_pixmap) {
-		d->_glxDrawable = window->d->_offscreen_pixmap->d->_glx_pixmap;
-		// direct = False; // on NVIDIA doest not work
-	} else {
-		d->_glxDrawable = window->d->_x11_drawable;
-	}
+    Bool direct = True;
+    if (window->d->_offscreen_pixmap) {
+        d->_glxDrawable = window->d->_offscreen_pixmap->d->_glx_pixmap;
+        // direct = False; // on NVIDIA doest not work
+    } else {
+        d->_glxDrawable = window->d->_x11_drawable;
+    }
 
-	{
-		// TODO: assert  gui is locked
-		d->_glxCtx = ew_glXCreateContext(window->d->getX11Display(),
-						 window->d->_x11_visualInfo,
-						 None,   /* GLXContext shareList */
-						 direct /* direct acces to device */);
-	}
+    {
+        // TODO: assert  gui is locked
+        d->_glxCtx = ew_glXCreateContext(window->d->getX11Display(),
+                                         window->d->_x11_visualInfo,
+                                         None,   /* GLXContext shareList */
+                                         direct /* direct acces to device */);
+    }
 
-	if (! d->_glxCtx) {
-		throw ew::core::exceptions::object_creation_error();
-	}
+    if (! d->_glxCtx) {
+        throw ew::core::exceptions::object_creation_error();
+    }
 }
 
 // _____________________________________________________________
 
 rendering_context::~rendering_context()
 {
-	{
-		std::lock_guard<std::mutex> lock(*d);
+    {
+        std::lock_guard<std::mutex> lock(*d);
 
-		// TODO: assert  gui is locked
-		ew_glXDestroyContext(d->window->d->getX11Display(),
-				     d->_glxCtx);
-	}
-	delete d;
+        // TODO: assert  gui is locked
+        ew_glXDestroyContext(d->window->d->getX11Display(),
+                             d->_glxCtx);
+    }
+    delete d;
 }
 
 // ______________________________________________________________
 
 bool rendering_context::lock()
 {
-	d->lock();
-	assert(d->window != 0);
-	//assert(d->_th_owner == 0);
+    d->lock();
+    assert(d->window != 0);
+    //assert(d->_th_owner == 0);
 
-	if (d->window->d->_offscreen_pixmap) {
-		d->_glxDrawable = d->window->d->_offscreen_pixmap->d->_glx_pixmap;
-	} else {
-		d->_glxDrawable = d->window->d->_x11_drawable;
-	}
+    if (d->window->d->_offscreen_pixmap) {
+        d->_glxDrawable = d->window->d->_offscreen_pixmap->d->_glx_pixmap;
+    } else {
+        d->_glxDrawable = d->window->d->_x11_drawable;
+    }
 
-	ew::core::time::sleep(1);
-	while (ew_glXMakeCurrent(d->window->d->_x11_dpy,
-				 d->_glxDrawable,
-				 d->_glxCtx) != True) {
-		ew::core::time::sleep(1);
-	}
+    ew::core::time::sleep(1);
+    while (ew_glXMakeCurrent(d->window->d->_x11_dpy,
+                             d->_glxDrawable,
+                             d->_glxCtx) != True) {
+        ew::core::time::sleep(1);
+    }
 
-	d->_th_owner = std::this_thread::get_id();
+    d->_th_owner = std::this_thread::get_id();
 
-	return true;
+    return true;
 }
 
 // ________________________________________________________________
 
 bool rendering_context::unlock()
 {
-	assert(d->window != 0);
+    assert(d->window != 0);
 
-	assert(d->_th_owner == std::this_thread::get_id());
+    assert(d->_th_owner == std::this_thread::get_id());
 
-	// commented : because on nvidia cause flickering
-	// ew_glXMakeCurrent(d->window->d->_x11_dpy, None, NULL);
-	// assert(ret == True);
+    // commented : because on nvidia cause flickering
+    // ew_glXMakeCurrent(d->window->d->_x11_dpy, None, NULL);
+    // assert(ret == True);
 
-	d->_th_owner = std::thread::id();
-	d->unlock();
-	return true;
+    d->_th_owner = std::thread::id();
+    d->unlock();
+    return true;
 }
 
 // ________________________________________________________________
 // remove this ?
 bool rendering_context::trylock()
 {
-	assert(0);
+    assert(0);
 
-	if (d->window == 0) {
-		return false;
-	}
+    if (d->window == 0) {
+        return false;
+    }
 
-	if (d->_th_owner == std::this_thread::get_id()) {
-		d->_nrLock++;
-		return true;
-	}
+    if (d->_th_owner == std::this_thread::get_id()) {
+        d->_nrLock++;
+        return true;
+    }
 
-	if (d->try_lock() == false)
-		return false;
+    if (d->try_lock() == false)
+        return false;
 
-	//  ObjectLocker guilock(d->window->d->_guiDpy);
-	int ret = ew_glXMakeCurrent(d->window->d->_x11_dpy,
-				    d->_glxDrawable,
-				    d->_glxCtx);
-	if (ret == True) {
-		d->_th_owner = std::this_thread::get_id();
-		d->_nrLock++;
-		return true;
-	}
+    //  ObjectLocker guilock(d->window->d->_guiDpy);
+    int ret = ew_glXMakeCurrent(d->window->d->_x11_dpy,
+                                d->_glxDrawable,
+                                d->_glxCtx);
+    if (ret == True) {
+        d->_th_owner = std::this_thread::get_id();
+        d->_nrLock++;
+        return true;
+    }
 
-	d->_nrLock = 0;
-	d->_th_owner = std::thread::id();
-	d->unlock();
-	return false;
+    d->_nrLock = 0;
+    d->_th_owner = std::thread::id();
+    d->unlock();
+    return false;
 }
 
 bool rendering_context::attach(ew::graphics::gui::window * window)
 {
-	d->window = window;
-	lock();
-	return true;
+    d->window = window;
+    lock();
+    return true;
 }
 
 bool rendering_context::detach()
 {
-	d->_glxDrawable = None;
-	d->window = 0;
-	unlock();
-	return true;
+    d->_glxDrawable = None;
+    d->window = 0;
+    unlock();
+    return true;
 }
 
 ew::graphics::gui::window * rendering_context::isAttachedTo()
 {
-	return d->window;
+    return d->window;
 }
 
 }

@@ -22,29 +22,29 @@ template <typename Ret>
 class Signal
 {
 public:
-	void connect(Object * o, _Slot<Ret> * sl)
-	{
-		// register
-		_obj = o;
-		_slot = sl;
-	}
+    void connect(Object * o, _Slot<Ret> * sl)
+    {
+        // register
+        _obj = o;
+        _slot = sl;
+    }
 
-	// remove a given cnx
-	void disconnect(Object * o, _Slot<Ret> * sl);
+    // remove a given cnx
+    void disconnect(Object * o, _Slot<Ret> * sl);
 
-	// remove all cnx
-	void disconnect(Object * o);
+    // remove all cnx
+    void disconnect(Object * o);
 
 
 
-	Ret emit()
-	{
-		_slot->operator()(_obj);
-	}
+    Ret emit()
+    {
+        _slot->operator()(_obj);
+    }
 private:
-	// replace vector of std::pair<>
-	Object * _obj;
-	_Slot<Ret> * _slot;
+    // replace vector of std::pair<>
+    Object * _obj;
+    _Slot<Ret> * _slot;
 };
 #define DECL_SIGNAL(RET__, name__) Signal<RET__> sig_##name__
 
@@ -62,7 +62,7 @@ template <typename Ret>
 class _Slot
 {
 public:
-	virtual Ret operator()(Object * obj) = 0;
+    virtual Ret operator()(Object * obj) = 0;
 };
 
 
@@ -70,15 +70,15 @@ template <typename OBJ, typename Ret, Ret(OBJ::*real_slot)() >
 class Slot : public _Slot<Ret>
 {
 private:
-	Ret operator()(OBJ * o)
-	{
-		return (o->*real_slot)();
-	}
+    Ret operator()(OBJ * o)
+    {
+        return (o->*real_slot)();
+    }
 
-	Ret operator()(Object * obj)
-	{
-		return operator()(static_cast<OBJ *>(obj));
-	}
+    Ret operator()(Object * obj)
+    {
+        return operator()(static_cast<OBJ *>(obj));
+    }
 
 };
 #define SLOT(name) slot_##name

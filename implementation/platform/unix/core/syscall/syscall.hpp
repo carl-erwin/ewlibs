@@ -68,9 +68,9 @@ void sys_pthread_exit(void * value_ptr);
 int sys_sched_yield(void);
 
 int sys_pthread_create(::pthread_t * thread,
-		       const ::pthread_attr_t * attr,
-		       void * (*start_routine)(void *),
-		       void * arg);
+                       const ::pthread_attr_t * attr,
+                       void * (*start_routine)(void *),
+                       void * arg);
 
 int sys_pthread_cancel(::pthread_t thread);
 
@@ -82,11 +82,11 @@ int sys_pthread_cond_destroy(::pthread_cond_t * cond);
 int sys_pthread_cond_init(::pthread_cond_t * cond, const ::pthread_condattr_t * attr);
 
 int sys_pthread_cond_timedwait(::pthread_cond_t * cond,
-			       ::pthread_mutex_t * mutex,
-			       const struct timespec * abstime);
+                               ::pthread_mutex_t * mutex,
+                               const struct timespec * abstime);
 
 int sys_pthread_cond_wait(::pthread_cond_t * cond,
-			  ::pthread_mutex_t * mutex);
+                          ::pthread_mutex_t * mutex);
 
 int sys_pthread_cond_broadcast(::pthread_cond_t * cond);
 int sys_pthread_cond_signal(::pthread_cond_t * cond);

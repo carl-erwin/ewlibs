@@ -26,37 +26,37 @@ public:
 
 
 display::Display()
-	: d(new private_data)
+    : d(new private_data)
 {
 
 }
 
 display::~Display()
 {
-	delete d;
+    delete d;
 }
 
 
 const char * display::class_name() const
 {
-	return "";
+    return "";
 }
 
 const char * display::getName() const
 {
-	return "";
+    return "";
 }
 
 
 /* video interface */
 const char  ** display::get_supported_video_interface_names(void)
 {
-	return 0;
+    return 0;
 }
 
 IVideoInterface * display::get_video_interface(char * name)
 {
-	return 0;
+    return 0;
 }
 
 void   display::release_video_interface(IVideoInterface * ivideoInterface)
@@ -68,12 +68,12 @@ void   display::release_video_interface(IVideoInterface * ivideoInterface)
 /* user input interface */
 const char  ** display::get_supported_user_input_interface_names(void)
 {
-	return 0;
+    return 0;
 }
 
 IUserInputInterface * display::get_user_input_interface(char * name)
 {
-	return 0;
+    return 0;
 }
 
 void   display::release_user_input_interface(IUserInputInterface * iuser_inputInterface)
@@ -85,45 +85,45 @@ void   display::release_user_input_interface(IUserInputInterface * iuser_inputIn
 // we must be able to lock x11 display
 bool display::lock()
 {
-	return true;
+    return true;
 }
 
 bool display::unlock()
 {
-	return true;
+    return true;
 }
 
 bool display::trylock()
 {
-	return true;
+    return true;
 }
 
 // first methods to call
 bool display::open()
 {
-	return true;
+    return true;
 }
 
 bool display::close()
 {
-	return true;
+    return true;
 }
 
 
 // event
 u32  display::poll_events()
 {
-	return 0;
+    return 0;
 }
 
 ew::graphics::gui::events::Event  * display::pumpEvent()
 {
-	return 0;
+    return 0;
 }
 
 bool  display::pushEvent(ew::graphics::gui::events::Event * ev)
 {
-	return true;
+    return true;
 }
 
 

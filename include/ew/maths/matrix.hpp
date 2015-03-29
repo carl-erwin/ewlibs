@@ -68,40 +68,40 @@ template <typename T, u32 M, u32 N >
 class EW_EXPORT_SYM Matrix
 {
 public:
-	inline Matrix(void);
-	inline Matrix(const T & x);
-	inline Matrix(const T * m);
-	inline const T & operator[](const u32 i) const;
-	inline const T & operator()(const u32 i, const u32 j) const;
-	inline T & operator[](const u32 i);
-	inline T & operator()(const u32 i, const u32 j);
+    inline Matrix(void);
+    inline Matrix(const T & x);
+    inline Matrix(const T * m);
+    inline const T & operator[](const u32 i) const;
+    inline const T & operator()(const u32 i, const u32 j) const;
+    inline T & operator[](const u32 i);
+    inline T & operator()(const u32 i, const u32 j);
 
-	inline s32 operator==(const Matrix<T, M, N> & m0);
-	inline s32 operator!=(const Matrix<T, M, N> & m0);
+    inline s32 operator==(const Matrix<T, M, N> & m0);
+    inline s32 operator!=(const Matrix<T, M, N> & m0);
 
-	inline Matrix< T, M, N > & operator=(const Matrix< T, M, N > & mat);
-	inline Matrix< T, M, N > & operator+=(const Matrix< T, M, N > & mat);
-	inline Matrix< T, M, N > & operator-=(const Matrix< T, M, N > & mat);
+    inline Matrix< T, M, N > & operator=(const Matrix< T, M, N > & mat);
+    inline Matrix< T, M, N > & operator+=(const Matrix< T, M, N > & mat);
+    inline Matrix< T, M, N > & operator-=(const Matrix< T, M, N > & mat);
 
-	// Matrix< T, M, N >& operator*=(const Matrix< T, M, N > & mat) { return (*this); } // a implementer
+    // Matrix< T, M, N >& operator*=(const Matrix< T, M, N > & mat) { return (*this); } // a implementer
 
-	inline Matrix< T, M, N > & operator*=(const T & val);
-	inline Matrix< T, M, N > & operator/=(const T & val);
-	inline Matrix< T, M, N > & operator+=(const T & val);
-	inline Matrix< T, M, N > & operator-=(const T & val);
-	inline Matrix< T, M, N > & Zero(void);
+    inline Matrix< T, M, N > & operator*=(const T & val);
+    inline Matrix< T, M, N > & operator/=(const T & val);
+    inline Matrix< T, M, N > & operator+=(const T & val);
+    inline Matrix< T, M, N > & operator-=(const T & val);
+    inline Matrix< T, M, N > & Zero(void);
 
-	inline const Matrix< T, M, N > Transpose(void) const;
+    inline const Matrix< T, M, N > Transpose(void) const;
 
-	inline Matrix< T, M, N > & LoadIdentity(void);
+    inline Matrix< T, M, N > & LoadIdentity(void);
 
-	// Determinant();
-	// Inverse();
+    // Determinant();
+    // Inverse();
 
-	const T * GetDataPtr(void);
+    const T * GetDataPtr(void);
 
 private:
-	T data[ M * N ];
+    T data[ M * N ];
 };
 
 // ----------------------------------------------------------------
@@ -110,53 +110,53 @@ class EW_EXPORT_SYM Matrix<T, 4, 4>
 {
 public:
 
-	Matrix<T, 4, 4>(void);
-	Matrix<T, 4, 4>(const T & x);
-	Matrix<T, 4, 4>(const T * m);
-	Matrix(const Matrix< T, 3, 3 > & mat_33);
+    Matrix<T, 4, 4>(void);
+    Matrix<T, 4, 4>(const T & x);
+    Matrix<T, 4, 4>(const T * m);
+    Matrix(const Matrix< T, 3, 3 > & mat_33);
 
-	const T & operator[](const u32 i) const;
-	const T & operator()(const u32 i, const u32 j) const;
-	T & operator[](const u32 i);
-	T & operator()(const u32 i, const u32 j);
+    const T & operator[](const u32 i) const;
+    const T & operator()(const u32 i, const u32 j) const;
+    T & operator[](const u32 i);
+    T & operator()(const u32 i, const u32 j);
 
-	Matrix< T, 4, 4 > & operator=(const Matrix< T, 4, 4 > & mat);
-	Matrix< T, 4, 4 > & operator+=(const Matrix< T, 4, 4 > & mat);
-	Matrix< T, 4, 4 > & operator-=(const Matrix< T, 4, 4 > & mat);
-	Matrix< T, 4, 4 > operator*(const Matrix< T, 4, 4 > & mat);
-	Matrix< T, 4, 4 > & operator*=(const Matrix< T, 4, 4 > & mat);
-	Vector<T, 3> operator*(const Vector<T, 3> & vec);
-	Matrix< T, 4, 4 > & operator*=(const T & val);
-	Matrix< T, 4, 4 > & operator/=(const T & val);
-	Matrix< T, 4, 4 > & operator+=(const T & val);
-	Matrix< T, 4, 4 > & operator-=(const T & val);
-	Matrix< T, 4, 4 > & Zero(void);
+    Matrix< T, 4, 4 > & operator=(const Matrix< T, 4, 4 > & mat);
+    Matrix< T, 4, 4 > & operator+=(const Matrix< T, 4, 4 > & mat);
+    Matrix< T, 4, 4 > & operator-=(const Matrix< T, 4, 4 > & mat);
+    Matrix< T, 4, 4 > operator*(const Matrix< T, 4, 4 > & mat);
+    Matrix< T, 4, 4 > & operator*=(const Matrix< T, 4, 4 > & mat);
+    Vector<T, 3> operator*(const Vector<T, 3> & vec);
+    Matrix< T, 4, 4 > & operator*=(const T & val);
+    Matrix< T, 4, 4 > & operator/=(const T & val);
+    Matrix< T, 4, 4 > & operator+=(const T & val);
+    Matrix< T, 4, 4 > & operator-=(const T & val);
+    Matrix< T, 4, 4 > & Zero(void);
 
-	const Matrix< T, 4, 4 > Transpose(void) const;
-	Matrix<T, 4, 4> & LoadIdentity(void);
-	Matrix<T, 4, 4> Inverse(void);
+    const Matrix< T, 4, 4 > Transpose(void) const;
+    Matrix<T, 4, 4> & LoadIdentity(void);
+    Matrix<T, 4, 4> Inverse(void);
 
 
-	void Rotation_X(const T angle);
-	void Rotation_Y(const T angle);
-	void Rotation_Z(const T angle);
+    void Rotation_X(const T angle);
+    void Rotation_Y(const T angle);
+    void Rotation_Z(const T angle);
 
-	void Translate(const Vector<T, 3> & v);
-	void Translate(const T x, const T y, const T z);
+    void Translate(const Vector<T, 3> & v);
+    void Translate(const T x, const T y, const T z);
 
-	void Scale(const Vector<T, 3> & v);
-	void Scale(const T x, const T y, const T z);
+    void Scale(const Vector<T, 3> & v);
+    void Scale(const T x, const T y, const T z);
 
-	void Reflect(const Vector<T, 3> & v);
-	void Reflect(const T x, const T y, const T z, const T w);
+    void Reflect(const Vector<T, 3> & v);
+    void Reflect(const T x, const T y, const T z, const T w);
 
-	void Look_At(const Vector<T, 3> & eye, const Vector<T, 3> & dir, const Vector<T, 3> & up);
-	void Look_At(const T * eye, const T * dir, const T * up);
+    void Look_At(const Vector<T, 3> & eye, const Vector<T, 3> & dir, const Vector<T, 3> & up);
+    void Look_At(const T * eye, const T * dir, const T * up);
 
-	const T * GetDataPtr(void);
+    const T * GetDataPtr(void);
 
 private:
-	T data[ 16 ];
+    T data[ 16 ];
 };
 
 // ----------------------------------- OSSTREAM OPERATOR ---------------------

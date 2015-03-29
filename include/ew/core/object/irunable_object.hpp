@@ -13,11 +13,11 @@ namespace objects   // ?
 class EW_CORE_OBJECT_EXPORT runable_object : virtual public object
 {
 public:
-	virtual void run() = 0;
-	virtual const char * get_class_name() const
-	{
-		return "ew::core::objects::runable_object";
-	};
+    virtual void run() = 0;
+    virtual const char * get_class_name() const
+    {
+        return "ew::core::objects::runable_object";
+    };
 };
 
 }

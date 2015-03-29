@@ -16,13 +16,13 @@ using namespace ew::graphics::gui::events;
 
 EW_GRAPHICS_EXPORT void    push_draw_event(widget * widget)
 {
-	struct widget_event * ev =  new struct widget_event();
-	ev->type = WidgetDrawEvent;
-	ev->widget = widget;
-	ev->display = widget->display();
-	assert(ev->display);
-	ev->time = ew::core::time::get_ticks();
-	ev->display->push_events((events::event **)&ev, 1);
+    struct widget_event * ev =  new struct widget_event();
+    ev->type = WidgetDrawEvent;
+    ev->widget = widget;
+    ev->display = widget->display();
+    assert(ev->display);
+    ev->time = ew::core::time::get_ticks();
+    ev->display->push_events((events::event **)&ev, 1);
 }
 
 }

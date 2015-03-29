@@ -6,8 +6,8 @@ namespace units
 {
 
 enum unit {
-	pixel,
-	percent,
+    pixel,
+    percent,
 };
 
 

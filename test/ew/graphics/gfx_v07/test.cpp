@@ -69,10 +69,10 @@ display * dpy = 0;
 
 inline int next_p2(int a)
 {
-	int rval = 1;
-	while (rval < a)
-		rval <<= 1;
-	return rval;
+    int rval = 1;
+    while (rval < a)
+        rval <<= 1;
+    return rval;
 }
 
 
@@ -81,211 +81,211 @@ inline int next_p2(int a)
 
 void renderthreadFunc(main_window * win)
 {
-	std::cerr << "  renderthreadFunc( myWindow * win ) \n";
+    std::cerr << "  renderthreadFunc( myWindow * win ) \n";
 
-	// setup gl
-	dpy->lock();
-	win->lock();
-	win->lockDrawingContext();
-	{
-		ew_glEnable(GL_DEPTH_TEST);
-		// ew_glEnable(GL_LINE_SMOOTH);
-		//     ew_glMatrixMode(GL_TEXTURE);
-		//     ew_glLoadIdentity();
-		//     ew_glMatrixMode(GL_COLOR);
-		//     ew_glLoadIdentity();
-		//     ew_glDisable(GL_CULL_FACE);
+    // setup gl
+    dpy->lock();
+    win->lock();
+    win->lockDrawingContext();
+    {
+        ew_glEnable(GL_DEPTH_TEST);
+        // ew_glEnable(GL_LINE_SMOOTH);
+        //     ew_glMatrixMode(GL_TEXTURE);
+        //     ew_glLoadIdentity();
+        //     ew_glMatrixMode(GL_COLOR);
+        //     ew_glLoadIdentity();
+        //     ew_glDisable(GL_CULL_FACE);
 
-		ew_glViewport(0, 0, win->width(), win->height());
+        ew_glViewport(0, 0, win->width(), win->height());
 
-		ew_glMatrixMode(GL_PROJECTION);
-		ew_glLoadIdentity();
+        ew_glMatrixMode(GL_PROJECTION);
+        ew_glLoadIdentity();
 
-		GLdouble ratio;
-		if (win->height()) {
-			ratio = ((GLdouble) win->width()) / ((GLdouble) win->height());
-		} else {
-			ratio = 4.0 / 3.0;
-		}
+        GLdouble ratio;
+        if (win->height()) {
+            ratio = ((GLdouble) win->width()) / ((GLdouble) win->height());
+        } else {
+            ratio = 4.0 / 3.0;
+        }
 
-		ew_gluPerspective(45.0,
-				  ratio,
-				  (GLdouble) 0.001,
-				  (GLdouble) 10000.0);
+        ew_gluPerspective(45.0,
+                          ratio,
+                          (GLdouble) 0.001,
+                          (GLdouble) 10000.0);
 
-		ew_glMatrixMode(GL_MODELVIEW);
-		ew_glLoadIdentity();
+        ew_glMatrixMode(GL_MODELVIEW);
+        ew_glLoadIdentity();
 
-	}
-	win->unlockDrawingContext();
-	win->unlock();
-	dpy->unlock();
+    }
+    win->unlockDrawingContext();
+    win->unlock();
+    dpy->unlock();
 
-	////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
 
-	// vars
-	double rot_angle = 0.0;
-	double angle_inc_per_second = 10.0;
+    // vars
+    double rot_angle = 0.0;
+    double angle_inc_per_second = 10.0;
 
-	//  u32 render_begin = 0;
-	//u32 render_end = 0;
-	u32 rot0 = 0;
-	u32 rot1 = 0;
-	//  u32 time_render_frame = 0;
-	u32 target_fps = 60;
+    //  u32 render_begin = 0;
+    //u32 render_end = 0;
+    u32 rot0 = 0;
+    u32 rot1 = 0;
+    //  u32 time_render_frame = 0;
+    u32 target_fps = 60;
 
-	while (win->loop == true) {
-		// render_begin = ew::core::time::get_ticks();
+    while (win->loop == true) {
+        // render_begin = ew::core::time::get_ticks();
 
-		dpy->lock();
-		win->lock();
-		win->lockDrawingContext();
-		{
-		}
-		// swap_buffers:
-		win->swapBuffers();
-		win->unlockDrawingContext();
-		win->unlock();
-		dpy->unlock();
+        dpy->lock();
+        win->lock();
+        win->lockDrawingContext();
+        {
+        }
+        // swap_buffers:
+        win->swapBuffers();
+        win->unlockDrawingContext();
+        win->unlock();
+        dpy->unlock();
 
-		// render_end = ew::core::time::get_ticks();
-		//    time_render_frame = render_end - render_begin;
-		rot1 =  ew::core::time::get_ticks();
-		u32 diff = rot1 - rot0;
-		if (diff >= 1000 / target_fps) {
-			rot_angle += angle_inc_per_second * ((long double) diff / 1000.0);
-			if (rot_angle >= 360.0)
-				rot_angle -= 360.0;
-			rot0 =  ew::core::time::get_ticks();
-		}
+        // render_end = ew::core::time::get_ticks();
+        //    time_render_frame = render_end - render_begin;
+        rot1 =  ew::core::time::get_ticks();
+        u32 diff = rot1 - rot0;
+        if (diff >= 1000 / target_fps) {
+            rot_angle += angle_inc_per_second * ((long double) diff / 1000.0);
+            if (rot_angle >= 360.0)
+                rot_angle -= 360.0;
+            rot0 =  ew::core::time::get_ticks();
+        }
 
-		ew::core::time::sleep(1);
+        ew::core::time::sleep(1);
 
-	} // ! while ( isAvailable() == true )
+    } // ! while ( isAvailable() == true )
 }
 
 
 void windowthread()
 {
-	main_window * win = 0;
+    main_window * win = 0;
 
-	std::cerr << "void  windowthread()" << "\n";
+    std::cerr << "void  windowthread()" << "\n";
 
-	window_properties winProperties;
+    window_properties winProperties;
 
-	winProperties.x = x;
-	winProperties.y = y;
-	winProperties.width = width;
-	winProperties.height = height;
-	winProperties.is_resizeable = true;
-	winProperties.is_fullscreen = false;
+    winProperties.x = x;
+    winProperties.y = y;
+    winProperties.width = width;
+    winProperties.height = height;
+    winProperties.is_resizeable = true;
+    winProperties.is_fullscreen = false;
 
-	dpy->lock();
-	win = new main_window(winProperties);
-	win->show();
-	dpy->unlock();
-	{
-		std::thread renderthread = std::thread(renderthreadFunc, win);
-		renderthread.join();
-	}
-	dpy->lock();
-	delete win; // destroy
-	dpy->unlock();
+    dpy->lock();
+    win = new main_window(winProperties);
+    win->show();
+    dpy->unlock();
+    {
+        std::thread renderthread = std::thread(renderthreadFunc, win);
+        renderthread.join();
+    }
+    dpy->lock();
+    delete win; // destroy
+    dpy->unlock();
 
-	nrRuningthreads_mtx.lock();
-	--nrRuningthreads;
-	nrRuningthreads_mtx.unlock();
+    nrRuningthreads_mtx.lock();
+    --nrRuningthreads;
+    nrRuningthreads_mtx.unlock();
 
-	std::cerr << "void  windowthread() :: done" << "\n";
+    std::cerr << "void  windowthread() :: done" << "\n";
 }
 
 int main(int ac, char ** av)
 {
-	if (!(ac == 2 || ac == 4)) {
-		std::cerr << "usage : " << av[ 0 ] << " nr_window [ width height ]" << "\n";
-		ew::system::exit(1);
-	}
+    if (!(ac == 2 || ac == 4)) {
+        std::cerr << "usage : " << av[ 0 ] << " nr_window [ width height ]" << "\n";
+        ew::system::exit(1);
+    }
 
-	nrthreads = atoi(av[ 1 ]);
-	if (ac == 4) {
-		width  = ew::maths::in_range<u32>(10, atoi(av[2]), MAX_WIDTH);
-		height = ew::maths::in_range<u32>(10, atoi(av[3]), MAX_HEIGHT);
-	}
+    nrthreads = atoi(av[ 1 ]);
+    if (ac == 4) {
+        width  = ew::maths::in_range<u32>(10, atoi(av[2]), MAX_WIDTH);
+        height = ew::maths::in_range<u32>(10, atoi(av[3]), MAX_HEIGHT);
+    }
 
-	if (ew::core::time::init() == false) {
-		std::cerr << "ew::core::time::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::core::time::init() == false) {
+        std::cerr << "ew::core::time::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
 
-	if (ew::graphics::gui::init() == false) {
-		std::cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::graphics::gui::init() == false) {
+        std::cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	if (ew::graphics::rendering::init() == false) {
-		std::cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::graphics::rendering::init() == false) {
+        std::cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	// alloc display before creating any widget
-	dpy = new ew::graphics::gui::display();
-	if (dpy->open() == false) {
-		return 1;
-	}
+    // alloc display before creating any widget
+    dpy = new ew::graphics::gui::display();
+    if (dpy->open() == false) {
+        return 1;
+    }
 
-	if (false) {
-		for (int i = 0; i < 20; ++i) {
-			std::cerr << " --- test " << i << "\n";
-			main_window * win = 0;
+    if (false) {
+        for (int i = 0; i < 20; ++i) {
+            std::cerr << " --- test " << i << "\n";
+            main_window * win = 0;
 
-			window_properties winProperties;
-			winProperties.x = x;
-			winProperties.y = y;
-			winProperties.width = width;
-			winProperties.height = height;
-			winProperties.is_resizeable = true;
-			winProperties.is_fullscreen = false;
+            window_properties winProperties;
+            winProperties.x = x;
+            winProperties.y = y;
+            winProperties.width = width;
+            winProperties.height = height;
+            winProperties.is_resizeable = true;
+            winProperties.is_fullscreen = false;
 
-			dpy->lock();
-			win = new main_window(winProperties);
-			win->show();
-			win->hide();
-			delete win;
-			dpy->unlock();
-		}
-	} else {
-		nrRuningthreads = nrthreads;
-		if (nrthreads) {
-			auto windowthreadsVec = new std::thread * [ nrthreads ];
+            dpy->lock();
+            win = new main_window(winProperties);
+            win->show();
+            win->hide();
+            delete win;
+            dpy->unlock();
+        }
+    } else {
+        nrRuningthreads = nrthreads;
+        if (nrthreads) {
+            auto windowthreadsVec = new std::thread * [ nrthreads ];
 
-			for (u32 count = 0; count < nrthreads; ++count) {
-				windowthreadsVec[ count ] = new std::thread(windowthread);
-			}
+            for (u32 count = 0; count < nrthreads; ++count) {
+                windowthreadsVec[ count ] = new std::thread(windowthread);
+            }
 
-			// we should have an app quit on last window ??
-			while (nrRuningthreads != 0)
-				ew::core::time::sleep(100);
+            // we should have an app quit on last window ??
+            while (nrRuningthreads != 0)
+                ew::core::time::sleep(100);
 
-			for (u32 count = 0; count < nrthreads; ++count) {
-				windowthreadsVec[ count ] ->join();
-				dpy->lock();
-				delete windowthreadsVec[ count ];
-				dpy->unlock();
-			}
-			delete [] windowthreadsVec;
-		}
-	}
+            for (u32 count = 0; count < nrthreads; ++count) {
+                windowthreadsVec[ count ] ->join();
+                dpy->lock();
+                delete windowthreadsVec[ count ];
+                dpy->unlock();
+            }
+            delete [] windowthreadsVec;
+        }
+    }
 
-	std::cerr << "delete dpy..." << "\n";
-	delete dpy;
+    std::cerr << "delete dpy..." << "\n";
+    delete dpy;
 
-	if (ew::graphics::gui::quit() == false) {
-		std::cerr << "ew::graphics::gui::quit() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::graphics::gui::quit() == false) {
+        std::cerr << "ew::graphics::gui::quit() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	return 0;
+    return 0;
 }
 
 } // ! namespace graphics
@@ -294,5 +294,5 @@ int main(int ac, char ** av)
 
 int main(int ac, char ** av)
 {
-	return test::graphics::main(ac, av);
+    return test::graphics::main(ac, av);
 }

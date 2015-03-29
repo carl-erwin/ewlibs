@@ -4,61 +4,61 @@
 class Exception
 {
 public:
-	const char * what()
-	{
-		return "Exception";
-	}
+    const char * what()
+    {
+        return "Exception";
+    }
 };
 
 
 class ExceptionThower
 {
 public:
-	ExceptionThower(Exception & ex) :
-		_enable(true),
-		_ex(&ex)
-	{
-		std::cerr << "ExceptionThowerr( Exception & ex )\n";
-	}
+    ExceptionThower(Exception & ex) :
+        _enable(true),
+        _ex(&ex)
+    {
+        std::cerr << "ExceptionThowerr( Exception & ex )\n";
+    }
 
-	ExceptionThower(Exception * ex) :
-		_enable(true),
-		_ex(ex)
-	{
-		std::cerr << "ExceptionThowerr( Exception * ex )\n";
-	}
+    ExceptionThower(Exception * ex) :
+        _enable(true),
+        _ex(ex)
+    {
+        std::cerr << "ExceptionThowerr( Exception * ex )\n";
+    }
 
-	~ExceptionThower()
-	{
-		std::cerr << "~ExceptionThower()\n";
-		if (_enable)
-			throw * _ex;
-	}
+    ~ExceptionThower()
+    {
+        std::cerr << "~ExceptionThower()\n";
+        if (_enable)
+            throw * _ex;
+    }
 
-	void enable()
-	{
-		_enable = true;
-	}
-	void disable()
-	{
-		_enable = false;
-	}
+    void enable()
+    {
+        _enable = true;
+    }
+    void disable()
+    {
+        _enable = false;
+    }
 
-	bool _enable;
-	Exception * _ex;
+    bool _enable;
+    Exception * _ex;
 };
 
 int main(int ac, char ** av)
 {
-	try {
-		ExceptionThower exth(new Exception());
+    try {
+        ExceptionThower exth(new Exception());
 
-		//    exth.disable();
-	}
+        //    exth.disable();
+    }
 
-	catch (Exception & ex) {
-		std::cerr << "catch exception " << ex.what() << "\n";
-	}
+    catch (Exception & ex) {
+        std::cerr << "catch exception " << ex.what() << "\n";
+    }
 
-	return 0;
+    return 0;
 }

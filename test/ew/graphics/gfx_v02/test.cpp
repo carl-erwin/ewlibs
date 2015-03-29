@@ -87,280 +87,280 @@ TLS_DECL u32 target_fps = 60;
 class myWindow : public ew::graphics::gui::window
 {
 public:
-	bool loop;
-	u32 fps;
-	u32 sleep_frame;
-	u32 target_fps;
+    bool loop;
+    u32 fps;
+    u32 sleep_frame;
+    u32 target_fps;
 
 public:
-	myWindow(ew::graphics::gui::display * dpy, window_properties & properties)
-		:
-		window(dpy, (window *) 0, properties)
-	{
-		cerr << "class myWindow::myWindow(......) ok" << "\n";
-		loop = true;
-		fps = 0;
-		target_fps = 60;
-		sleep_frame = 1000 / target_fps;
-	}
+    myWindow(ew::graphics::gui::display * dpy, window_properties & properties)
+        :
+        window(dpy, (window *) 0, properties)
+    {
+        cerr << "class myWindow::myWindow(......) ok" << "\n";
+        loop = true;
+        fps = 0;
+        target_fps = 60;
+        sleep_frame = 1000 / target_fps;
+    }
 
-	virtual bool do_resize(u32 width, u32 height)
-	{
-		GLfloat h = (GLfloat) height / (GLfloat) width;
+    virtual bool do_resize(u32 width, u32 height)
+    {
+        GLfloat h = (GLfloat) height / (GLfloat) width;
 
-		glViewport(0, 0, (GLint) width, (GLint) height);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.0, 0.0, -40.0);
-		return true;
-	}
+        glViewport(0, 0, (GLint) width, (GLint) height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(0.0, 0.0, -40.0);
+        return true;
+    }
 
-	virtual bool on_resize(const widget_event * ev)
-	{
-		return do_resize(ev->width, ev->height);
-	}
+    virtual bool on_resize(const widget_event * ev)
+    {
+        return do_resize(ev->width, ev->height);
+    }
 
-	virtual bool on_key_press(const keyboard_event * ev)
-	{
-		u32 key = ev->key;
+    virtual bool on_key_press(const keyboard_event * ev)
+    {
+        u32 key = ev->key;
 
-		// cerr << "key =" << key << "\n";
-		switch (key) {
-		case keys::Escape:
-			loop = false;
-			break;
-		case 86:
-			angle_inc_per_second += 2.0 ;
-			break;
-		case 82:
-			angle_inc_per_second -= 2.0 ;
-			break;
+        // cerr << "key =" << key << "\n";
+        switch (key) {
+        case keys::Escape:
+            loop = false;
+            break;
+        case 86:
+            angle_inc_per_second += 2.0 ;
+            break;
+        case 82:
+            angle_inc_per_second -= 2.0 ;
+            break;
 
-		case 100: /* left */
-			view_roty += 4.0f;
-			break ;
+        case 100: /* left */
+            view_roty += 4.0f;
+            break ;
 
-		case 102: /* right */
-			view_roty -= 4.0f;
-			break ;
+        case 102: /* right */
+            view_roty -= 4.0f;
+            break ;
 
-		case 98: /* up */
-			view_rotz -= 4.0f;
-			break ;
+        case 98: /* up */
+            view_rotz -= 4.0f;
+            break ;
 
-		case 104: /* down */
-			view_rotz += 4.0f;
-			break ;
-		}
+        case 104: /* down */
+            view_rotz += 4.0f;
+            break ;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	virtual bool on_close(const widget_event * ev)
-	{
-		cerr << "myWindow::on_close(void)" << "\n";
+    virtual bool on_close(const widget_event * ev)
+    {
+        cerr << "myWindow::on_close(void)" << "\n";
 
-		loop = false;
+        loop = false;
 
-		return true;
-	}
+        return true;
+    }
 
-	virtual bool on_create(const widget_event * ev)
-	{
-		glClearColor(0, 0, 0, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		gears_init();
+    virtual bool on_create(const widget_event * ev)
+    {
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        gears_init();
 
-		// TODO: push on_resize event after on create in window:: ctor
-		do_resize(width(), height());
-		show();
-		return true;
-	}
+        // TODO: push on_resize event after on create in window:: ctor
+        do_resize(width(), height());
+        show();
+        return true;
+    }
 
-	virtual bool on_draw(const widget_event * ev)
-	{
+    virtual bool on_draw(const widget_event * ev)
+    {
 
-		if (!loop)
-			return true;
+        if (!loop)
+            return true;
 
 
 #ifdef __linux__ // not ok yet on FreeBSD
-		double r = (random() % 256) * 0.001;
-		double g = (random() % 256) * 0.001;
-		double b = (random() % 256) * 0.001;
+        double r = (random() % 256) * 0.001;
+        double g = (random() % 256) * 0.001;
+        double b = (random() % 256) * 0.001;
 
-		glClearColor(r, g, b, 1.0);
+        glClearColor(r, g, b, 1.0);
 #endif
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		draw();
+        draw();
 
-		rot1 = ew::core::time::get_ticks();
-		u32 diff = rot1 - rot0;
-		static const u32 min_time = 1000 / (target_fps);
-		if (diff > min_time) {
-			rot0 = ew::core::time::get_ticks();
+        rot1 = ew::core::time::get_ticks();
+        u32 diff = rot1 - rot0;
+        static const u32 min_time = 1000 / (target_fps);
+        if (diff > min_time) {
+            rot0 = ew::core::time::get_ticks();
 
-			angle += angle_inc_per_second * ((long double) diff / 1000.0);
-			while (angle >= 360.0)
-				angle -= 360.0;
-		}
+            angle += angle_inc_per_second * ((long double) diff / 1000.0);
+            while (angle >= 360.0)
+                angle -= 360.0;
+        }
 
-		if (sleep_frame > 0)
-			ew::core::time::sleep(sleep_frame);
+        if (sleep_frame > 0)
+            ew::core::time::sleep(sleep_frame);
 
-		push_draw_event(this);
-		fps++;
-		return true;
-	}
+        push_draw_event(this);
+        fps++;
+        return true;
+    }
 
 };
 
 // move this to x11Window code
 void renderthreadFunc(myWindow * win)
 {
-	push_draw_event(win);
-	while (win->loop == true) {
-		ew::core::time::sleep(1000);
-		cerr << "fps = " << win->fps << "\n";
+    push_draw_event(win);
+    while (win->loop == true) {
+        ew::core::time::sleep(1000);
+        cerr << "fps = " << win->fps << "\n";
 
-		if (win->fps >= win->target_fps) {
-			if (win->sleep_frame)
-				win->sleep_frame++;
+        if (win->fps >= win->target_fps) {
+            if (win->sleep_frame)
+                win->sleep_frame++;
 
-		} else if (win->fps < win->target_fps) {
+        } else if (win->fps < win->target_fps) {
 
-			if (win->sleep_frame > 0) {
-				win->sleep_frame--;
-				if (win->sleep_frame == 0) {
-					cerr << "sleep frame == 0\n";
-				}
-			}
-		}
-		win->fps = 0;
-	}
+            if (win->sleep_frame > 0) {
+                win->sleep_frame--;
+                if (win->sleep_frame == 0) {
+                    cerr << "sleep frame == 0\n";
+                }
+            }
+        }
+        win->fps = 0;
+    }
 }
 
 void windowthread()
 {
-	window_properties properties;
+    window_properties properties;
 
-	properties.x = app_x;
-	properties.y = app_y;
-	properties.width = app_width;
-	properties.height = app_height;
-	properties.is_resizeable = true;
-	properties.is_fullscreen = false;
-	properties.have_decoration = true;
+    properties.x = app_x;
+    properties.y = app_y;
+    properties.width = app_width;
+    properties.height = app_height;
+    properties.is_resizeable = true;
+    properties.is_fullscreen = false;
+    properties.have_decoration = true;
 
-	guiDpy->lock();
-	myWindow * win = new myWindow(guiDpy, properties);
-	guiDpy->unlock();
+    guiDpy->lock();
+    myWindow * win = new myWindow(guiDpy, properties);
+    guiDpy->unlock();
 
-	renderthreadFunc(win);
+    renderthreadFunc(win);
 
-	guiDpy->lock();
-	delete win;
-	guiDpy->unlock();
+    guiDpy->lock();
+    delete win;
+    guiDpy->unlock();
 
-	std::lock_guard<std::mutex> lock(nrRuningthreads_mtx);
-	--nrRuningthreads;
+    std::lock_guard<std::mutex> lock(nrRuningthreads_mtx);
+    --nrRuningthreads;
 
-	if (nrRuningthreads == 0)
-		nrRuningthreads_cond.notify_one();
+    if (nrRuningthreads == 0)
+        nrRuningthreads_cond.notify_one();
 
-	cerr << "void  windowthread() :: done" << "\n";
+    cerr << "void  windowthread() :: done" << "\n";
 }
 
 int main(int ac, char ** av)
 {
-	cerr << "ac = " << ac << "\n";
+    cerr << "ac = " << ac << "\n";
 
-	if (ac == 2 || ac == 4) {
-		if (ac == 4) {
-			app_width = ew::maths::min(APP_WIDTH, ::atoi(av[ 2 ]));
-			app_height = ew::maths::min(APP_HEIGHT, ::atoi(av[ 3 ]));
-		}
-	} else {
-		cerr << "usage : " << av[ 0 ] << " nr_window [ width height ]" << "\n";
-		ew::system::exit(1);
-	}
+    if (ac == 2 || ac == 4) {
+        if (ac == 4) {
+            app_width = ew::maths::min(APP_WIDTH, ::atoi(av[ 2 ]));
+            app_height = ew::maths::min(APP_HEIGHT, ::atoi(av[ 3 ]));
+        }
+    } else {
+        cerr << "usage : " << av[ 0 ] << " nr_window [ width height ]" << "\n";
+        ew::system::exit(1);
+    }
 
-	if (ew::core::time::init() == false) {
-		cerr << "ew::core::time::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::core::time::init() == false) {
+        cerr << "ew::core::time::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	if (ew::graphics::gui::init() == false) {
-		cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::graphics::gui::init() == false) {
+        cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	if (ew::graphics::rendering::init() == false) {
-		cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::system::exit(1);
-	}
+    if (ew::graphics::rendering::init() == false) {
+        cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::system::exit(1);
+    }
 
-	cerr << " app_width   = " << app_width << "\n";
-	cerr << " app_height  = " << app_height << "\n";
+    cerr << " app_width   = " << app_width << "\n";
+    cerr << " app_height  = " << app_height << "\n";
 
-	guiDpy = new ew::graphics::gui::display();
-	if (guiDpy->open() == false) {
-		return 1;
-	}
+    guiDpy = new ew::graphics::gui::display();
+    if (guiDpy->open() == false) {
+        return 1;
+    }
 
-	{
-		nrthreads = atoi(av[ 1 ]);
-		nrRuningthreads = nrthreads;
-		if (nrthreads) {
-			std::thread ** windowthreadsVec = new std::thread * [ nrthreads ];
+    {
+        nrthreads = atoi(av[ 1 ]);
+        nrRuningthreads = nrthreads;
+        if (nrthreads) {
+            std::thread ** windowthreadsVec = new std::thread * [ nrthreads ];
 
-			for (u32 count = 0; count < nrthreads; ++count) {
-				windowthreadsVec[ count ] = new std::thread(windowthread);
-			}
+            for (u32 count = 0; count < nrthreads; ++count) {
+                windowthreadsVec[ count ] = new std::thread(windowthread);
+            }
 
-			cerr << "wait for threads\n";
-			std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
-			nrRuningthreads_cond.wait(lock);
+            cerr << "wait for threads\n";
+            std::unique_lock<std::mutex> lock(nrRuningthreads_mtx);
+            nrRuningthreads_cond.wait(lock);
 
-			cerr << "no more thread running\n";
+            cerr << "no more thread running\n";
 
-			for (u32 count = 0; count < nrthreads; ++count) {
-				windowthreadsVec[ count ]->join();
-				guiDpy->lock();
-				delete windowthreadsVec[ count ];
-				guiDpy->unlock();
-			}
-			guiDpy->lock();
-			delete [] windowthreadsVec;
-			guiDpy->unlock();
-		}
-	}
+            for (u32 count = 0; count < nrthreads; ++count) {
+                windowthreadsVec[ count ]->join();
+                guiDpy->lock();
+                delete windowthreadsVec[ count ];
+                guiDpy->unlock();
+            }
+            guiDpy->lock();
+            delete [] windowthreadsVec;
+            guiDpy->unlock();
+        }
+    }
 
-	delete guiDpy;
+    delete guiDpy;
 
-	bool error = false;
-	if (ew::graphics::rendering::quit() == false) {
-		cerr << "ew::graphics::gui::quit() :: error" << "\n";
-		error = true;
-	}
+    bool error = false;
+    if (ew::graphics::rendering::quit() == false) {
+        cerr << "ew::graphics::gui::quit() :: error" << "\n";
+        error = true;
+    }
 
 
-	if (ew::graphics::gui::quit() == false) {
-		cerr << "ew::graphics::gui::quit() :: error" << "\n";
-		error = true;
-	}
+    if (ew::graphics::gui::quit() == false) {
+        cerr << "ew::graphics::gui::quit() :: error" << "\n";
+        error = true;
+    }
 
-	if (ew::core::time::quit() == false) {
-		cerr << "ew::core::time::quit() :: error" << "\n";
-		error = true;
-	}
+    if (ew::core::time::quit() == false) {
+        cerr << "ew::core::time::quit() :: error" << "\n";
+        error = true;
+    }
 
-	return (error == true) ? 0 : 1;
+    return (error == true) ? 0 : 1;
 }
 
 
@@ -370,5 +370,5 @@ int main(int ac, char ** av)
 
 int main(int ac, char ** av)
 {
-	return ew::test::main(ac, av);
+    return ew::test::main(ac, av);
 }

@@ -45,15 +45,15 @@ static const size_t shared    = (1 << 7);   /* ???? */
 
 // move to PositionableObject
 enum location {
-	beginning,
-	current,
-	end
+    beginning,
+    current,
+    end
 };
 
 enum direction {
-	forward,
-	backward,
-	automatic_direction
+    forward,
+    backward,
+    automatic_direction
 };
 
 } // ! namespace STREAM
@@ -63,57 +63,57 @@ enum direction {
 class EW_CORE_OBJECT_EXPORT stream_object
 {
 public:
-	virtual ~stream_object()
-	{
+    virtual ~stream_object()
+    {
 
-	}
+    }
 
-	const char * class_name() const
-	{
-		return "ew::core::objects::stream_object";
-	};
+    const char * class_name() const
+    {
+        return "ew::core::objects::stream_object";
+    };
 
-	virtual bool open(stream::open_mode mode) = 0;
-	virtual bool reopen(stream::open_mode mode) = 0;
-	virtual stream::open_mode get_open_mode() = 0;
+    virtual bool open(stream::open_mode mode) = 0;
+    virtual bool reopen(stream::open_mode mode) = 0;
+    virtual stream::open_mode get_open_mode() = 0;
 
-	virtual bool close() = 0;
+    virtual bool close() = 0;
 
-	virtual bool is_opened() = 0;
-	virtual bool is_closed() = 0;
+    virtual bool is_opened() = 0;
+    virtual bool is_closed() = 0;
 
-	virtual bool set_position(u64 to, stream::location from, stream::direction direction) = 0;
+    virtual bool set_position(u64 to, stream::location from, stream::direction direction) = 0;
 
-	virtual u64 get_position(void) = 0;
+    virtual u64 get_position(void) = 0;
 
 public:
 
-	class exceptions
-	{
-	public:
-		class invalid_stream_direction;
-		class position_overflow_exception;
-		class position_underflow_exception;
-	};
+    class exceptions
+    {
+    public:
+        class invalid_stream_direction;
+        class position_overflow_exception;
+        class position_underflow_exception;
+    };
 };
 
 
 class EW_CORE_EXCEPTION_EXPORT stream_object::exceptions::invalid_stream_direction : public ew::core::exception
 {
 public:
-	invalid_stream_direction() : exception("Invalid Stream Direction") { }
+    invalid_stream_direction() : exception("Invalid Stream Direction") { }
 };
 
 class EW_CORE_EXCEPTION_EXPORT stream_object::exceptions::position_underflow_exception : public ew::core::exception
 {
 public:
-	position_underflow_exception() : exception("Position Underflow Exception") { }
+    position_underflow_exception() : exception("Position Underflow Exception") { }
 };
 
 class EW_CORE_EXCEPTION_EXPORT stream_object::exceptions::position_overflow_exception : public ew::core::exception
 {
 public:
-	position_overflow_exception() : exception("Position Overflow Exception") { }
+    position_overflow_exception() : exception("Position Overflow Exception") { }
 };
 
 

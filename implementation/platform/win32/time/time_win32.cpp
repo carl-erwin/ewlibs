@@ -14,33 +14,33 @@ namespace TIME
 
 bool init()
 {
-	return true;
+    return true;
 }
 bool quit()
 {
-	return true;
+    return true;
 }
 
 u32 get_seconds_since_startup(void)
 {
-	return 0;
+    return 0;
 }
 u32 get_milliseconds_since_startup(void)
 {
-	return 0;
+    return 0;
 }
 u32 getMicroSecondsSinceStartUp(void)
 {
-	return 0;
+    return 0;
 }
 u32 get_ticks(void)
 {
-	return GetTickCount();
+    return GetTickCount();
 }
 
 void sleep(u32 nrMilliseconds)
 {
-	::Sleep(nrMilliseconds);
+    ::Sleep(nrMilliseconds);
 }
 void usleep(u32 nrMicroSeconds) { }
 void nsleep(u32 nrNanoSeconds) {}

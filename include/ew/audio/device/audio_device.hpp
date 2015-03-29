@@ -14,7 +14,7 @@ using namespace ew::core::types;
 class EW_AUDIO_EXPORT audio_device : public ew::core::devices::input_output::input_output_device
 {
 public:
-	audio_device(u32 index) : input_output_device(index) { }
+    audio_device(u32 index) : input_output_device(index) { }
 };
 
 

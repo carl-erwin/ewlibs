@@ -21,10 +21,10 @@ using namespace ew::core::types;
 class EW_VIDEO_EXPORT graphic_card : public ew::core::devices::output_device
 {
 public:
-	graphic_card(u32 index);
-	virtual ~graphic_card();
+    graphic_card(u32 index);
+    virtual ~graphic_card();
 
-	virtual bool setResolution(u32 width, u32 height, u32 bpp) = 0;
+    virtual bool setResolution(u32 width, u32 height, u32 bpp) = 0;
 };
 
 }

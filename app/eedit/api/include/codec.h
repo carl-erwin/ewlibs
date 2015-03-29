@@ -26,30 +26,30 @@ extern "C" {
  */
 
 enum editor_codec_type_e {
-	EDITOR_INVALID_CODEC = 0,
-	EDITOR_TEXT_CODEC,
-	EDITOR_PICTURE_CODEC,
-	EDITOR_VIDEO_CODEC,
-	EDITOR_AUDIO_CODEC,
+    EDITOR_INVALID_CODEC = 0,
+    EDITOR_TEXT_CODEC,
+    EDITOR_PICTURE_CODEC,
+    EDITOR_VIDEO_CODEC,
+    EDITOR_AUDIO_CODEC,
 };
 
 
 
 // this struct represent a charater whitin the codec
 struct codec_io_ctx_s {
-	editor_buffer_id_t editor_buffer_id;      // editor_buffer.h
-	byte_buffer_id_t   bid;       // buffer id see byte_buffer.h
-	codec_id_t         codec_id;
-	codec_context_id_t codec_ctx; //
+    editor_buffer_id_t editor_buffer_id;      // editor_buffer.h
+    byte_buffer_id_t   bid;       // buffer id see byte_buffer.h
+    codec_id_t         codec_id;
+    codec_context_id_t codec_ctx; //
 };
 
 
 // this struct is embeded in all derived codecs type
 struct codec_ops_s {
-	int                      (*context_create)(codec_context_id_t  * ctx);
-	int                      (*context_destroy)(codec_context_id_t * ctx);
-	enum editor_codec_type_e (*get_type)();
-	int                      (*get_name)(char buffer[], size_t buffer_size);
+    int                      (*context_create)(codec_context_id_t  * ctx);
+    int                      (*context_destroy)(codec_context_id_t * ctx);
+    enum editor_codec_type_e (*get_type)();
+    int                      (*get_name)(char buffer[], size_t buffer_size);
 };
 
 

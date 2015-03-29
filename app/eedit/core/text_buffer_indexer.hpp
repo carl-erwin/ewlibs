@@ -20,8 +20,8 @@ class text_buffer;
 class text_buffer_indexer
 {
 public:
-	static bool build_index(text_buffer * text_buffer);
-	static bool on_node_event(buffer::node * n, buffer::node_event ev, struct index_context * ctx);
+    static bool build_index(text_buffer * text_buffer);
+    static bool on_node_event(buffer::node * n, buffer::node_event ev, struct index_context * ctx);
 
 };
 

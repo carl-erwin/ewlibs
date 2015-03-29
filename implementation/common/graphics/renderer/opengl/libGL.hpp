@@ -275,15 +275,15 @@ DECLARE_wrapper(void, glColorMaterial, GLenum face, GLenum mode);
 static inline GLenum ew_debug_glGetError(const char * msg, const char * function, int line)
 {
 
-	GLenum st = ew_glGetError();
+    GLenum st = ew_glGetError();
 
-	if (st != GL_NO_ERROR) {
-		std::cerr << msg << " in " << function << " @ line " << line << "\n";
-		std::cerr << "st = " << st << "\n";
-		assert(0);
-	}
+    if (st != GL_NO_ERROR) {
+        std::cerr << msg << " in " << function << " @ line " << line << "\n";
+        std::cerr << "st = " << st << "\n";
+        assert(0);
+    }
 
-	return st;
+    return st;
 }
 
 }

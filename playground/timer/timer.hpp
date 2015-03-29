@@ -21,39 +21,39 @@ class TimerHandler;
 class Timer
 {
 public:
-	Timer(u32 freq);
+    Timer(u32 freq);
 
-	virtual ~Timer();
-	virtual u32  frequency();
-	virtual void setFrequency(u32 val);
-	virtual u32  isPeriodic();
-	virtual void setPeriodic(u32 val);
-	virtual u32  expireAt();
+    virtual ~Timer();
+    virtual u32  frequency();
+    virtual void setFrequency(u32 val);
+    virtual u32  isPeriodic();
+    virtual void setPeriodic(u32 val);
+    virtual u32  expireAt();
 
 public:
-	// action
-	virtual void timeout() = 0;
+    // action
+    virtual void timeout() = 0;
 
 private:
-	friend class TimerHandler;
-	u32 _repeat: 1;
-	//u32 _remove:1;
-	u32 _freq: 30;
-	u32 _timeout;
+    friend class TimerHandler;
+    u32 _repeat: 1;
+    //u32 _remove:1;
+    u32 _freq: 30;
+    u32 _timeout;
 };
 
 class TimerHandler
 {
 public:
-	TimerHandler();
-	virtual ~TimerHandler();
-	bool addTimer(Timer * t);
-	bool removeTimer(Timer * t);
-	u32  wait();
+    TimerHandler();
+    virtual ~TimerHandler();
+    bool addTimer(Timer * t);
+    bool removeTimer(Timer * t);
+    u32  wait();
 
 private:
-	class Private;
-	Private * d;
+    class Private;
+    Private * d;
 };
 
 

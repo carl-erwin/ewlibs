@@ -30,15 +30,15 @@ using namespace ew::User;
 
 Win32_Platform::Win32_Platform()
 {
-	if (ew::core::Platform::getPlatformInstance()) {
-		// error
-		std::cerr << "Error : a platform dll is already loaded" << "\n";
-		systemExit(0);
-	}
+    if (ew::core::Platform::getPlatformInstance()) {
+        // error
+        std::cerr << "Error : a platform dll is already loaded" << "\n";
+        systemExit(0);
+    }
 
-	std::cerr << "Win32 Platform dll loaded" << "\n";
+    std::cerr << "Win32 Platform dll loaded" << "\n";
 
-	ew::core::Platform::setPlatformInstance(this);
+    ew::core::Platform::setPlatformInstance(this);
 }
 
 Win32_Platform::~Win32_Platform()
@@ -48,53 +48,53 @@ Win32_Platform::~Win32_Platform()
 
 const char * Win32_Platform::getName(void) const
 {
-	return ("Win32");
+    return ("Win32");
 }
 
 
 
 bool   Win32_Platform::init(u32 Flags)
 {
-	std::cerr << "[ Win32_Platform :: init ]" << std::endl;
+    std::cerr << "[ Win32_Platform :: init ]" << std::endl;
 
 
-	return false;
-	return true;
+    return false;
+    return true;
 }
 
 bool   Win32_Platform::initSubSystem(u32 Flags)
 {
-	std::cerr << "[ Win32_Platform :: initSubSystem ]" << std::endl;
+    std::cerr << "[ Win32_Platform :: initSubSystem ]" << std::endl;
 
-	return false;
-	return true;
+    return false;
+    return true;
 }
 
 bool   Win32_Platform::wasInit(u32 Flags)
 {
-	std::cerr << "[ Win32_Platform :: wasInit ]" << std::endl;
-	return false;
-	return true;
+    std::cerr << "[ Win32_Platform :: wasInit ]" << std::endl;
+    return false;
+    return true;
 }
 
 bool   Win32_Platform::quitSubSystem(u32 Flags)
 {
-	std::cerr << "[ Win32_Platform :: quitSubSystem ]" << std::endl;
+    std::cerr << "[ Win32_Platform :: quitSubSystem ]" << std::endl;
 
-	Flags = 0;
-	return (false);
+    Flags = 0;
+    return (false);
 }
 
 s32   Win32_Platform::quit(void)
 {
-	std::cerr << "[ Win32_Platform :: quit ]" << std::endl;
+    std::cerr << "[ Win32_Platform :: quit ]" << std::endl;
 
-	return (0);
+    return (0);
 }
 
 void   Win32_Platform::systemExit(s32 status)
 {
-	::exit((int)status);
+    ::exit((int)status);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -153,12 +153,12 @@ void   Win32_Platform::systemExit(s32 status)
 /* audio interface */
 const char ** Win32_Platform::getSupportedAudioInterfaceNames(void)
 {
-	return 0;
+    return 0;
 }
 
 IAudioInterface * Win32_Platform::getAudioInterface(char *)
 {
-	return 0;
+    return 0;
 }
 
 void Win32_Platform::releaseAudioInterface(IAudioInterface * iaudio)
@@ -173,20 +173,20 @@ void Win32_Platform::releaseAudioInterface(IAudioInterface * iaudio)
 /* graphical user interface */
 const char  **  Win32_Platform::getSupportedGraphicalUserInterface(void)
 {
-	// wgl / directX
-	return 0;
+    // wgl / directX
+    return 0;
 }
 
 Gui  * Win32_Platform::getGraphicalUserInterface(char * name)
 {
-	//
-	Gui * gui = 0;
-	return gui;
+    //
+    Gui * gui = 0;
+    return gui;
 }
 
 void    Win32_Platform::releaseGraphicalUserInterface(Gui * gui)
 {
-	delete gui;
+    delete gui;
 }
 
 
@@ -207,19 +207,19 @@ using namespace ew::implementation::Platform::Win32;
 
 extern "C"  IPlatform * getPlatformInstance(void)
 {
-	std::cerr << __FUNCTION__ << std::endl;
+    std::cerr << __FUNCTION__ << std::endl;
 
-	Win32_Platform * _platform = new Win32_Platform();
-	return _platform;
+    Win32_Platform * _platform = new Win32_Platform();
+    return _platform;
 }
 
 
 extern "C"  void  releasePlatformInstance(IPlatform * iplatform)
 {
-	std::cerr << __FUNCTION__ << std::endl;
+    std::cerr << __FUNCTION__ << std::endl;
 
-	Win32_Platform * _platform = static_cast<Win32_Platform *>(iplatform);
-	delete _platform;
+    Win32_Platform * _platform = static_cast<Win32_Platform *>(iplatform);
+    delete _platform;
 }
 
 // -------------------------------------------------------------------------------------
@@ -227,18 +227,18 @@ extern "C"  void  releasePlatformInstance(IPlatform * iplatform)
 // Init
 extern "C"  void initPlatform(void)
 {
-	win32_platform = new ew::implementation::Platform::Win32::Win32_Platform();
+    win32_platform = new ew::implementation::Platform::Win32::Win32_Platform();
 
-	// This is done in constructor
-	// ew::core::Platform::setPlatformInstance(win32_platform);
-	std::cerr << "[ Win32_Platform :: Platform initialized ]" << "\n";
+    // This is done in constructor
+    // ew::core::Platform::setPlatformInstance(win32_platform);
+    std::cerr << "[ Win32_Platform :: Platform initialized ]" << "\n";
 }
 
 // Quit
 extern "C"  void releasePlatform(void)
 {
-	delete win32_platform;
-	std::cerr << "[ Win32_Platform :: Platform released ]" << "\n";
+    delete win32_platform;
+    std::cerr << "[ Win32_Platform :: Platform released ]" << "\n";
 }
 
 

@@ -52,45 +52,45 @@ template <typename T, u32 size>
 class EW_MATHS_EXPORT Vector
 {
 public:
-	inline Vector<T, size>(void);
-	inline Vector<T, size>(const T * vec);
-	inline Vector<T, size>(const Vector<T, size> & vec);
+    inline Vector<T, size>(void);
+    inline Vector<T, size>(const T * vec);
+    inline Vector<T, size>(const Vector<T, size> & vec);
 
-	inline T * GetDataPtr(void);
+    inline T * GetDataPtr(void);
 
-	inline const T & operator[](const u32 i) const;
-	inline T & operator[](const u32 i);
-	inline s32 operator==(const Vector<T, size> & vec);
-	inline s32 operator!=(const Vector<T, size> & vec);
+    inline const T & operator[](const u32 i) const;
+    inline T & operator[](const u32 i);
+    inline s32 operator==(const Vector<T, size> & vec);
+    inline s32 operator!=(const Vector<T, size> & vec);
 
-	inline Vector<T, size> operator+(const Vector<T, size> & vec);
-	inline Vector<T, size> operator-(const Vector<T, size> & vec);
+    inline Vector<T, size> operator+(const Vector<T, size> & vec);
+    inline Vector<T, size> operator-(const Vector<T, size> & vec);
 
-	inline Vector<T, size> operator*(const T & val);
-	inline Vector<T, size> operator/(const T & val);
-	inline Vector<T, size> operator+(const T & val);
-	inline Vector<T, size> operator-(const T & val);
+    inline Vector<T, size> operator*(const T & val);
+    inline Vector<T, size> operator/(const T & val);
+    inline Vector<T, size> operator+(const T & val);
+    inline Vector<T, size> operator-(const T & val);
 
-	inline Vector<T, size> & operator*=(const T & val);
-	inline Vector<T, size> & operator/=(const T & val);
-	inline Vector<T, size> & operator+=(const T & val);
-	inline Vector<T, size> & operator-=(const T & val);
+    inline Vector<T, size> & operator*=(const T & val);
+    inline Vector<T, size> & operator/=(const T & val);
+    inline Vector<T, size> & operator+=(const T & val);
+    inline Vector<T, size> & operator-=(const T & val);
 
-	inline Vector<T, size> & operator+=(const Vector<T, size> & vec);
-	inline Vector<T, size> & operator-=(const Vector<T, size> & vec);
-	inline Vector<T, size> & operator=(const Vector<T, size> & vec);
+    inline Vector<T, size> & operator+=(const Vector<T, size> & vec);
+    inline Vector<T, size> & operator-=(const Vector<T, size> & vec);
+    inline Vector<T, size> & operator=(const Vector<T, size> & vec);
 
-	inline Vector<T, size> & operator=(const T * vec);
+    inline Vector<T, size> & operator=(const T * vec);
 
-	inline T Length() const;
-	inline T Dot(const Vector<T, size> & vec);
+    inline T Length() const;
+    inline T Dot(const Vector<T, size> & vec);
 
-	inline Vector<T, size> & Normalize(void);
-	inline Vector<T, size> & zero(void);
+    inline Vector<T, size> & Normalize(void);
+    inline Vector<T, size> & zero(void);
 
 private:   // should be public ?
 
-	T m_vec[ size ];
+    T m_vec[ size ];
 
 };
 
@@ -100,63 +100,63 @@ template <typename T>
 class EW_MATHS_EXPORT Vector<T, 2>
 {
 public:
-	inline Vector(void);
-	inline Vector(const T * vec);
-	inline Vector(const Vector<T, 2> & vec);
-	inline Vector(const T x_, const T y_);
+    inline Vector(void);
+    inline Vector(const T * vec);
+    inline Vector(const Vector<T, 2> & vec);
+    inline Vector(const T x_, const T y_);
 
-	inline const T & operator[](const u32 i) const;
-	inline T & operator[](const u32 i);
+    inline const T & operator[](const u32 i) const;
+    inline T & operator[](const u32 i);
 
-	inline T * GetDataPtr(void);
-	inline const T * GetDataPtr(void) const;
+    inline T * GetDataPtr(void);
+    inline const T * GetDataPtr(void) const;
 
-	inline s32 operator==(const Vector<T, 2> & vec);
-	inline s32 operator!=(const Vector<T, 2> & vec);
+    inline s32 operator==(const Vector<T, 2> & vec);
+    inline s32 operator!=(const Vector<T, 2> & vec);
 
-	inline Vector<T, 2> operator-() const;
+    inline Vector<T, 2> operator-() const;
 
-	inline Vector<T, 2> operator+(const Vector<T, 2> & vec) const;
-	inline Vector<T, 2> operator-(const Vector<T, 2> & vec) const;
+    inline Vector<T, 2> operator+(const Vector<T, 2> & vec) const;
+    inline Vector<T, 2> operator-(const Vector<T, 2> & vec) const;
 
-	inline Vector<T, 2> operator*(const T & val) const;
-	inline Vector<T, 2> operator/(const T & val) const;
-	inline Vector<T, 2> operator+(const T & val) const;
-	inline Vector<T, 2> operator-(const T & val) const;
+    inline Vector<T, 2> operator*(const T & val) const;
+    inline Vector<T, 2> operator/(const T & val) const;
+    inline Vector<T, 2> operator+(const T & val) const;
+    inline Vector<T, 2> operator-(const T & val) const;
 
-	inline Vector<T, 2> & operator*=(const T & val);
-	inline Vector<T, 2> & operator/=(const T & val);
-	inline Vector<T, 2> & operator+=(const T & val);
-	inline Vector<T, 2> & operator-=(const T & val);
+    inline Vector<T, 2> & operator*=(const T & val);
+    inline Vector<T, 2> & operator/=(const T & val);
+    inline Vector<T, 2> & operator+=(const T & val);
+    inline Vector<T, 2> & operator-=(const T & val);
 
-	inline Vector<T, 2> & operator+=(const Vector<T, 2> & vec);
-	inline Vector<T, 2> & operator-=(const Vector<T, 2> & vec);
+    inline Vector<T, 2> & operator+=(const Vector<T, 2> & vec);
+    inline Vector<T, 2> & operator-=(const Vector<T, 2> & vec);
 
-	inline Vector<T, 2> & operator=(const Vector<T, 2> & vec);
-	inline Vector<T, 2> & operator=(const T * vec);
-	//
-	inline T Length() const;
-	inline T Dot(const Vector<T, 2> & vec) const;
-	inline Vector<T, 2> & Normalize();
-	//
-	inline Vector<T, 2> & zero(void);
-	inline Vector<T, 2> & set
-	(const T & x_, const T & y_);
-	inline Vector<T, 2> & set
-	(const T * vec);
+    inline Vector<T, 2> & operator=(const Vector<T, 2> & vec);
+    inline Vector<T, 2> & operator=(const T * vec);
+    //
+    inline T Length() const;
+    inline T Dot(const Vector<T, 2> & vec) const;
+    inline Vector<T, 2> & Normalize();
+    //
+    inline Vector<T, 2> & zero(void);
+    inline Vector<T, 2> & set
+    (const T & x_, const T & y_);
+    inline Vector<T, 2> & set
+    (const T * vec);
 
 public:
-	union { /* _anonymous */
-		struct { // vector component
-			T x;
-			T y;
-		};
-		struct { // for texture coord ?? should be in vertex
-			T u;
-			T v;
-		};
-		T m_vec[ 2 ];
-	};
+    union { /* _anonymous */
+        struct { // vector component
+            T x;
+            T y;
+        };
+        struct { // for texture coord ?? should be in vertex
+            T u;
+            T v;
+        };
+        T m_vec[ 2 ];
+    };
 };
 
 template <typename T>
@@ -168,60 +168,60 @@ template <typename T>
 class EW_MATHS_EXPORT Vector<T, 3>
 {
 public:
-	inline Vector(void);
-	inline Vector(const T * vec);
-	inline Vector(const Vector<T, 3> & vec);
-	inline Vector(const T x_, const T y_ = 0, const T z_ = 0);
+    inline Vector(void);
+    inline Vector(const T * vec);
+    inline Vector(const Vector<T, 3> & vec);
+    inline Vector(const T x_, const T y_ = 0, const T z_ = 0);
 
-	inline const T & operator[](const u32 i) const;
-	inline T & operator[](const u32 i);
+    inline const T & operator[](const u32 i) const;
+    inline T & operator[](const u32 i);
 
-	inline T * GetDataPtr(void);
-	inline const T * GetDataPtr(void) const;
+    inline T * GetDataPtr(void);
+    inline const T * GetDataPtr(void) const;
 
-	inline Vector<T, 3> operator-() const ;
+    inline Vector<T, 3> operator-() const ;
 
-	inline s32 operator==(const Vector<T, 3> & vec) const ;
-	inline s32 operator!=(const Vector<T, 3> & vec) const ;
+    inline s32 operator==(const Vector<T, 3> & vec) const ;
+    inline s32 operator!=(const Vector<T, 3> & vec) const ;
 
-	inline Vector<T, 3> operator+(const Vector<T, 3> & vec) const;
-	inline Vector<T, 3> operator-(const Vector<T, 3> & vec) const ;
+    inline Vector<T, 3> operator+(const Vector<T, 3> & vec) const;
+    inline Vector<T, 3> operator-(const Vector<T, 3> & vec) const ;
 
-	inline Vector<T, 3> operator*(const T & val) const;
-	inline Vector<T, 3> operator/(const T & val) const;
-	inline Vector<T, 3> operator+(const T & val) const;
-	inline Vector<T, 3> operator-(const T & val) const;
+    inline Vector<T, 3> operator*(const T & val) const;
+    inline Vector<T, 3> operator/(const T & val) const;
+    inline Vector<T, 3> operator+(const T & val) const;
+    inline Vector<T, 3> operator-(const T & val) const;
 
-	inline Vector<T, 3> & operator*=(const T & val);
-	inline Vector<T, 3> & operator/=(const T & val);
-	inline Vector<T, 3> & operator+=(const T & val);
-	inline Vector<T, 3> & operator-=(const T & val);
+    inline Vector<T, 3> & operator*=(const T & val);
+    inline Vector<T, 3> & operator/=(const T & val);
+    inline Vector<T, 3> & operator+=(const T & val);
+    inline Vector<T, 3> & operator-=(const T & val);
 
-	inline Vector<T, 3> & operator+=(const Vector<T, 3> & vec);
-	inline Vector<T, 3> & operator-=(const Vector<T, 3> & vec);
+    inline Vector<T, 3> & operator+=(const Vector<T, 3> & vec);
+    inline Vector<T, 3> & operator-=(const Vector<T, 3> & vec);
 
-	inline Vector<T, 3> & operator=(const Vector<T, 3> & vec);
-	inline Vector<T, 3> & operator=(const T * vec);
+    inline Vector<T, 3> & operator=(const Vector<T, 3> & vec);
+    inline Vector<T, 3> & operator=(const T * vec);
 
-	inline T Length() const;
-	inline T Dot(const Vector<T, 3> & vec) const;
-	inline Vector<T, 3> & Normalize();
+    inline T Length() const;
+    inline T Dot(const Vector<T, 3> & vec) const;
+    inline Vector<T, 3> & Normalize();
 
-	inline Vector<T, 3> & zero(void);
-	inline Vector<T, 3> & set
-	(const T x_, const T y_, const T z_, const T w_);
-	inline Vector<T, 3> & set
-	(const T * vec);
+    inline Vector<T, 3> & zero(void);
+    inline Vector<T, 3> & set
+    (const T x_, const T y_, const T z_, const T w_);
+    inline Vector<T, 3> & set
+    (const T * vec);
 
 public:
-	union { /* _anonymous */
-		struct {
-			T x;
-			T y;
-			T z;
-		};
-		T m_vec[ 3 ];
-	};
+    union { /* _anonymous */
+        struct {
+            T x;
+            T y;
+            T z;
+        };
+        T m_vec[ 3 ];
+    };
 };
 
 template <typename T>
@@ -233,58 +233,58 @@ template <typename T>
 class EW_MATHS_EXPORT Vector<T, 4>
 {
 public:
-	inline Vector(void);
-	inline Vector(const T * vec);
-	inline Vector(const Vector<T, 4> & vec);
-	inline Vector(const T x_, const T y_ = 0, const T z_ = 0, const T w_ = 0);
+    inline Vector(void);
+    inline Vector(const T * vec);
+    inline Vector(const Vector<T, 4> & vec);
+    inline Vector(const T x_, const T y_ = 0, const T z_ = 0, const T w_ = 0);
 
-	inline const T & operator[](const u32 i) const;
-	inline T & operator[](const u32 i);
+    inline const T & operator[](const u32 i) const;
+    inline T & operator[](const u32 i);
 
-	inline T * GetDataPtr(void);
-	inline const T * GetDataPtr(void) const;
+    inline T * GetDataPtr(void);
+    inline const T * GetDataPtr(void) const;
 
-	inline s32 operator==(const Vector<T, 4> & vec);
-	inline s32 operator!=(const Vector<T, 4> & vec);
+    inline s32 operator==(const Vector<T, 4> & vec);
+    inline s32 operator!=(const Vector<T, 4> & vec);
 
-	inline Vector<T, 4> operator-() const;
+    inline Vector<T, 4> operator-() const;
 
-	inline Vector<T, 4> operator+(const Vector<T, 4> & vec) const;
-	inline Vector<T, 4> operator-(const Vector<T, 4> & vec) const;
-	inline Vector<T, 4> operator*(const T & val) const;
-	inline Vector<T, 4> operator/(const T & val) const;
+    inline Vector<T, 4> operator+(const Vector<T, 4> & vec) const;
+    inline Vector<T, 4> operator-(const Vector<T, 4> & vec) const;
+    inline Vector<T, 4> operator*(const T & val) const;
+    inline Vector<T, 4> operator/(const T & val) const;
 
-	inline Vector<T, 4> & operator*=(T val);
-	inline Vector<T, 4> & operator/=(T val);
-	inline Vector<T, 4> & operator+=(T val);
-	inline Vector<T, 4> & operator-=(T val);
+    inline Vector<T, 4> & operator*=(T val);
+    inline Vector<T, 4> & operator/=(T val);
+    inline Vector<T, 4> & operator+=(T val);
+    inline Vector<T, 4> & operator-=(T val);
 
-	inline Vector<T, 4> & operator+=(Vector<T, 4> & vec);
-	inline Vector<T, 4> & operator-=(Vector<T, 4> & vec);
+    inline Vector<T, 4> & operator+=(Vector<T, 4> & vec);
+    inline Vector<T, 4> & operator-=(Vector<T, 4> & vec);
 
-	inline Vector<T, 4> & operator=(const Vector<T, 4> & vec);
-	inline Vector<T, 4> & operator=(const T * vec);
+    inline Vector<T, 4> & operator=(const Vector<T, 4> & vec);
+    inline Vector<T, 4> & operator=(const T * vec);
 
-	inline T Length() const;
-	inline T Dot(const Vector<T, 4> & vec) const;
-	inline Vector<T, 4> & Normalize();
+    inline T Length() const;
+    inline T Dot(const Vector<T, 4> & vec) const;
+    inline Vector<T, 4> & Normalize();
 
-	inline Vector<T, 4> & zero(void);
-	inline Vector<T, 4> & set
-	(T x_, T y_, T z_, T w_);
-	inline Vector<T, 4> & set
-	(T * vec);
+    inline Vector<T, 4> & zero(void);
+    inline Vector<T, 4> & set
+    (T x_, T y_, T z_, T w_);
+    inline Vector<T, 4> & set
+    (T * vec);
 
-	//       T & x() { return x; }
-	//       T & y() { return y; }
-	//       T & z() { return z; }
-	//       T & w() { return w; }
+    //       T & x() { return x; }
+    //       T & y() { return y; }
+    //       T & z() { return z; }
+    //       T & w() { return w; }
 private:
 public:
-	T x;
-	T y;
-	T z;
-	T w;
+    T x;
+    T y;
+    T z;
+    T w;
 };
 
 template <typename T>

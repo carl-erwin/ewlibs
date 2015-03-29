@@ -25,19 +25,19 @@ class window;
 class EW_GRAPHICS_EXPORT pixmap   /* : public ew::graphics::gui::Widget */
 {
 public:
-	pixmap(ew::graphics::gui::window * window);
-	virtual ~pixmap();
+    pixmap(ew::graphics::gui::window * window);
+    virtual ~pixmap();
 
-	virtual bool resize(u32 width, u32 height);
+    virtual bool resize(u32 width, u32 height);
 
 private:
-	class private_data;
-	class private_data * d;
+    class private_data;
+    class private_data * d;
 
-	friend class ew::graphics::gui::gui;
-	friend class ew::graphics::gui::display;
-	friend class ew::graphics::gui::window;
-	friend class ew::graphics::rendering::rendering_context;
+    friend class ew::graphics::gui::gui;
+    friend class ew::graphics::gui::display;
+    friend class ew::graphics::gui::window;
+    friend class ew::graphics::rendering::rendering_context;
 };
 }
 }

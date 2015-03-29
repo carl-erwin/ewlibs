@@ -18,7 +18,7 @@ using namespace ew::core::types;
 class EW_AUDIO_EXPORT sound_card : public ew::audio::audio_device
 {
 public:
-	sound_card(u32 index) : audio_device(index) { }
+    sound_card(u32 index) : audio_device(index) { }
 };
 
 }

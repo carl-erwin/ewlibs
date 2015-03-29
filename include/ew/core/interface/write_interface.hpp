@@ -14,12 +14,12 @@ namespace objects
 class EW_CORE_OBJECT_EXPORT write_interface
 {
 public:
-	virtual ~write_interface()
-	{
+    virtual ~write_interface()
+    {
 
-	}
+    }
 
-	virtual bool write(const u8 * buffer, u64 nr_to_write , u64 * nr_written) = 0;
+    virtual bool write(const u8 * buffer, u64 nr_to_write , u64 * nr_written) = 0;
 };
 
 }

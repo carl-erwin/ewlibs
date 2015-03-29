@@ -13,16 +13,16 @@ namespace  eedit
 class status_bar : public ew::graphics::gui::widget
 {
 public:
-	status_bar(ew::graphics::gui::widget * parent);
+    status_bar(ew::graphics::gui::widget * parent);
 
-	virtual ~status_bar();
+    virtual ~status_bar();
 
-	bool set_content(const s32 * str, size_t nr_char = 0);
+    bool set_content(const s32 * str, size_t nr_char = 0);
 
-	virtual bool render();
+    virtual bool render();
 private:
-	s32 * m_content = nullptr;
-	size_t m_content_sz = 0;
+    s32 * m_content = nullptr;
+    size_t m_content_sz = 0;
 };
 
 

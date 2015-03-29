@@ -16,18 +16,18 @@ using namespace ew::implementation::graphics::rendering::opengl;
 
 EW_PLATFORM_EXPORT bool init()
 {
-	std::cerr << "rendering::init()" << "\n";
-	// unload libGL, LibGLU
-	// move this in renderer opengl dll loading
-	load_libGL_dll();
-	// load_libGLU_dll();
-	return true;
+    std::cerr << "rendering::init()" << "\n";
+    // unload libGL, LibGLU
+    // move this in renderer opengl dll loading
+    load_libGL_dll();
+    // load_libGLU_dll();
+    return true;
 }
 
 EW_PLATFORM_EXPORT bool quit()
 {
-	// unload libGL, libGLU
-	return true;
+    // unload libGL, libGLU
+    return true;
 }
 
 //  class  EW_GRAPHICS_EXPORT renderer { }

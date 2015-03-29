@@ -8,14 +8,14 @@ namespace network
 
 bool init()
 {
-	// add global STREAM(fd,socket) watcher
-	// using select ? epoll  ?
-	return true;
+    // add global STREAM(fd,socket) watcher
+    // using select ? epoll  ?
+    return true;
 }
 
 bool quit()
 {
-	return true;
+    return true;
 }
 }
 }

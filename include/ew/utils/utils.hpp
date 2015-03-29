@@ -16,23 +16,23 @@ using namespace ew::core::types;
  */
 static inline  char * c_string_dup(const char * str)
 {
-	if (str == nullptr) {
-		return nullptr;
-	}
+    if (str == nullptr) {
+        return nullptr;
+    }
 
-	try {
-		size_t len = ::strlen(str);
-		char * dup = ::new char [ len + 1 ];
-		::memcpy(dup, str, len);
-		dup[len] = 0;
-		return dup;
-	}
+    try {
+        size_t len = ::strlen(str);
+        char * dup = ::new char [ len + 1 ];
+        ::memcpy(dup, str, len);
+        dup[len] = 0;
+        return dup;
+    }
 
-	catch (std::bad_alloc & e) {
-		return nullptr;
-	}
+    catch (std::bad_alloc & e) {
+        return nullptr;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 }

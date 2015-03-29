@@ -25,27 +25,27 @@ class EW_PLATFORM_EXPORT Win32_File : public ew::core::File::IFile
 {
 public:
 
-	// implementation must copy somewere fileName in order to use in const char * getName(void)
-	Win32_File(const char * fileName);
-	virtual ~Win32_File();
+    // implementation must copy somewere fileName in order to use in const char * getName(void)
+    Win32_File(const char * fileName);
+    virtual ~Win32_File();
 
 
-	virtual bool open(u32 mode);
-	virtual bool reOpen(u32 mode);
+    virtual bool open(u32 mode);
+    virtual bool reOpen(u32 mode);
 
-	virtual bool close(void);
+    virtual bool close(void);
 
-	virtual bool is_opened();
-	virtual bool is_closed();
-	virtual const char * getFileName();
-	virtual const u32 get_open_mode();
+    virtual bool is_opened();
+    virtual bool is_closed();
+    virtual const char * getFileName();
+    virtual const u32 get_open_mode();
 
-	virtual bool write(u8 * buffer, u64 bufferSize);
-	virtual bool read(u8 * buffer, u64 bufferSize);
-	virtual bool setPos(u64 ,
-			    ew::core::objects::STREAM::Location from,
-			    ew::core::objects::STREAM::Direction dir);
-	virtual u64  getPos(void);
+    virtual bool write(u8 * buffer, u64 bufferSize);
+    virtual bool read(u8 * buffer, u64 bufferSize);
+    virtual bool setPos(u64 ,
+                        ew::core::objects::STREAM::Location from,
+                        ew::core::objects::STREAM::Direction dir);
+    virtual u64  getPos(void);
 };
 
 }

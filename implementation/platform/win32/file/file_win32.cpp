@@ -16,106 +16,106 @@ using namespace ew::core::objects::STREAM;
 class File::private_data
 {
 public:
-	int a;
+    int a;
 };
 
 File::File(const char * fileName)
-	:
-	d(new private_data)
+    :
+    d(new private_data)
 {
 
 }
 
 File::~File()
 {
-	delete d;
+    delete d;
 }
 
 const char * File::class_name() const
 {
-	return "ew::core::FILE::File";
+    return "ew::core::FILE::File";
 }
 
 const char * File::getName() const
 {
-	return 0;
+    return 0;
 }
 
 bool File::lock()
 {
-	return false;
+    return false;
 }
 
 bool File::unlock()
 {
-	return false;
+    return false;
 }
 
 bool File::trylock()
 {
-	return false;
+    return false;
 }
 
 bool File::isLocked()
 {
-	return false;
+    return false;
 }
 
 bool File::open(open_mode mode)
 {
-	return false;
+    return false;
 }
 
 bool File::reOpen(open_mode mode)
 {
-	return false;
+    return false;
 }
 
 bool File::close(void)
 {
-	return false;
+    return false;
 }
 
 bool File::is_opened()
 {
-	return false;
+    return false;
 }
 bool File::is_closed()
 {
-	return false;
+    return false;
 }
 
 const open_mode File::get_open_mode()
 {
-	return invalid_mode;
+    return invalid_mode;
 }
 
 bool File::write(const u8 * buffer, u64 & size)
 {
-	return false;
+    return false;
 }
 
 
 bool File::read(u8 * buffer, u64 & size)
 {
-	return false;
+    return false;
 }
 
 bool File::seek(u64 to, Location from, Direction direction)
 {
-	return false;
+    return false;
 }
 
 
 u64 File::getPos(void)
 {
-	return 0;
+    return 0;
 }
 
 
 u64 File::size(void)
 {
-	return 0;
+    return 0;
 }
 
 

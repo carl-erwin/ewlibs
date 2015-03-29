@@ -13,12 +13,12 @@ namespace devices
 using namespace ew::core::types;
 
 class EW_USER_EXPORT mouse
-	:
-	public ew::core::devices::input::input_device_with_axis,
-	public ew::core::devices::input::input_device_with_buttons
+    :
+    public ew::core::devices::input::input_device_with_axis,
+    public ew::core::devices::input::input_device_with_buttons
 {
 public:
-	mouse(u32 index);
+    mouse(u32 index);
 };
 
 }

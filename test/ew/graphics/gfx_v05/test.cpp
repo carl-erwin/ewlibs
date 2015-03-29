@@ -73,11 +73,11 @@ display * guiDpy = 0;
 
 inline int next_p2(int a)
 {
-	int rval = 1;
+    int rval = 1;
 
-	while (rval < a)
-		rval <<= 1;
-	return rval;
+    while (rval < a)
+        rval <<= 1;
+    return rval;
 }
 
 // struct Glyph
@@ -94,58 +94,58 @@ inline int next_p2(int a)
 class myWindow : public ew::graphics::gui::window
 {
 public:
-	bool loop;
+    bool loop;
 
 public:
-	myWindow(display * dpy, window_properties & properties)
-		:
-		window(dpy, (widget *) 0, properties)
-	{
-		std::cerr << "class myWindow::myWindow(......) ok" << "\n";
-		loop = true;
-	}
+    myWindow(display * dpy, window_properties & properties)
+        :
+        window(dpy, (widget *) 0, properties)
+    {
+        std::cerr << "class myWindow::myWindow(......) ok" << "\n";
+        loop = true;
+    }
 
-	virtual bool on_resize(u32 w, u32 h)
-	{
-		std::cerr << "myWindow::on_resize(..) ok" << "\n";
+    virtual bool on_resize(u32 w, u32 h)
+    {
+        std::cerr << "myWindow::on_resize(..) ok" << "\n";
 
-		lockDrawingContext();
-		{
-			ew_glViewport(0, 0, w, h);
+        lockDrawingContext();
+        {
+            ew_glViewport(0, 0, w, h);
 
-			//     clear the window
-			ew_glMatrixMode(GL_PROJECTION);
-			ew_glLoadIdentity();
-			ew_gluPerspective(45.0,
-					  (GLdouble)((GLdouble) w / (GLdouble) h),
-					  (GLdouble) 0.1,
-					  (GLdouble) 100.0);
+            //     clear the window
+            ew_glMatrixMode(GL_PROJECTION);
+            ew_glLoadIdentity();
+            ew_gluPerspective(45.0,
+                              (GLdouble)((GLdouble) w / (GLdouble) h),
+                              (GLdouble) 0.1,
+                              (GLdouble) 100.0);
 
-			//       gluOrtho2D( (GLdouble) 0.0, // left,
-			//      (GLdouble) w, // right,
-			//      (GLdouble) 0, // bottom,
-			//      (GLdouble) h ); // top )
-
-
+            //       gluOrtho2D( (GLdouble) 0.0, // left,
+            //      (GLdouble) w, // right,
+            //      (GLdouble) 0, // bottom,
+            //      (GLdouble) h ); // top )
 
 
-			// static const double c = 20.0/255.0;
-			// ew_glClearColor(c, c, c, c);
-			// ew_glClearColor(0.0, 0.1, 0, 0);
-			//       ew_glClear(GL_COLOR_BUFFER_BIT);
-			//       ew_glFlush();
-			//       this->swapBuffers();
-		}
-		unlockDrawingContext();
-		return true;
-	}
 
-	virtual bool on_close(void)
-	{
-		std::cerr << "myWindow::on_close(void)" << "\n";
-		loop = false;
-		return true;
-	}
+
+            // static const double c = 20.0/255.0;
+            // ew_glClearColor(c, c, c, c);
+            // ew_glClearColor(0.0, 0.1, 0, 0);
+            //       ew_glClear(GL_COLOR_BUFFER_BIT);
+            //       ew_glFlush();
+            //       this->swapBuffers();
+        }
+        unlockDrawingContext();
+        return true;
+    }
+
+    virtual bool on_close(void)
+    {
+        std::cerr << "myWindow::on_close(void)" << "\n";
+        loop = false;
+        return true;
+    }
 
 };
 
@@ -155,152 +155,152 @@ public:
 
 void renderthreadFunc(myWindow * win)
 {
-	win->lock();
-	win->lockDrawingContext();
+    win->lock();
+    win->lockDrawingContext();
 
 
-	ew_glShadeModel(GL_SMOOTH);
-	ew_glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	ew_glClearDepth(1.0f);
-	ew_glEnable(GL_DEPTH_TEST);
-	ew_glDepthFunc(GL_LEQUAL);
-	ew_glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    ew_glShadeModel(GL_SMOOTH);
+    ew_glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    ew_glClearDepth(1.0f);
+    ew_glEnable(GL_DEPTH_TEST);
+    ew_glDepthFunc(GL_LEQUAL);
+    ew_glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	our_font.init("../Test.ttf", 16);
+    our_font.init("../Test.ttf", 16);
 
-	win->on_resize(app_width, app_height);
+    win->on_resize(app_width, app_height);
 
-	win->unlockDrawingContext();
-	win->unlock();
-
-
-	////////////////////////////////////////////////////
-	while (win->loop == true) {
-		win->lock();
-		if (win->lockDrawingContext() == true) {
-
-			ew_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear Screen And Depth Buffer
-			ew_glLoadIdentity();     // Reset The Current Modelview Matrix
-			ew_glTranslatef(0.0f, 0.0f, -1.0f);      // Move One Unit Into The Screen
-
-			// Blue Text
-			ew_glColor3ub(0, 0, 0xff);
-
-			// Position The WGL Text On The Screen
-			//glRasterPos2f(-0.40f, 0.35f);
-			ew_glRasterPos2f(0.0f, 0.0f);
-
-			// Here We Print Some Text Using Our FreeType Font
-			// The only really important command is the actual print() call,
-			// but for the sake of making the results a bit more interesting
-			// I have put in some code to rotate and scale the text.
-
-			// Red text
-			ew_glColor3ub(0xff, 0, 0);
-
-			ew_glPushMatrix();
-			ew_glLoadIdentity();
-			ew_glTranslatef(0, 0, -50);
-			freetype::print(our_font, 320, 240, "Active FreeType Text");
-			ew_glPopMatrix();
-
-			// swap_buffers:
-			win->swapBuffers();
-		}
-		win->unlockDrawingContext();
-		win->unlock();
+    win->unlockDrawingContext();
+    win->unlock();
 
 
-	} // ! while ( isAvailable() == true )
+    ////////////////////////////////////////////////////
+    while (win->loop == true) {
+        win->lock();
+        if (win->lockDrawingContext() == true) {
+
+            ew_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear Screen And Depth Buffer
+            ew_glLoadIdentity();     // Reset The Current Modelview Matrix
+            ew_glTranslatef(0.0f, 0.0f, -1.0f);      // Move One Unit Into The Screen
+
+            // Blue Text
+            ew_glColor3ub(0, 0, 0xff);
+
+            // Position The WGL Text On The Screen
+            //glRasterPos2f(-0.40f, 0.35f);
+            ew_glRasterPos2f(0.0f, 0.0f);
+
+            // Here We Print Some Text Using Our FreeType Font
+            // The only really important command is the actual print() call,
+            // but for the sake of making the results a bit more interesting
+            // I have put in some code to rotate and scale the text.
+
+            // Red text
+            ew_glColor3ub(0xff, 0, 0);
+
+            ew_glPushMatrix();
+            ew_glLoadIdentity();
+            ew_glTranslatef(0, 0, -50);
+            freetype::print(our_font, 320, 240, "Active FreeType Text");
+            ew_glPopMatrix();
+
+            // swap_buffers:
+            win->swapBuffers();
+        }
+        win->unlockDrawingContext();
+        win->unlock();
+
+
+    } // ! while ( isAvailable() == true )
 }
 
 
 void windowthread()
 {
-	myWindow * win = 0;
+    myWindow * win = 0;
 
-	std::cerr << "void  windowthread()" << "\n";
+    std::cerr << "void  windowthread()" << "\n";
 
-	/* x11Window */
-	// todo :
-	window_properties properties;
+    /* x11Window */
+    // todo :
+    window_properties properties;
 
-	properties.x = app_x;
-	properties.y = app_y;
-	properties.width = app_width;
-	properties.height = app_height;
+    properties.x = app_x;
+    properties.y = app_y;
+    properties.width = app_width;
+    properties.height = app_height;
 
-	win = new myWindow(guiDpy, properties);
-	if (!win)
-		return ;
+    win = new myWindow(guiDpy, properties);
+    if (!win)
+        return ;
 
-	win->show(true);
-	// win->startEventthread();
-	// win->event_thread()->start();
+    win->show(true);
+    // win->startEventthread();
+    // win->event_thread()->start();
 
-	bool useRenderthread = true; // true;
-	if (useRenderthread == false) {
-		renderthreadFunc(win);
-	} else {
-		//  release the glx ctx if we launch a thread
-		if (win->unlockDrawingContext() == false) {
-			std::cerr << "exit @ line " << __LINE__ << std::endl;
-			_exit(1);
-		}
+    bool useRenderthread = true; // true;
+    if (useRenderthread == false) {
+        renderthreadFunc(win);
+    } else {
+        //  release the glx ctx if we launch a thread
+        if (win->unlockDrawingContext() == false) {
+            std::cerr << "exit @ line " << __LINE__ << std::endl;
+            _exit(1);
+        }
 
-		thread * renderthread = new thread((ew::core::THREAD::func_t) renderthreadFunc, (ew::core::THREAD::Arg_t) win);
-		if (renderthread->start() != true) {
-			// thread_exit();
-			// win->event_thread()->stop();
-		}
-		renderthread->join();
-	}
+        thread * renderthread = new thread((ew::core::THREAD::func_t) renderthreadFunc, (ew::core::THREAD::Arg_t) win);
+        if (renderthread->start() != true) {
+            // thread_exit();
+            // win->event_thread()->stop();
+        }
+        renderthread->join();
+    }
 
-	// litle test
-	win->lock()
-	;
-	win->unlock();
+    // litle test
+    win->lock()
+    ;
+    win->unlock();
 
-	delete win; // destroy
+    delete win; // destroy
 
-	nrRuningthreads_mtx = newmutex();
-	nrRuningthreads_mtx->lock()
-	;
-	--nrRuningthreads;
-	nrRuningthreads_mtx->unlock();
+    nrRuningthreads_mtx = newmutex();
+    nrRuningthreads_mtx->lock()
+    ;
+    --nrRuningthreads;
+    nrRuningthreads_mtx->unlock();
 
-	std::cerr << "void  windowthread() :: done" << "\n";
+    std::cerr << "void  windowthread() :: done" << "\n";
 }
 
 int main(int ac, char ** av)
 {
-	if (ew::graphics::gui::init() == false) {
-		std::cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::core::System::exit(1);
-	}
+    if (ew::graphics::gui::init() == false) {
+        std::cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::core::System::exit(1);
+    }
 
-	if (ew::graphics::rendering::init() == false) {
-		std::cerr << "ew::graphics::gui::init() :: error" << "\n";
-		ew::core::System::exit(1);
-	}
-
-
-	// alloc display before creating any widget
-	guiDpy = new ew::graphics::gui::display();
-	if (guiDpy->open() == false) {
-		return 1;
-	}
-
-	windowthread();
-
-	delete guiDpy;
-
-	if (ew::graphics::gui::quit() == false) {
-		std::cerr << "ew::graphics::gui::quit() :: error" << "\n";
-		ew::core::System::exit(1);
-	}
+    if (ew::graphics::rendering::init() == false) {
+        std::cerr << "ew::graphics::gui::init() :: error" << "\n";
+        ew::core::System::exit(1);
+    }
 
 
+    // alloc display before creating any widget
+    guiDpy = new ew::graphics::gui::display();
+    if (guiDpy->open() == false) {
+        return 1;
+    }
 
-	return 0;
+    windowthread();
+
+    delete guiDpy;
+
+    if (ew::graphics::gui::quit() == false) {
+        std::cerr << "ew::graphics::gui::quit() :: error" << "\n";
+        ew::core::System::exit(1);
+    }
+
+
+
+    return 0;
 }

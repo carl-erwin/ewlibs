@@ -18,12 +18,12 @@ using namespace ew::video::devices; // ::GRAPHIC_CARD; ?
 class EW_VIDEO_EXPORT video_interface : public ew::core::object
 {
 public:
-	video_interface();
-	virtual ~video_interface();
+    video_interface();
+    virtual ~video_interface();
 
-	virtual u32 getNumberOfVideoDevices(void) = 0;
-	// virtual IGraphicCard * getGraphicCard(u32 index) = 0;
-	// virtual void releaseGraphicCard(IGraphicCard * igraphicCard) = 0;
+    virtual u32 getNumberOfVideoDevices(void) = 0;
+    // virtual IGraphicCard * getGraphicCard(u32 index) = 0;
+    // virtual void releaseGraphicCard(IGraphicCard * igraphicCard) = 0;
 };
 
 }

@@ -12,67 +12,67 @@
 extern "C"
 SHOW_SYMBOL int text_codec_read(struct codec_io_ctx_s * io_ctx, int direction, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	if (direction > 0)
-		return ops->read_forward(io_ctx, iovc, iocnt);
-	if (direction < 0)
-		return ops->read_backward(io_ctx, iovc, iocnt);
+    if (direction > 0)
+        return ops->read_forward(io_ctx, iovc, iocnt);
+    if (direction < 0)
+        return ops->read_backward(io_ctx, iovc, iocnt);
 
-	return -1;
+    return -1;
 }
 
 
 extern "C"
 SHOW_SYMBOL int text_codec_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->read_forward(io_ctx, iovc, iocnt);
+    return ops->read_forward(io_ctx, iovc, iocnt);
 }
 
 extern "C"
 SHOW_SYMBOL int text_codec_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->read_backward(io_ctx, iovc, iocnt);
+    return ops->read_backward(io_ctx, iovc, iocnt);
 }
 
 extern "C"
 SHOW_SYMBOL int text_codec_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->write(io_ctx, iovc, iocnt);
+    return ops->write(io_ctx, iovc, iocnt);
 }
 
 extern "C"
 SHOW_SYMBOL int text_codec_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->sync_codepoint(io_ctx, offset, direction, synced_offset);
+    return ops->sync_codepoint(io_ctx, offset, direction, synced_offset);
 }
 
 extern "C"
 SHOW_SYMBOL int text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->sync_line(io_ctx, offset, direction, synced_offset);
+    return ops->sync_line(io_ctx, offset, direction, synced_offset);
 }
 
 
@@ -81,19 +81,19 @@ SHOW_SYMBOL int text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint6
 extern "C"
 SHOW_SYMBOL int text_codec_encode(codec_id_t codec_id, int32_t codepoint, uint64_t out_size, uint8_t out[], size_t * nb_write)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->encode(codepoint, out_size, out, nb_write);
+    return ops->encode(codepoint, out_size, out, nb_write);
 }
 
 extern "C"
 SHOW_SYMBOL int text_codec_decode(codec_id_t codec_id, size_t in_size, uint8_t in[], int32_t * codepoint)
 {
-	text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(codec_id));
-	if (ops == nullptr)
-		return -1;
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(codec_id));
+    if (ops == nullptr)
+        return -1;
 
-	return ops->decode(in_size, in, codepoint);
+    return ops->decode(in_size, in, codepoint);
 }

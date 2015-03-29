@@ -29,23 +29,23 @@ using namespace ew::core::File;
 class EW_DECLSPEC Win32_Dll : public ew::core::File::IDll
 {
 public:
-	Win32_Dll(const char * fileName);
-	virtual      ~Win32_Dll();
+    Win32_Dll(const char * fileName);
+    virtual      ~Win32_Dll();
 
-	const char * class_name(void) const;
-	const char * getName() const;
+    const char * class_name(void) const;
+    const char * getName() const;
 
-	virtual bool load();
-	virtual bool unload();
+    virtual bool load();
+    virtual bool unload();
 
-	virtual const char * getFileName();
+    virtual const char * getFileName();
 
-	virtual bool   isLoaded(void);
-	virtual void  * getSymbol(const char * symbol);
+    virtual bool   isLoaded(void);
+    virtual void  * getSymbol(const char * symbol);
 
 private:
-	char    *   _fileName;
-	dllHandlerType  _handler;
+    char    *   _fileName;
+    dllHandlerType  _handler;
 };
 
 // -----------------------------------------------------------
@@ -53,18 +53,18 @@ private:
 class EW_DECLSPEC DllInterface : public ew::core::File::IDllInterface
 {
 public:
-	const char * class_name(void) const
-	{
-		return 0;
-	};
-	const char * getName() const
-	{
-		return 0;
-	};
+    const char * class_name(void) const
+    {
+        return 0;
+    };
+    const char * getName() const
+    {
+        return 0;
+    };
 
 
-	IDll  * loadDll(const char * name);
-	bool  releaseDll(IDll * idll);
+    IDll  * loadDll(const char * name);
+    bool  releaseDll(IDll * idll);
 };
 
 

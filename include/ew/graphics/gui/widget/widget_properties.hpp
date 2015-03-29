@@ -20,34 +20,34 @@ using namespace ew::core::types;
 class EW_GRAPHICS_EXPORT widget_properties
 {
 public:
-	widget_properties() :
-		x(0),
-		y(0),
-		width(1),
-		height(1),
-		min_width(1),
-		min_height(1),
-		max_width(1),
-		max_height(1),
-		is_resizeable(true),
-		use_offscreen_buffer(false)
-	{
-	}
+    widget_properties() :
+        x(0),
+        y(0),
+        width(1),
+        height(1),
+        min_width(1),
+        min_height(1),
+        max_width(1),
+        max_height(1),
+        is_resizeable(true),
+        use_offscreen_buffer(false)
+    {
+    }
 
-	s32 x;
-	s32 y;
-	u32 width;
-	u32 height;
+    s32 x;
+    s32 y;
+    u32 width;
+    u32 height;
 
-	/* TODO: { */
-	u32 min_width;
-	u32 min_height;
-	u32 max_width;
-	u32 max_height;
-	/* } */
+    /* TODO: { */
+    u32 min_width;
+    u32 min_height;
+    u32 max_width;
+    u32 max_height;
+    /* } */
 
-	bool is_resizeable;
-	bool use_offscreen_buffer;
+    bool is_resizeable;
+    bool use_offscreen_buffer;
 };
 
 }

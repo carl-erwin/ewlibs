@@ -6,7 +6,7 @@
 // TODO: region.h
 // simple enough
 struct editor_region {
-	mark_t * begin;
-	mark_t * end;
-	editor_view_id_t * owner;
+    mark_t * begin;
+    mark_t * end;
+    editor_view_id_t * owner;
 };

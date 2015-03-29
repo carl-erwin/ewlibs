@@ -18,12 +18,12 @@ namespace rendering
 class rendering_context::private_data   // add lock ?
 {
 public:
-	ew::graphics::gui::window * widget; // attached to
+    ew::graphics::gui::window * widget; // attached to
 
-	HGLRC hglRC;
+    HGLRC hglRC;
 
-	friend class ew::graphics::gui::Widget;
-	friend class ew::graphics::gui::window;
+    friend class ew::graphics::gui::Widget;
+    friend class ew::graphics::gui::window;
 };
 
 

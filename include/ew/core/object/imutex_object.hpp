@@ -16,25 +16,25 @@ namespace objects
 class EW_CORE_OBJECT_EXPORT mutex_object : virtual public object
 {
 private:
-	mutex_object(const mutex_object &);
-	mutex_object & operator= (const mutex_object &);
+    mutex_object(const mutex_object &);
+    mutex_object & operator= (const mutex_object &);
 
 public:
-	mutex_object();
-	virtual ~mutex_object();
+    mutex_object();
+    virtual ~mutex_object();
 
-	// object
-	virtual const char * get_class_name() const;
+    // object
+    virtual const char * get_class_name() const;
 
-	// mutex
-	virtual bool lock();
-	virtual bool trylock();
-	virtual bool unlock();
+    // mutex
+    virtual bool lock();
+    virtual bool trylock();
+    virtual bool unlock();
 
 #if 0
 private:
-	class private_data;
-	class private_data * const d;
+    class private_data;
+    class private_data * const d;
 #endif
 };
 

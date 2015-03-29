@@ -10,22 +10,22 @@ namespace gui
 
 bool init()
 {
-	return true;
+    return true;
 }
 
 bool quit()
 {
-	return true;
+    return true;
 }
 
 bool  setSinglethreadEventPollingMode()
 {
-	return true;
+    return true;
 }
 
 bool  useSinglethreadEventPolling()
 {
-	return true;
+    return true;
 }
 
 Gui::Gui() { }
@@ -33,11 +33,11 @@ Gui::~Gui() { }
 
 const char * Gui::class_name() const
 {
-	return "gui";
+    return "gui";
 }
 const char * Gui::getName() const
 {
-	return "Win32 gui";
+    return "Win32 gui";
 }
 
 }

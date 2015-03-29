@@ -45,9 +45,9 @@ const int32_t MOVE_BACKWARD = -1;
 */
 
 enum operation_mask_e {
-	EDITOR_OP_MARK_MOVE      = 1 << 0,
-	EDITOR_OP_INSERT_AT_MARK = 1 << 1,
-	EDITOR_OP_DELETE_AT_MARK = 1 << 2,
+    EDITOR_OP_MARK_MOVE      = 1 << 0,
+    EDITOR_OP_INSERT_AT_MARK = 1 << 1,
+    EDITOR_OP_DELETE_AT_MARK = 1 << 2,
 };
 
 
@@ -63,161 +63,169 @@ enum operation_mask_e {
  */
 bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, int move_direction)
 {
-	// TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
+    // TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
 
-	// setup context
-	auto ebid      = msg->editor_buffer_id;
-	auto bid       = msg->byte_buffer_id;
+    // setup context
+    auto ebid      = msg->editor_buffer_id;
+    auto bid       = msg->byte_buffer_id;
 
-	auto view      = msg->view_id;
-	auto codec_id  = editor_view_get_codec_id(view);
-	auto codec_ctx = editor_view_get_codec_ctx(view);
+    auto view      = msg->view_id;
+    auto codec_id  = editor_view_get_codec_id(view);
+    auto codec_ctx = editor_view_get_codec_ctx(view);
 
-	// get the moving marks
-	auto buff_nmark = editor_buffer_number_of_marks(ebid, MOVING_MARK);
-	auto view_nmark = editor_view_number_of_marks(view, MOVING_MARK);
+    // get the moving marks
+    auto buff_nmark = editor_buffer_number_of_marks(ebid, MOVING_MARK);
+    auto view_nmark = editor_view_number_of_marks(view, MOVING_MARK);
 
-	// accumulate marks
-	std::vector<mark_t> marks(buff_nmark + view_nmark);
+    // accumulate marks
+    std::vector<mark_t> marks(buff_nmark + view_nmark);
 
-	editor_buffer_get_marks(ebid, MOVING_MARK, buff_nmark, &marks[0]);
-	editor_view_get_marks(view, MOVING_MARK,   view_nmark, &marks[buff_nmark]);
+    editor_buffer_get_marks(ebid, MOVING_MARK, buff_nmark, &marks[0]);
+    editor_view_get_marks(view, MOVING_MARK,   view_nmark, &marks[buff_nmark]);
 
-	// NB: sort in decreasing offset order
-	std::sort(marks.begin(), marks.end(), [](mark_t m1, mark_t m2) { return mark_get_offset(m1) > mark_get_offset(m2); });
+    // NB: sort in decreasing offset order
+    std::sort(marks.begin(), marks.end(), [](mark_t m1, mark_t m2) {
+        return mark_get_offset(m1) > mark_get_offset(m2);
+    });
 
-	// build text codec context :
-	codec_io_ctx_s codec_io_ctx = {
-		.editor_buffer_id = msg->editor_buffer_id,
-		.bid              = msg->byte_buffer_id,
-		.codec_id         = codec_id,
-		.codec_ctx        = codec_ctx,
-	};
+    // build text codec context :
+    codec_io_ctx_s codec_io_ctx = {
+        .editor_buffer_id = msg->editor_buffer_id,
+        .bid              = msg->byte_buffer_id,
+        .codec_id         = codec_id,
+        .codec_ctx        = codec_ctx,
+    };
 
-	auto t0 = ew::core::time::get_ticks();
-	for (auto & cur_mark : marks) {
+    auto t0 = ew::core::time::get_ticks();
+    for (auto & cur_mark : marks) {
 
-		// if (mark_get_type(cur_mark) == FIXED) continue;
+        // if (mark_get_type(cur_mark) == FIXED) continue;
 
-		auto old_offset = mark_get_offset(cur_mark);
+        auto old_offset = mark_get_offset(cur_mark);
 
-		// function ?
-		if (op_mask & EDITOR_OP_INSERT_AT_MARK) {
-			struct text_codec_io_s write_io { .offset = old_offset, .cp = codepoint, .size = 0 };
+        // function ?
+        if (op_mask & EDITOR_OP_INSERT_AT_MARK) {
+            struct text_codec_io_s write_io {
+                .offset = old_offset, .cp = codepoint, .size = 0
+            };
 
-			int ret = text_codec_write(&codec_io_ctx, &write_io, 1);
-			if (ret <= 0) {
-				app_log << __PRETTY_FUNCTION__ << " text_codec_write error\n";
-				continue;
-			}
+            int ret = text_codec_write(&codec_io_ctx, &write_io, 1);
+            if (ret <= 0) {
+                app_log << __PRETTY_FUNCTION__ << " text_codec_write error\n";
+                continue;
+            }
 
-			// move all the marks after (> offset) this one of write_io.size
-			// FIXME: the FIXED MARKS MUST BE MOVED !!
-			// must add type = mark_get_type(m);
-			for (auto it = &marks[0]; it < &cur_mark; it++) {
-				auto new_off = mark_get_offset(*it) + write_io.size;
-				mark_set_offset(*it, new_off);
-			}
-		}
+            // move all the marks after (> offset) this one of write_io.size
+            // FIXME: the FIXED MARKS MUST BE MOVED !!
+            // must add type = mark_get_type(m);
+            for (auto it = &marks[0]; it < &cur_mark; it++) {
+                auto new_off = mark_get_offset(*it) + write_io.size;
+                mark_set_offset(*it, new_off);
+            }
+        }
 
 
-		if (op_mask & EDITOR_OP_MARK_MOVE) {
+        if (op_mask & EDITOR_OP_MARK_MOVE) {
 
-			if ((old_offset == 0) && (move_direction < 0))
-				continue;
+            if ((old_offset == 0) && (move_direction < 0))
+                continue;
 
-			if (move_direction) {
-				struct text_codec_io_s read_io { .offset = old_offset, .cp = -1, .size = 0 };
-				int ret = text_codec_read(&codec_io_ctx, move_direction, &read_io, 1);
-				if (ret > 0) {
-					mark_set_offset(cur_mark, read_io.offset + (move_direction > 0 ? read_io.size : 0));
-				} else {
+            if (move_direction) {
+                struct text_codec_io_s read_io {
+                    .offset = old_offset, .cp = -1, .size = 0
+                };
+                int ret = text_codec_read(&codec_io_ctx, move_direction, &read_io, 1);
+                if (ret > 0) {
+                    mark_set_offset(cur_mark, read_io.offset + (move_direction > 0 ? read_io.size : 0));
+                } else {
 
-				}
-			}
-		}
+                }
+            }
+        }
 
-		if (op_mask & EDITOR_OP_DELETE_AT_MARK) {
-			auto cur_offset = mark_get_offset(cur_mark);
-			struct text_codec_io_s read_io { .offset = cur_offset, .cp = -1, .size = 0 };
-			int ret = text_codec_read(&codec_io_ctx, MOVE_FORWARD, &read_io, 1);
-			if (ret <= 0) {
-				continue;
-			}
+        if (op_mask & EDITOR_OP_DELETE_AT_MARK) {
+            auto cur_offset = mark_get_offset(cur_mark);
+            struct text_codec_io_s read_io {
+                .offset = cur_offset, .cp = -1, .size = 0
+            };
+            int ret = text_codec_read(&codec_io_ctx, MOVE_FORWARD, &read_io, 1);
+            if (ret <= 0) {
+                continue;
+            }
 
-			uint8_t removed[8];
-			size_t nb_rm = 0;
-			byte_buffer_remove(bid, cur_offset, removed, read_io.size, &nb_rm);
+            uint8_t removed[8];
+            size_t nb_rm = 0;
+            byte_buffer_remove(bid, cur_offset, removed, read_io.size, &nb_rm);
 
-			// move all the marks after (> offset) this one of -read_io.size
-			// FIXME: the FIXED MARKS MUST BE MOVED !!
-			// must add type = mark_get_type(m);
-			for (auto it = &marks[0]; it < &cur_mark; it++) {
-				auto new_off = mark_get_offset(*it) - read_io.size;
-				mark_set_offset(*it, new_off);
-			}
-		}
-	}
-	auto t1 = ew::core::time::get_ticks();
+            // move all the marks after (> offset) this one of -read_io.size
+            // FIXME: the FIXED MARKS MUST BE MOVED !!
+            // must add type = mark_get_type(m);
+            for (auto it = &marks[0]; it < &cur_mark; it++) {
+                auto new_off = mark_get_offset(*it) - read_io.size;
+                mark_set_offset(*it, new_off);
+            }
+        }
+    }
+    auto t1 = ew::core::time::get_ticks();
 
-	app_log << __PRETTY_FUNCTION__ << " moved  " << marks.size() << " marks in " << t1 - t0 << " ms\n";
+    app_log << __PRETTY_FUNCTION__ << " moved  " << marks.size() << " marks in " << t1 - t0 << " ms\n";
 
-	// FIXME: the screen may change or not, call when there is a change
-	set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
-	return true;
+    // FIXME: the screen may change or not, call when there is a change
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+    return true;
 }
 
 
 bool mark_move_backward(eedit::core::event * msg)
 {
-	return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_BACKWARD);
+    return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_BACKWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool mark_move_forward(eedit::core::event * msg)
 {
-	return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_FORWARD);
+    return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_FORWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool insert_codepoint_val(eedit::core::event * _msg, int32_t codepoint)
 {
-	input_event * msg = static_cast<input_event *>(_msg);
-	mark_operation(msg, EDITOR_OP_INSERT_AT_MARK|EDITOR_OP_MARK_MOVE, codepoint, MOVE_FORWARD);
-	return true;
+    input_event * msg = static_cast<input_event *>(_msg);
+    mark_operation(msg, EDITOR_OP_INSERT_AT_MARK|EDITOR_OP_MARK_MOVE, codepoint, MOVE_FORWARD);
+    return true;
 }
 
 
 bool insert_codepoint(eedit::core::event * _msg)
 {
-	input_event * msg = static_cast<input_event *>(_msg);
-	insert_codepoint_val(_msg, msg->ev->start_value);
-	return true;
+    input_event * msg = static_cast<input_event *>(_msg);
+    insert_codepoint_val(_msg, msg->ev->start_value);
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 bool insert_newline(eedit::core::event * _msg)
 {
-	insert_codepoint_val(_msg, (s32)'\n');
-	return true;
+    insert_codepoint_val(_msg, (s32)'\n');
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool delete_left_char(eedit::core::event * _msg)
 {
-	mark_operation(_msg, EDITOR_OP_MARK_MOVE|EDITOR_OP_DELETE_AT_MARK, INVALID_CP, MOVE_BACKWARD);
-	return true;
+    mark_operation(_msg, EDITOR_OP_MARK_MOVE|EDITOR_OP_DELETE_AT_MARK, INVALID_CP, MOVE_BACKWARD);
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool delete_right_char(eedit::core::event * _msg)
 {
-	mark_operation(_msg, EDITOR_OP_DELETE_AT_MARK, INVALID_CP, NO_MOVE);
-	return true;
+    mark_operation(_msg, EDITOR_OP_DELETE_AT_MARK, INVALID_CP, NO_MOVE);
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,37 +239,37 @@ bool delete_right_char(eedit::core::event * _msg)
 bool mark_clone_and_move_left(eedit::core::event * _msg)
 {
 
-	return true;
+    return true;
 }
 
 bool mark_clone_and_move_right(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 bool mark_clone_and_move_up(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 bool mark_clone_and_move_down(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 bool mark_delete(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 bool mark_select_next(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 bool mark_select_previous(eedit::core::event * _msg)
 {
-	return true;
+    return true;
 }
 
 
@@ -269,22 +277,22 @@ bool mark_select_previous(eedit::core::event * _msg)
 
 void mark_mode_register_modules_function()
 {
-	/* basic moves */
-	editor_register_module_function("left-char",                  (module_fn)mark_move_backward);
-	editor_register_module_function("right-char",                 (module_fn)mark_move_forward);
-	/* insert/delete */
-	editor_register_module_function("self-insert",                (module_fn)insert_codepoint);
-	editor_register_module_function("insert-newline",             (module_fn)insert_newline);
-	editor_register_module_function("delete-left-char",           (module_fn)delete_left_char);
-	editor_register_module_function("delete-right-char",          (module_fn)delete_right_char);
-	/* clone operation */
-	editor_register_module_function("mark-clone-and-move-left",   (module_fn)mark_clone_and_move_left);
-	editor_register_module_function("mark-clone-and-move-right",  (module_fn)mark_clone_and_move_right);
-	editor_register_module_function("mark-clone-and-move-up",     (module_fn)mark_clone_and_move_up);
-	editor_register_module_function("mark-clone-and-move-down",   (module_fn)mark_clone_and_move_down);
-	editor_register_module_function("mark-delete",                (module_fn)mark_delete);
-	editor_register_module_function("mark-select-next",           (module_fn)mark_select_next);
-	editor_register_module_function("mark-select-previous",       (module_fn)mark_select_previous);
+    /* basic moves */
+    editor_register_module_function("left-char",                  (module_fn)mark_move_backward);
+    editor_register_module_function("right-char",                 (module_fn)mark_move_forward);
+    /* insert/delete */
+    editor_register_module_function("self-insert",                (module_fn)insert_codepoint);
+    editor_register_module_function("insert-newline",             (module_fn)insert_newline);
+    editor_register_module_function("delete-left-char",           (module_fn)delete_left_char);
+    editor_register_module_function("delete-right-char",          (module_fn)delete_right_char);
+    /* clone operation */
+    editor_register_module_function("mark-clone-and-move-left",   (module_fn)mark_clone_and_move_left);
+    editor_register_module_function("mark-clone-and-move-right",  (module_fn)mark_clone_and_move_right);
+    editor_register_module_function("mark-clone-and-move-up",     (module_fn)mark_clone_and_move_up);
+    editor_register_module_function("mark-clone-and-move-down",   (module_fn)mark_clone_and_move_down);
+    editor_register_module_function("mark-delete",                (module_fn)mark_delete);
+    editor_register_module_function("mark-select-next",           (module_fn)mark_select_next);
+    editor_register_module_function("mark-select-previous",       (module_fn)mark_select_previous);
 }
 
 /* TODO:

@@ -37,35 +37,35 @@ static dll * _libGLU = 0;
 
 dll::symbol _libGLU_symbol_table[] = {
 #include "libGLU_sym_tab_entries.hpp"
-	{0 , 0 }
+    {0 , 0 }
 };
 
 bool load_libGLU_dll()
 {
-	_libGLU = ::new dll("libGLU.so");
+    _libGLU = ::new dll("libGLU.so");
 
-	ew::core::enable_exceptions();
-	{
-		_libGLU->load();
+    ew::core::enable_exceptions();
+    {
+        _libGLU->load();
 
-		for (size_t i = 0;  _libGLU_symbol_table[i].name; ++i) {
-			// try
-			*(_libGLU_symbol_table[i].ptr) = _libGLU->symbol_by_name(_libGLU_symbol_table[i].name);
-			// catch
-			// extension not available ?
-		}
-	}
-	ew::core::disable_exceptions();
+        for (size_t i = 0;  _libGLU_symbol_table[i].name; ++i) {
+            // try
+            *(_libGLU_symbol_table[i].ptr) = _libGLU->symbol_by_name(_libGLU_symbol_table[i].name);
+            // catch
+            // extension not available ?
+        }
+    }
+    ew::core::disable_exceptions();
 
-	return true;
+    return true;
 }
 
 bool unload_libGLU_dll()
 {
-	if (_libGLU)
-		_libGLU->unload();
-	::delete _libGLU;
-	return true;
+    if (_libGLU)
+        _libGLU->unload();
+    ::delete _libGLU;
+    return true;
 }
 
 

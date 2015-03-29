@@ -19,80 +19,80 @@
 
 
 enum editor_stream_type_e {
-	editor_stream_type_bytes,
-	editor_stream_type_unicode,
-	editor_stream_type_codec_change
+    editor_stream_type_bytes,
+    editor_stream_type_unicode,
+    editor_stream_type_codec_change
 };
 
 
 extern "C" {
 
-	struct filter_io_s {
+    struct filter_io_s {
 
-		uint32_t content_type;
+        uint32_t content_type;
 
-		// general info
-		uint8_t valid;
-		uint8_t end_of_pipe; // skip
-		uint8_t quit; // close pipeline
-		uint8_t is_selected;
+        // general info
+        uint8_t valid;
+        uint8_t end_of_pipe; // skip
+        uint8_t quit; // close pipeline
+        uint8_t is_selected;
 
-		uint64_t  offset;
+        uint64_t  offset;
 
-		union {
-			// content_type == bytes
-			struct {
-				uint8_t   byte_value;
-			};
+        union {
+            // content_type == bytes
+            struct {
+                uint8_t   byte_value;
+            };
 
-			// content_type == unicode
-			struct {
-				int32_t   cp;
-				int32_t   real_cp;
-				uint64_t  cp_index; // be carefull used const u64 invalid_cp_index
-				uint32_t  split_flag;
-				uint32_t  split_count;
-			};
+            // content_type == unicode
+            struct {
+                int32_t   cp;
+                int32_t   real_cp;
+                uint64_t  cp_index; // be carefull used const u64 invalid_cp_index
+                uint32_t  split_flag;
+                uint32_t  split_count;
+            };
 
-			// codec_change
-			struct {
-				codec_id_t         codec_id;
-				codec_context_id_t codec_ctx;
-			};
-		};
+            // codec_change
+            struct {
+                codec_id_t         codec_id;
+                codec_context_id_t codec_ctx;
+            };
+        };
 
-		// TODO: add style infos ?
-	};
+        // TODO: add style infos ?
+    };
 
-	typedef struct filter_io_s filter_io_t;
+    typedef struct filter_io_s filter_io_t;
 
 }
 
 
 inline size_t filter_io_size()
 {
-	return sizeof (struct filter_io_s);
+    return sizeof (struct filter_io_s);
 }
 
 inline void filter_io_init(filter_io_t * io)
 {
 
-	io->content_type = 0;
+    io->content_type = 0;
 
-	// general info
-	io->valid       = false; // ok
-	io->end_of_pipe = false; // skip
-	io->quit        = false; // close pipeline
-	io->is_selected = false;
+    // general info
+    io->valid       = false; // ok
+    io->end_of_pipe = false; // skip
+    io->quit        = false; // close pipeline
+    io->is_selected = false;
 
-	io->offset      = (uint64_t)-1;
-	io->byte_value  = 0;
+    io->offset      = (uint64_t)-1;
+    io->byte_value  = 0;
 
-	io->cp          = 0xffd;
-	io->real_cp     = 0xffd;
-	io->cp_index    = (uint64_t)-1; // be carrefull used const u64 invalid_cp_index
-	io->split_flag  = 0;
-	io->split_count = 0;
+    io->cp          = 0xffd;
+    io->real_cp     = 0xffd;
+    io->cp_index    = (uint64_t)-1; // be carrefull used const u64 invalid_cp_index
+    io->split_flag  = 0;
+    io->split_count = 0;
 };
 
 
@@ -105,33 +105,33 @@ namespace core
 // TODO :  build_layout_context_t -> build_layout_context_s
 struct build_layout_context_s {
 
-	build_layout_context_s(editor_buffer_id_t editor_buffer_id_, byte_buffer_id_t bid_, uint64_t sid_, const codepoint_info_s * start_cpi_, screen_t * out_);
+    build_layout_context_s(editor_buffer_id_t editor_buffer_id_, byte_buffer_id_t bid_, uint64_t sid_, const codepoint_info_s * start_cpi_, screen_t * out_);
 
-	// ctx in
-	editor_buffer_id_t	editor_buffer_id = 0;
-	byte_buffer_id_t	bid  = 0;
-	editor_view_id_t	view  = 0;
-	codec_id_t              codec_id = 0;
-	codec_io_ctx_s	        io_ctx;
+    // ctx in
+    editor_buffer_id_t	editor_buffer_id = 0;
+    byte_buffer_id_t	bid  = 0;
+    editor_view_id_t	view  = 0;
+    codec_id_t              codec_id = 0;
+    codec_io_ctx_s	        io_ctx;
 
-	u64                  start_offset = 0;
+    u64                  start_offset = 0;
 
-	ew::graphics::fonts::font * ft = nullptr; // TODO: font family, map<font>
+    ew::graphics::fonts::font * ft = nullptr; // TODO: font family, map<font>
 
-	u32 max_width_px;
-	u32 max_height_px;
+    u32 max_width_px;
+    u32 max_height_px;
 
-	// ctx out
-	// TODO : move variables to screen/output device
-	u32 nr_put;
-	u32 screen_max_line;
-	u32 screen_max_column;
+    // ctx out
+    // TODO : move variables to screen/output device
+    u32 nr_put;
+    u32 screen_max_line;
+    u32 screen_max_column;
 
-	const codepoint_info_s * start_cpi = nullptr; // this cpi is mainly used to compute expansion split count, column count, etc...
+    const codepoint_info_s * start_cpi = nullptr; // this cpi is mainly used to compute expansion split count, column count, etc...
 
-	// in/out
-	u64 maximum_cp;
-	screen_t * out;
+    // in/out
+    u64 maximum_cp;
+    screen_t * out;
 };
 
 typedef struct build_layout_context_s build_layout_context_t;
@@ -141,17 +141,17 @@ void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info);
 
 
 bool get_glyph_info_from_cache(const s32 cp,
-			       ew::graphics::fonts::font_glyph_info & out);
+                               ew::graphics::fonts::font_glyph_info & out);
 
 
 void add_glyph_info_to_cache(const s32 cp,
-			     const ew::graphics::fonts::font_glyph_info & glyph_info);
+                             const ew::graphics::fonts::font_glyph_info & glyph_info);
 
 
 bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft,
-			      const s32 cp,
-			      s32 * cp_filtered, /* filled on error with 0xfffd */
-			      ew::graphics::fonts::font_glyph_info & glyph_info);
+                              const s32 cp,
+                              s32 * cp_filtered, /* filled on error with 0xfffd */
+                              ew::graphics::fonts::font_glyph_info & glyph_info);
 
 /*
   this function checks if cp can be put in the current line
@@ -163,9 +163,9 @@ bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft,
   no_enough_space
 */
 enum layout_status_e {
-	layout_ok,
-	layout_font_error,
-	no_layout_space_left,
+    layout_ok,
+    layout_font_error,
+    no_layout_space_left,
 };
 
 
@@ -193,18 +193,18 @@ struct filter_context_t;   // -> build_layout_mode_context_t
 typedef bool (*mode_init_fn)(build_layout_context_t * ctx, filter_context_t ** to_allocate);
 
 typedef bool (*mode_filter_fn)(build_layout_context_t * ctx,
-			       filter_context_t * filter_ctx,
-			       const filter_io_t * const in, const size_t nr_in,
-			       filter_io_t * out, const size_t  max_out, size_t * nr_out);
+                               filter_context_t * filter_ctx,
+                               const filter_io_t * const in, const size_t nr_in,
+                               filter_io_t * out, const size_t  max_out, size_t * nr_out);
 
 typedef bool (*mode_finish_fn)(build_layout_context_t * ctx, filter_context_t *);
 
 struct filter_context_t {};
 struct filter_t {
-	const char *   name;
-	mode_init_fn   init;
-	mode_filter_fn filter;
-	mode_finish_fn finish;
+    const char *   name;
+    mode_init_fn   init;
+    mode_filter_fn filter;
+    mode_finish_fn finish;
 };
 
 

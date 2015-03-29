@@ -31,57 +31,57 @@ using namespace ew::user;
 
 
 class EW_GRAPHICS_EXPORT display :
-	public ew::core::object,
-	public ew::core::objects::lock_interface
+    public ew::core::object,
+    public ew::core::objects::lock_interface
 {
 public:
-	display();
-	virtual ~display();
+    display();
+    virtual ~display();
 
-	//
-	virtual const char * class_name() const;
+    //
+    virtual const char * class_name() const;
 
-	// event
-	virtual u32 poll_events(bool block = false, u32 timeout = 250 /* ms */);
-	virtual ew::graphics::gui::events::event * pump_event();
-	virtual bool push_events(ew::graphics::gui::events::event ** ev, u32 nrEvents, bool force_push = false);
-	virtual u32 get_nr_pending_events(u32 type);
+    // event
+    virtual u32 poll_events(bool block = false, u32 timeout = 250 /* ms */);
+    virtual ew::graphics::gui::events::event * pump_event();
+    virtual bool push_events(ew::graphics::gui::events::event ** ev, u32 nrEvents, bool force_push = false);
+    virtual u32 get_nr_pending_events(u32 type);
 
-	// video interface
-	virtual const char ** get_supported_video_interface_names(void) ;
-	virtual video_interface * get_video_interface(const char * name = "default") ;
-	virtual void release_video_interface(video_interface * ivideoInterface) ;
+    // video interface
+    virtual const char ** get_supported_video_interface_names(void) ;
+    virtual video_interface * get_video_interface(const char * name = "default") ;
+    virtual void release_video_interface(video_interface * ivideoInterface) ;
 
-	// user input interface
-	virtual const char ** get_supported_user_input_interface_names(void) ;
-	virtual user_input_interface * get_user_input_interface(const char * name = "default") ;
-	virtual void release_user_input_interface(user_input_interface * iuser_inputInterface) ;
+    // user input interface
+    virtual const char ** get_supported_user_input_interface_names(void) ;
+    virtual user_input_interface * get_user_input_interface(const char * name = "default") ;
+    virtual void release_user_input_interface(user_input_interface * iuser_inputInterface) ;
 
-	// ILockableObject
-	virtual bool lock();
-	virtual bool unlock();
-	virtual bool trylock()
-	{
-		return false;
-	}; // not allowed
+    // ILockableObject
+    virtual bool lock();
+    virtual bool unlock();
+    virtual bool trylock()
+    {
+        return false;
+    }; // not allowed
 
-	//          virtual bool isLocked();
+    //          virtual bool isLocked();
 
-	virtual std::thread::id  is_locked_by();
+    virtual std::thread::id  is_locked_by();
 
-	virtual bool open();    // first method to call
-	virtual bool close();   // last method to call implicitly called in destructor
+    virtual bool open();    // first method to call
+    virtual bool close();   // last method to call implicitly called in destructor
 
-	//
-	ew::graphics::gui::events::event_dispatcher * get_event_dispatcher();
+    //
+    ew::graphics::gui::events::event_dispatcher * get_event_dispatcher();
 
 
 private:
-	class private_data;
-	class private_data * d;
+    class private_data;
+    class private_data * d;
 
-	friend class ew::graphics::gui::window;
-	friend class ew::graphics::gui::events::event_dispatcher;
+    friend class ew::graphics::gui::window;
+    friend class ew::graphics::gui::events::event_dispatcher;
 };
 
 }

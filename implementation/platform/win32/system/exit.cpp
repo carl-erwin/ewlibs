@@ -11,7 +11,7 @@ using namespace ew::core::types;
 
 void exit(s32 status)
 {
-	::exit(int(status));
+    ::exit(int(status));
 }
 }
 }

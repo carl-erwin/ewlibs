@@ -15,16 +15,16 @@ static ew::graphics::gui::display * _instance = 0;
 
 bool setDisplayInstance(ew::graphics::gui::display * dpy)
 {
-	_instance = dpy;
-	return true;
+    _instance = dpy;
+    return true;
 }
 
 ew::graphics::gui::display * getDisplayInstance()
 {
-	if (! _instance)
-		throw "getDisplayInstance() :: error :: no instance !!";
+    if (! _instance)
+        throw "getDisplayInstance() :: error :: no instance !!";
 
-	return _instance;
+    return _instance;
 }
 
 }

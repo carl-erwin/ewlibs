@@ -36,38 +36,38 @@ std::chrono::steady_clock::time_point _start;
 
 bool init(void)
 {
-	_start = std::chrono::steady_clock::now();
-	_time_was_init = true;
-	return _time_was_init;
+    _start = std::chrono::steady_clock::now();
+    _time_was_init = true;
+    return _time_was_init;
 }
 
 
 bool quit(void)
 {
-	_time_was_init = false;
-	return true;
+    _time_was_init = false;
+    return true;
 }
 
 //  -----------------------------------------------
 
 
-  size_t get_seconds_since_startup()
-  {
-        std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
+size_t get_seconds_since_startup()
+{
+    std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
     return  std::chrono::duration_cast<std::chrono::seconds>(_end - _start).count();
-  }
+}
 
-    size_t get_milliseconds_since_startup()
-  {
-        std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
+size_t get_milliseconds_since_startup()
+{
+    std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
     return  std::chrono::duration_cast<std::chrono::milliseconds>(_end - _start).count();
-  }
+}
 
-    size_t get_nanoseconds_since_startup()
-  {
-        std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
+size_t get_nanoseconds_since_startup()
+{
+    std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
     return  std::chrono::duration_cast<std::chrono::nanoseconds>(_end - _start).count();
-  }
+}
 
 
 size_t get_ticks(void)
@@ -78,33 +78,33 @@ size_t get_ticks(void)
 
 void sleep(size_t nr_milliseconds)
 {
-        std::mutex mtx;
-	std::unique_lock<std::mutex> lock(mtx);
-	
-	std::condition_variable cond;
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lock(mtx);
 
-	auto now = std::chrono::system_clock::now();
-	cond.wait_until(lock, now + std::chrono::milliseconds(nr_milliseconds));
+    std::condition_variable cond;
+
+    auto now = std::chrono::system_clock::now();
+    cond.wait_until(lock, now + std::chrono::milliseconds(nr_milliseconds));
 }
 
 void usleep(size_t nr_microseconds)
 {
-        std::mutex mtx;
-	std::unique_lock<std::mutex> lock(mtx);
-	
-	std::condition_variable cond;
-	auto now = std::chrono::system_clock::now();
-	cond.wait_until(lock, now + std::chrono::microseconds(nr_microseconds));
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lock(mtx);
+
+    std::condition_variable cond;
+    auto now = std::chrono::system_clock::now();
+    cond.wait_until(lock, now + std::chrono::microseconds(nr_microseconds));
 }
 
 void nsleep(size_t nr_nanoseconds)
 {
-        std::mutex mtx;
-	std::unique_lock<std::mutex> lock(mtx);
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lock(mtx);
 
-	std::condition_variable cond;
-	auto now = std::chrono::system_clock::now();
-	cond.wait_until(lock, now + std::chrono::nanoseconds(nr_nanoseconds));
+    std::condition_variable cond;
+    auto now = std::chrono::system_clock::now();
+    cond.wait_until(lock, now + std::chrono::nanoseconds(nr_nanoseconds));
 }
 
 

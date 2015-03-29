@@ -18,52 +18,52 @@ namespace core
 {
 
 enum build_screen_list_hints {
-	build_screen_no_hints = 0,
-	rewind_screen         = 1,
-	resync_screen         = 2,
+    build_screen_no_hints = 0,
+    rewind_screen         = 1,
+    resync_screen         = 2,
 };
 
 
 struct selection_record_s {
-	u64 bid;
+    u64 bid;
 
-	int b_x;
-	int b_y;
-	u64 b_offset;
-	bool use = false;
+    int b_x;
+    int b_y;
+    u64 b_offset;
+    bool use = false;
 
-	int e_x;
-	int e_y;
-	u64 e_offset;
+    int e_x;
+    int e_y;
+    u64 e_offset;
 
-	codepoint_info_s start_cpi;
+    codepoint_info_s start_cpi;
 };
 
 
 struct core_context_t {
-	std::mutex m_mtx;
-	bool core_started = false;
-	bool core_running = true;
-	event_queue<eedit::core::event *> m_msg_queue;
+    std::mutex m_mtx;
+    bool core_started = false;
+    bool core_running = true;
+    event_queue<eedit::core::event *> m_msg_queue;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: rename
 struct screen_cache {
-	screen_cache()
-	{
-		assert(last_screen == nullptr);
-	}
+    screen_cache()
+    {
+        assert(last_screen == nullptr);
+    }
 
-	~screen_cache()
-	{
-		screen_release(last_screen);
-	}
+    ~screen_cache()
+    {
+        screen_release(last_screen);
+    }
 
-	screen_dimension_t dim;
-	u64 start_offset = 0;
-	screen_t * last_screen = nullptr;
+    screen_dimension_t dim;
+    u64 start_offset = 0;
+    screen_t * last_screen = nullptr;
 };
 
 

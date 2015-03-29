@@ -13,7 +13,7 @@ namespace objects
 class EW_CORE_OBJECT_EXPORT executable_object : virtual public ew::core::object
 {
 public:
-	virtual bool exec(void) = 0;
+    virtual bool exec(void) = 0;
 };
 
 }

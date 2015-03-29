@@ -13,19 +13,19 @@ namespace objects
 class EW_CORE_OBJECT_EXPORT lock_interface
 {
 public:
-	virtual ~lock_interface()
-	{
+    virtual ~lock_interface()
+    {
 
-	}
+    }
 
-	const char * get_class_name() const
-	{
-		return "ew::core::objects::lock_interface";
-	};
+    const char * get_class_name() const
+    {
+        return "ew::core::objects::lock_interface";
+    };
 
-	virtual bool lock(void)  = 0;
-	virtual bool unlock(void) = 0;
-	virtual bool trylock(void) = 0;
+    virtual bool lock(void)  = 0;
+    virtual bool unlock(void) = 0;
+    virtual bool trylock(void) = 0;
 };
 
 }

@@ -28,29 +28,29 @@ using namespace ew::graphics::gui;
 class EW_PLATFORM_WIN32_EXPORT Win32_Platform : public ew::core::Platform::IPlatform
 {
 public:
-	Win32_Platform();
-	virtual ~Win32_Platform();
+    Win32_Platform();
+    virtual ~Win32_Platform();
 
-	/* platform specific */
-	virtual   const char       *      getName(void) const;
+    /* platform specific */
+    virtual   const char       *      getName(void) const;
 
-	virtual bool                 init(u32 Flags);
-	virtual bool                 initSubSystem(u32 Flags);
-	virtual bool                 wasInit(u32 Flags);
-	virtual bool                 quitSubSystem(u32 Flags);
-	virtual s32                  quit(void);
-	virtual void                 systemExit(s32 status);
+    virtual bool                 init(u32 Flags);
+    virtual bool                 initSubSystem(u32 Flags);
+    virtual bool                 wasInit(u32 Flags);
+    virtual bool                 quitSubSystem(u32 Flags);
+    virtual s32                  quit(void);
+    virtual void                 systemExit(s32 status);
 
 
-	/* audio interface */
-	virtual const char  **  getSupportedAudioInterfaceNames(void);
-	virtual IAudioInterface  * getAudioInterface(char * name = "default");
-	virtual void    releaseAudioInterface(IAudioInterface * iaudioInterface);
+    /* audio interface */
+    virtual const char  **  getSupportedAudioInterfaceNames(void);
+    virtual IAudioInterface  * getAudioInterface(char * name = "default");
+    virtual void    releaseAudioInterface(IAudioInterface * iaudioInterface);
 
-	/* graphical user interface */
-	virtual  const char  ** getSupportedGraphicalUserInterface(void);
-	virtual  Gui * getGraphicalUserInterface(char * name = "default");
-	virtual  void   releaseGraphicalUserInterface(Gui * gui);
+    /* graphical user interface */
+    virtual  const char  ** getSupportedGraphicalUserInterface(void);
+    virtual  Gui * getGraphicalUserInterface(char * name = "default");
+    virtual  void   releaseGraphicalUserInterface(Gui * gui);
 
 };
 

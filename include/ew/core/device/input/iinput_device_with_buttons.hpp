@@ -20,17 +20,17 @@ using namespace ew::core::types;
 class EW_CORE_DEVICE_EXPORT input_device_with_buttons : virtual public input_device
 {
 public:
-	//  input_device_with_buttons(u32 index) {}
+    //  input_device_with_buttons(u32 index) {}
 
-	//  virtual ~input_device_with_buttons() {}
+    //  virtual ~input_device_with_buttons() {}
 
-	virtual void getNumberOfButtons(u32 & nrButtons) = 0;
+    virtual void getNumberOfButtons(u32 & nrButtons) = 0;
 
-	virtual u32 getNumberOfButtons(void) = 0;
+    virtual u32 getNumberOfButtons(void) = 0;
 
-	virtual bool isButtonPressed(u32 button) = 0;
+    virtual bool isButtonPressed(u32 button) = 0;
 
-	virtual bool isButtonRealesed(u32 button) = 0;
+    virtual bool isButtonRealesed(u32 button) = 0;
 
 //     virtual bool isAnyButtonPressed( void ) = 0;
 //     virtual bool isAnyButtonPressed( u32 & button ) = 0;

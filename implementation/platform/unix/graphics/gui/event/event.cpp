@@ -41,14 +41,14 @@ using ew::console::cerr;
 
 ew::graphics::gui::events::event * pump_event(ew::graphics::gui::display * dpy)
 {
-	return dpy->pump_event();
+    return dpy->pump_event();
 }
 
 bool destroyEvent(event * event)
 {
-	if (event)
-		delete event;
-	return true;
+    if (event)
+        delete event;
+    return true;
 }
 
 static const size_t __nr_events = 32;
@@ -57,97 +57,97 @@ class event_dispatcher::private_data
 {
 public:
 
-	private_data()
-		:
-		event_list_mutex(0),
-		timeout(100),
-		dpy(0)
-	{
-                event_list_mutex = new std::mutex();
+    private_data()
+        :
+        event_list_mutex(0),
+        timeout(100),
+        dpy(0)
+    {
+        event_list_mutex = new std::mutex();
 
-		for (size_t count = 32; count > 0; --count) {
-			pending_event_counters[ count - 1 ] = 0;
-			pending_event_ticks_filter[ count - 1 ] = 0;
-		}
-	}
+        for (size_t count = 32; count > 0; --count) {
+            pending_event_counters[ count - 1 ] = 0;
+            pending_event_ticks_filter[ count - 1 ] = 0;
+        }
+    }
 
-	~private_data()
-	{
-		delete event_list_mutex;
-	}
+    ~private_data()
+    {
+        delete event_list_mutex;
+    }
 
-        std::mutex * event_list_mutex;
-	std::list<event *> event_list;
-	u32 pending_event_counters[ __nr_events ];
-	u32 pending_event_ticks_filter[ __nr_events ];
+    std::mutex * event_list_mutex;
+    std::list<event *> event_list;
+    u32 pending_event_counters[ __nr_events ];
+    u32 pending_event_ticks_filter[ __nr_events ];
 
-        std::condition_variable  have_event_cond;
-	u32 timeout;
-	display * dpy;
+    std::condition_variable  have_event_cond;
+    u32 timeout;
+    display * dpy;
 };
 
 event_dispatcher::event_dispatcher(display * dpy)
-	: d(new private_data())
+    : d(new private_data())
 {
-	d->dpy = dpy;
+    d->dpy = dpy;
 }
 
 event_dispatcher::~event_dispatcher()
 {
-	std::list<event *>::iterator end = d->event_list.end();
-	std::list<event *>::iterator it = d->event_list.begin();
+    std::list<event *>::iterator end = d->event_list.end();
+    std::list<event *>::iterator it = d->event_list.begin();
 
-	for (; it != end;) {
-		std::list<event *>::iterator cur = it;
-		++it;
+    for (; it != end;) {
+        std::list<event *>::iterator cur = it;
+        ++it;
 
-		event * ev = *cur;
-		destroyEvent(ev);
-		d->event_list.erase(cur);
-	}
+        event * ev = *cur;
+        destroyEvent(ev);
+        d->event_list.erase(cur);
+    }
 
-	delete d;
+    delete d;
 }
 
 bool event_dispatcher::push(event ** event, u32 nrEvents)
 {
-	{
-	  std::lock_guard<std::mutex> lock(*d->event_list_mutex);
-		for (u32 i = 0; i < nrEvents; i++) {
-			if (event[i]) {
-				event[i]->pending = d->pending_event_counters[ event[i]->type ];
-				d->pending_event_counters[ event[i]->type ]++;
-				d->event_list.push_back(event[i]);
-			}
-		}
-		d->have_event_cond.notify_one();
-	}
+    {
+        std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+        for (u32 i = 0; i < nrEvents; i++) {
+            if (event[i]) {
+                event[i]->pending = d->pending_event_counters[ event[i]->type ];
+                d->pending_event_counters[ event[i]->type ]++;
+                d->event_list.push_back(event[i]);
+            }
+        }
+        d->have_event_cond.notify_one();
+    }
 
-	return true;
+    return true;
 }
 
 u32 event_dispatcher::get_nr_pending_events(event_type type) const
 {
-	u32 ret;
+    u32 ret;
 
-	if (d) {
-	  std::lock_guard<std::mutex> lock(*d->event_list_mutex);
-		ret = d->pending_event_counters[ type ];
-	} else {
-		ret = 0;
-	}
-	return ret;
+    if (d) {
+        std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+        ret = d->pending_event_counters[ type ];
+    } else {
+        ret = 0;
+    }
+    return ret;
 }
 
 bool event_dispatcher::drop_events_before_tick(event_type type , u32 tick)
 {
-	d->pending_event_ticks_filter[ type ] = tick;
-	return true;
+    d->pending_event_ticks_filter[ type ] = tick;
+    return true;
 }
 
 bool event_dispatcher::push(event * event)
 {
-	return push(&event, 1);
+    return push(&event, 1);
 }
 
 event * event_dispatcher::pop()
@@ -155,116 +155,116 @@ event * event_dispatcher::pop()
     std::lock_guard<std::mutex> lock(*d->event_list_mutex);
 
 
-	if (! d->event_list.size())
-		return 0;
+    if (! d->event_list.size())
+        return 0;
 
-	event * ev = *(d->event_list.begin());
-	d->event_list.pop_front();
+    event * ev = *(d->event_list.begin());
+    d->event_list.pop_front();
 
-	return ev;
+    return ev;
 }
 
 u32 event_dispatcher::get_queue_size()
 {
-      std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+    std::lock_guard<std::mutex> lock(*d->event_list_mutex);
 
-	u32 sz = d->event_list.size();
-	return sz;
+    u32 sz = d->event_list.size();
+    return sz;
 }
 
 bool  event_dispatcher::remove_widget_events(widget * widget)
 {
-        std::lock_guard<std::mutex> lock(*d->event_list_mutex);
+    std::lock_guard<std::mutex> lock(*d->event_list_mutex);
 
 
-	std::list<event *>::iterator it = d->event_list.begin();
-	while (it != d->event_list.end()) {
-		std::list<event *>::iterator cur = it;
-		++it;
+    std::list<event *>::iterator it = d->event_list.begin();
+    while (it != d->event_list.end()) {
+        std::list<event *>::iterator cur = it;
+        ++it;
 
-		event * ev = *cur;
-		if (ev->widget == widget) {
-			destroyEvent(ev);
-			d->event_list.erase(cur);
-		}
-	}
+        event * ev = *cur;
+        if (ev->widget == widget) {
+            destroyEvent(ev);
+            d->event_list.erase(cur);
+        }
+    }
 
-	return true;
+    return true;
 }
 
 
 bool event_dispatcher::stop()
 {
-	d->have_event_cond.notify_one();
-	return true;
+    d->have_event_cond.notify_one();
+    return true;
 }
 
 bool event_dispatcher::dispatch_all_events()
 {
-	{
-               std::unique_lock<std::mutex> lock(*d->event_list_mutex);
-	       d->have_event_cond.wait(lock);
-	}
+    {
+        std::unique_lock<std::mutex> lock(*d->event_list_mutex);
+        d->have_event_cond.wait(lock);
+    }
 
-	u32 nr = get_queue_size();
-	if (nr) {
-		dispatch_events(nr);
-		d->timeout = 0;
-	} else {
-		d->timeout = 1 * 1000;
-	}
+    u32 nr = get_queue_size();
+    if (nr) {
+        dispatch_events(nr);
+        d->timeout = 0;
+    } else {
+        d->timeout = 1 * 1000;
+    }
 
-	return true;
+    return true;
 }
 
 bool event_dispatcher::dispatch_events(u32 nr)
 {
-	assert(nr != 0);
+    assert(nr != 0);
 
-	u32 sz = get_queue_size();
-	if (nr > sz)
-		nr = sz;
+    u32 sz = get_queue_size();
+    if (nr > sz)
+        nr = sz;
 
 //    std::cerr << __FUNCTION__ << " queue size = " << sz << "\n";
 
-	while (nr--) {
+    while (nr--) {
 
-		// if (!get_queue_size())
-		//     break ;
+        // if (!get_queue_size())
+        //     break ;
 
-		event * ev = 0;
+        event * ev = 0;
 
-		// filter events
-		d->event_list_mutex->lock();
-		{
-			ev = d->event_list.front();
-			assert(ev);
-			d->pending_event_counters[ ev->type ]--;
-			d->event_list.pop_front();
-		}
-		d->event_list_mutex->unlock();
+        // filter events
+        d->event_list_mutex->lock();
+        {
+            ev = d->event_list.front();
+            assert(ev);
+            d->pending_event_counters[ ev->type ]--;
+            d->event_list.pop_front();
+        }
+        d->event_list_mutex->unlock();
 
 #if 0
-		std::cerr << " pending_event_counters[" << ev->type << "] == " << d->pending_event_counters[ ev->type ] << "\n";
-		std::cerr << " pending_event_ticks_filter[ ev->type ] <= ev->time\n";
-		std::cerr << d->pending_event_ticks_filter[ ev->type ] << " <= " << ev->time << " ?\n";
-		std::cerr << " ev->time  == " << ev->time << "\n";
+        std::cerr << " pending_event_counters[" << ev->type << "] == " << d->pending_event_counters[ ev->type ] << "\n";
+        std::cerr << " pending_event_ticks_filter[ ev->type ] <= ev->time\n";
+        std::cerr << d->pending_event_ticks_filter[ ev->type ] << " <= " << ev->time << " ?\n";
+        std::cerr << " ev->time  == " << ev->time << "\n";
 #endif
 
 
-		if (ev->time >= d->pending_event_ticks_filter[ ev->type ]) {
-			dispatch_event(ev);
-		} else {
-			// drop event
-			assert(0);
-		}
+        if (ev->time >= d->pending_event_ticks_filter[ ev->type ]) {
+            dispatch_event(ev);
+        } else {
+            // drop event
+            assert(0);
+        }
 
-		destroyEvent(ev);
-	}
+        destroyEvent(ev);
+    }
 
 //    std::cerr << __FUNCTION__ << " LEAVE : queue size = " << get_queue_size() << "\n";
 
-	return true;
+    return true;
 }
 
 //Todo : split into
@@ -274,120 +274,120 @@ bool event_dispatcher::dispatch_events(u32 nr)
 
 bool event_dispatcher::dispatch_event(event * event)
 {
-	assert(event != nullptr);
+    assert(event != nullptr);
 
-	ew::graphics::gui::window * window = static_cast<ew::graphics::gui::window *>(event->widget);
+    ew::graphics::gui::window * window = static_cast<ew::graphics::gui::window *>(event->widget);
 
-	if (window == nullptr)
-		return false;
+    if (window == nullptr)
+        return false;
 
-	object_locker<ew::graphics::gui::display> guiLock(event->display);
+    object_locker<ew::graphics::gui::display> guiLock(event->display);
 
-	if (! event->display->d->have_widget(event->display->d, window)) {
-		// cerr << "widget has disappeared" << "\n";
-		return false;
-	}
+    if (! event->display->d->have_widget(event->display->d, window)) {
+        // cerr << "widget has disappeared" << "\n";
+        return false;
+    }
 
-	std::lock_guard<std::mutex> widget_lock(* window);
+    std::lock_guard<std::mutex> widget_lock(* window);
 
-	if (! window->isAvailable()) {
-		// TODO: set unavailable widget flag
-		return false;
-	}
+    if (! window->isAvailable()) {
+        // TODO: set unavailable widget flag
+        return false;
+    }
 
-	object_locker<ew::graphics::rendering::rendering_context> lock_win_rdr_ctx(window->renderingContext());
+    object_locker<ew::graphics::rendering::rendering_context> lock_win_rdr_ctx(window->renderingContext());
 
-	// handle low level widget
-	switch (event->type) {
-	case WidgetResizeEvent: {
+    // handle low level widget
+    switch (event->type) {
+    case WidgetResizeEvent: {
 
-		// ignore all resize events except the last one
-		if (get_nr_pending_events(WidgetResizeEvent) != 0) {
-			return true;
-		}
+        // ignore all resize events except the last one
+        if (get_nr_pending_events(WidgetResizeEvent) != 0) {
+            return true;
+        }
 
-		// handle last resize event
-		widget_event * ev = static_cast<struct widget_event *>(event);
+        // handle last resize event
+        widget_event * ev = static_cast<struct widget_event *>(event);
 
-		window->d->_properties.width  = ev->width;
-		window->d->_properties.height = ev->height;
-		window->d->_properties.x  = window->x();
-		window->d->_properties.y = window->y();
+        window->d->_properties.width  = ev->width;
+        window->d->_properties.height = ev->height;
+        window->d->_properties.x  = window->x();
+        window->d->_properties.y = window->y();
 
-		// TODO: add helper for internal state updates
-		// window->d->internal_on_resize();
-		if (window->d->_offscreen_pixmap) {
-			window->renderingContext()->unlock();
-			window->d->_offscreen_pixmap->resize(ev->width, ev->height);
-			window->renderingContext()->lock();
-		}
+        // TODO: add helper for internal state updates
+        // window->d->internal_on_resize();
+        if (window->d->_offscreen_pixmap) {
+            window->renderingContext()->unlock();
+            window->d->_offscreen_pixmap->resize(ev->width, ev->height);
+            window->renderingContext()->lock();
+        }
 
-		window->on_resize(ev);
+        window->on_resize(ev);
 #if 0
-		// TODO: hints : if (redraw_after_resize) {
-		struct widget_event evdraw = *ev;
-		evdraw.type = WidgetDrawEvent;
-		if (window->on_draw(&evdraw)) {
-			window->swapBuffers();
-		}
-		// }
+        // TODO: hints : if (redraw_after_resize) {
+        struct widget_event evdraw = *ev;
+        evdraw.type = WidgetDrawEvent;
+        if (window->on_draw(&evdraw)) {
+            window->swapBuffers();
+        }
+        // }
 #endif
-		return true;
-	}
-	break;
+        return true;
+    }
+    break;
 
-	case WidgetMotionEvent: {
+    case WidgetMotionEvent: {
 
-		struct widget_event * ev = static_cast<struct widget_event *>(event);
+        struct widget_event * ev = static_cast<struct widget_event *>(event);
 
-		window->d->_properties.x = ev->x;
-		window->d->_properties.y = ev->y;
-		window->d->_properties.width = window->width();
-		window->d->_properties.height =  window->height();
-		window->on_move(ev);
+        window->d->_properties.x = ev->x;
+        window->d->_properties.y = ev->y;
+        window->d->_properties.width = window->width();
+        window->d->_properties.height =  window->height();
+        window->on_move(ev);
 
-		return true;
-	}
-	break;
+        return true;
+    }
+    break;
 
-	case WidgetCreateEvent: {
+    case WidgetCreateEvent: {
 
-		struct widget_event * ev = static_cast<struct widget_event *>(event);
+        struct widget_event * ev = static_cast<struct widget_event *>(event);
 
-		window->d->_properties.x = ev->x;
-		window->d->_properties.y = ev->y;
-		window->d->_properties.width = window->width();
-		window->d->_properties.height =  window->height();
-		window->on_create(ev);
+        window->d->_properties.x = ev->x;
+        window->d->_properties.y = ev->y;
+        window->d->_properties.width = window->width();
+        window->d->_properties.height =  window->height();
+        window->on_create(ev);
 
-		return true;
-	}
-	break;
+        return true;
+    }
+    break;
 
-	case WidgetCloseEvent: {
+    case WidgetCloseEvent: {
 
-		struct widget_event * ev = static_cast<struct widget_event *>(event);
+        struct widget_event * ev = static_cast<struct widget_event *>(event);
 
-		window->d->_properties.x = ev->x;
-		window->d->_properties.y = ev->y;
-		window->d->_properties.width = window->width();
-		window->d->_properties.height =  window->height();
-		window->on_close(ev);
+        window->d->_properties.x = ev->x;
+        window->d->_properties.y = ev->y;
+        window->d->_properties.width = window->width();
+        window->d->_properties.height =  window->height();
+        window->on_close(ev);
 
-		return true;
-	}
-	break;
+        return true;
+    }
+    break;
 
 
 
-	default: {
-		/* do nothing */
-	}
-	break;
+    default: {
+        /* do nothing */
+    }
+    break;
 
-	}
+    }
 
-	return window->on_event(event);
+    return window->on_event(event);
 }
 
 }

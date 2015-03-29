@@ -38,27 +38,27 @@ namespace rendering
 class  EW_GRAPHICS_EXPORT rendering_context : public ew::core::object
 {
 public:
-	rendering_context(ew::graphics::gui::window * window);
-	virtual ~rendering_context();
+    rendering_context(ew::graphics::gui::window * window);
+    virtual ~rendering_context();
 
-	virtual bool lock();
-	virtual bool unlock();
-	virtual bool trylock();
+    virtual bool lock();
+    virtual bool unlock();
+    virtual bool trylock();
 
-	//  virtual bool isAvailable();
+    //  virtual bool isAvailable();
 
-	virtual bool attach(ew::graphics::gui::window * window);
-	// virtual bool attach(ew::graphics::gui::Pixmap * pixmap);// TODO:: add this ?
-	virtual bool detach();
-	// return Widget ?
-	virtual ew::graphics::gui::window * isAttachedTo();
+    virtual bool attach(ew::graphics::gui::window * window);
+    // virtual bool attach(ew::graphics::gui::Pixmap * pixmap);// TODO:: add this ?
+    virtual bool detach();
+    // return Widget ?
+    virtual ew::graphics::gui::window * isAttachedTo();
 
 private:
-	class private_data;
-	private_data * d;
+    class private_data;
+    private_data * d;
 
-	friend class ew::graphics::gui::window;
-	friend class ew::graphics::gui::pixmap;
+    friend class ew::graphics::gui::window;
+    friend class ew::graphics::gui::pixmap;
 };
 
 }

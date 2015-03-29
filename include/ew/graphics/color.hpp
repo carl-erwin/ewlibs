@@ -52,38 +52,38 @@ template <typename T>
 class Color3
 {
 public:
-	inline Color3<T>(const T * color);
-	inline Color3<T>(const Color3<T> & color);
-	inline Color3<T>(const Color4<T> & color);
-	inline Color3<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0);
-	inline const T & operator[](const u32 i) const;
-	inline T & operator[](const u32 i);
-	inline T * GetDataPtr(void);
-	inline s32 operator==(const Color3<T> & color) const;
-	inline s32 operator!=(const Color3<T> & color) const;
-	inline Color3<T> operator+(const Color3<T> & color) const;
-	inline Color3<T> operator-(const Color3<T> & color) const;
-	inline Color3<T> operator*(const T & val) const;
-	inline Color3<T> operator/(const T & val) const;
-	inline Color3<T> operator+(const T & val) const;
-	inline Color3<T> operator-(const T & val) const;
-	inline Color3<T> & operator*=(const T & val);
-	inline Color3<T> & operator/=(const T & val);
-	inline Color3<T> & operator+=(const T & val);
-	inline Color3<T> & operator-=(const T & val);
-	inline Color3<T> & operator+=(const Color3<T> & color);
-	inline Color3<T> & operator-=(const Color3<T> & color);
-	inline Color3<T> & operator=(const Color3<T> & color);
-	inline Color3<T> & operator=(const T * color);
-	void set(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
-	void set(const T * color);
-	T & red();
-	T & green();
-	T & blue();
+    inline Color3<T>(const T * color);
+    inline Color3<T>(const Color3<T> & color);
+    inline Color3<T>(const Color4<T> & color);
+    inline Color3<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0);
+    inline const T & operator[](const u32 i) const;
+    inline T & operator[](const u32 i);
+    inline T * GetDataPtr(void);
+    inline s32 operator==(const Color3<T> & color) const;
+    inline s32 operator!=(const Color3<T> & color) const;
+    inline Color3<T> operator+(const Color3<T> & color) const;
+    inline Color3<T> operator-(const Color3<T> & color) const;
+    inline Color3<T> operator*(const T & val) const;
+    inline Color3<T> operator/(const T & val) const;
+    inline Color3<T> operator+(const T & val) const;
+    inline Color3<T> operator-(const T & val) const;
+    inline Color3<T> & operator*=(const T & val);
+    inline Color3<T> & operator/=(const T & val);
+    inline Color3<T> & operator+=(const T & val);
+    inline Color3<T> & operator-=(const T & val);
+    inline Color3<T> & operator+=(const Color3<T> & color);
+    inline Color3<T> & operator-=(const Color3<T> & color);
+    inline Color3<T> & operator=(const Color3<T> & color);
+    inline Color3<T> & operator=(const T * color);
+    void set(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
+    void set(const T * color);
+    T & red();
+    T & green();
+    T & blue();
 public:
-	T r;
-	T g;
-	T b;
+    T r;
+    T g;
+    T b;
 };
 
 
@@ -93,40 +93,40 @@ template <typename T>
 class Color4
 {
 public:
-	inline Color4<T>(const T * color);
-	inline Color4<T>(const Color3<T> & color);
-	inline Color4<T>(const Color4<T> & color);
-	inline Color4<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
-	inline T & operator[](const u32 i);
-	inline T * GetDataPtr(void);
-	inline s32 operator==(const Color4<T> & color) const;
-	inline s32 operator!=(const Color4<T> & color) const;
-	inline Color4<T> operator+(const Color4<T> & color) const;
-	inline Color4<T> operator-(const Color4<T> & color) const;
-	inline Color4<T> operator*(const T & val) const;
-	inline Color4<T> operator/(const T & val) const;
-	inline Color4<T> operator+(const T & val) const;
-	inline Color4<T> operator-(const T & val) const;
-	inline Color4<T> & operator*=(const T & val);
-	inline Color4<T> & operator/=(const T & val);
-	inline Color4<T> & operator+=(const T & val);
-	inline Color4<T> & operator-=(const T & val);
-	inline Color4<T> & operator+=(const Color4<T> & color);
-	inline Color4<T> & operator-=(const Color4<T> & color);
-	inline Color4<T> & operator=(const Color4<T> & color);
-	inline Color4<T> & operator=(const Color3<T> & color);
-	inline Color4<T> & operator=(const T * color);
-	void set(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
-	void set(const T * color);
-	T & red();
-	T & green();
-	T & blue();
-	T & alpha();
+    inline Color4<T>(const T * color);
+    inline Color4<T>(const Color3<T> & color);
+    inline Color4<T>(const Color4<T> & color);
+    inline Color4<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
+    inline T & operator[](const u32 i);
+    inline T * GetDataPtr(void);
+    inline s32 operator==(const Color4<T> & color) const;
+    inline s32 operator!=(const Color4<T> & color) const;
+    inline Color4<T> operator+(const Color4<T> & color) const;
+    inline Color4<T> operator-(const Color4<T> & color) const;
+    inline Color4<T> operator*(const T & val) const;
+    inline Color4<T> operator/(const T & val) const;
+    inline Color4<T> operator+(const T & val) const;
+    inline Color4<T> operator-(const T & val) const;
+    inline Color4<T> & operator*=(const T & val);
+    inline Color4<T> & operator/=(const T & val);
+    inline Color4<T> & operator+=(const T & val);
+    inline Color4<T> & operator-=(const T & val);
+    inline Color4<T> & operator+=(const Color4<T> & color);
+    inline Color4<T> & operator-=(const Color4<T> & color);
+    inline Color4<T> & operator=(const Color4<T> & color);
+    inline Color4<T> & operator=(const Color3<T> & color);
+    inline Color4<T> & operator=(const T * color);
+    void set(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
+    void set(const T * color);
+    T & red();
+    T & green();
+    T & blue();
+    T & alpha();
 public:
-	T r;
-	T g;
-	T b;
-	T a;
+    T r;
+    T g;
+    T b;
+    T a;
 };
 
 // ----------------------------------------- STREAM -------------------------------------------

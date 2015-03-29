@@ -16,10 +16,10 @@ using namespace ew::core::types;
 class EW_CORE_DEVICE_EXPORT output_device : public ew::core::device
 {
 private:
-	output_device(const output_device &);
-	output_device & operator=(const output_device &);
+    output_device(const output_device &);
+    output_device & operator=(const output_device &);
 public:
-	output_device(u32 index);
+    output_device(u32 index);
 };
 
 }

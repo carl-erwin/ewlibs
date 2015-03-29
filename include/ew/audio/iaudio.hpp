@@ -18,13 +18,13 @@ using namespace ew::core::types;
 class EW_AUDIO_EXPORT audio_interface : public ew::core::object
 {
 public:
-	audio_interface();
+    audio_interface();
 
-	virtual ~audio_interface();
+    virtual ~audio_interface();
 
-	virtual u32 getNumberOfAudioDevices(void) = 0;
-	virtual ew::audio::devices::sound_card * getSoundCard(u32 index) = 0;
-	virtual void releaseSoundCard(ew::audio::devices::sound_card * soundCard) = 0;
+    virtual u32 getNumberOfAudioDevices(void) = 0;
+    virtual ew::audio::devices::sound_card * getSoundCard(u32 index) = 0;
+    virtual void releaseSoundCard(ew::audio::devices::sound_card * soundCard) = 0;
 };
 
 }

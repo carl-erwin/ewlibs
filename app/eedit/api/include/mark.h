@@ -20,8 +20,8 @@ extern "C" {
 /// \brief enum mark_type_e pointer type
 ///
 typedef enum mark_type_e {
-	FIXED_MARK,
-	MOVING_MARK,
+    FIXED_MARK,
+    MOVING_MARK,
 } mark_type_t;
 
 

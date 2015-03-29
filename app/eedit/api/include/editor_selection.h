@@ -5,7 +5,7 @@
 
 // simple enough
 struct editor_selection {
-	mark_t * begin;
-	mark_t * end;
-	editor_view_id_t * owner;
+    mark_t * begin;
+    mark_t * end;
+    editor_view_id_t * owner;
 };

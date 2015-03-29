@@ -12,20 +12,20 @@ namespace objects
 template <typename T> class object_locker
 {
 private:
-	T * _obj;
+    T * _obj;
 public:
-	object_locker(T & obj) : _obj(&obj)
-	{
-		_obj->lock();
-	}
-	object_locker(T * obj) : _obj(obj)
-	{
-		_obj->lock();
-	}
-	~object_locker()
-	{
-		_obj->unlock();
-	}
+    object_locker(T & obj) : _obj(&obj)
+    {
+        _obj->lock();
+    }
+    object_locker(T * obj) : _obj(obj)
+    {
+        _obj->lock();
+    }
+    ~object_locker()
+    {
+        _obj->unlock();
+    }
 };
 
 }

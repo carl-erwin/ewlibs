@@ -21,10 +21,10 @@ bool EW_GRAPHICS_EXPORT multithreadEventPollingIsEnabled();
 class EW_GRAPHICS_EXPORT gui : public ew::core::object
 {
 public:
-	gui();
-	virtual ~gui();
+    gui();
+    virtual ~gui();
 
-	virtual const char * class_name() const;
+    virtual const char * class_name() const;
 };
 
 }

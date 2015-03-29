@@ -16,12 +16,12 @@ using namespace ew::core::types;
 class EW_CORE_OBJECT_EXPORT read_interface
 {
 public:
-	virtual ~read_interface()
-	{
+    virtual ~read_interface()
+    {
 
-	}
+    }
 
-	virtual bool read(u8 * buffer, u64 nrToRead , u64 * nrRead) = 0;
+    virtual bool read(u8 * buffer, u64 nrToRead , u64 * nrRead) = 0;
 };
 
 }

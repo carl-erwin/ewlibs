@@ -24,13 +24,13 @@ using namespace ew::core::types;
 class EW_CORE_TIME_EXPORT ITimer
 {
 public:
-	ITimer() {}
-	virtual ~ITimer() {}
+    ITimer() {}
+    virtual ~ITimer() {}
 
-	virtual void start()    = 0; /* start the timer */
-	virtual void stop()     = 0;
-	virtual u32  getValue() = 0;
-	virtual void reset()    = 0;
+    virtual void start()    = 0; /* start the timer */
+    virtual void stop()     = 0;
+    virtual u32  getValue() = 0;
+    virtual void reset()    = 0;
 };
 
 // -----------------------------------------------------------
@@ -39,15 +39,15 @@ public:
 class EW_CORE_TIME_EXPORT IAlarm
 {
 public:
-	IAlarm() {}
-	virtual ~IAlarm() {}
+    IAlarm() {}
+    virtual ~IAlarm() {}
 
-	bool registerCallback(void (*callback)(void));        /* */
+    bool registerCallback(void (*callback)(void));        /* */
 
-	virtual void start() = 0; /* start the timer */
-	virtual void stop() = 0;
-	virtual u32 getValue() = 0;
-	virtual void reset() = 0;
+    virtual void start() = 0; /* start the timer */
+    virtual void stop() = 0;
+    virtual u32 getValue() = 0;
+    virtual void reset() = 0;
 };
 
 

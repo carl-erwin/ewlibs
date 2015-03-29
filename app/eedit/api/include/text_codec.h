@@ -14,29 +14,29 @@ extern "C" {
 
 // this struct represent a character whitin the codec
 struct text_codec_io_s {
-	uint64_t  offset; // write only ?
-	int32_t   cp;
-	uint32_t  size;
+    uint64_t  offset; // write only ?
+    int32_t   cp;
+    uint32_t  size;
 };
 
 
 // MUST be passed in codec_register()
 struct text_codec_ops_s {
-	struct codec_ops_s base_ops;
+    struct codec_ops_s base_ops;
 
-	// text specific ops
-	int (*read_forward)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
-	int (*read_backward)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
-	int (*write)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
+    // text specific ops
+    int (*read_forward)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
+    int (*read_backward)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
+    int (*write)(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
 
-	// write_backward ?
+    // write_backward ?
 
-	// one codepoint at time
-	int (*encode)(int32_t codepoint, uint64_t out_size, uint8_t out[], uint64_t * nb_write);
-	int (*decode)(uint64_t in_size, uint8_t in[], int32_t * codepoint);
+    // one codepoint at time
+    int (*encode)(int32_t codepoint, uint64_t out_size, uint8_t out[], uint64_t * nb_write);
+    int (*decode)(uint64_t in_size, uint8_t in[], int32_t * codepoint);
 
-	int (*sync_codepoint)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
-	int (*sync_line)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
+    int (*sync_codepoint)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
+    int (*sync_line)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
 };
 
 

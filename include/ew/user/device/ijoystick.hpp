@@ -16,14 +16,14 @@ namespace devices
 using namespace ew::core::types;
 
 class EW_USER_EXPORT joystick
-	:
-	public ew::core::devices::input::input_device_with_buttons,
-	public ew::core::devices::input::input_device_with_axis,
-	public ew::core::devices::input::input_device_with_hats
+    :
+    public ew::core::devices::input::input_device_with_buttons,
+    public ew::core::devices::input::input_device_with_axis,
+    public ew::core::devices::input::input_device_with_hats
 {
 public:
-	joystick(u32 index);
-	virtual ~joystick();
+    joystick(u32 index);
+    virtual ~joystick();
 };
 
 }

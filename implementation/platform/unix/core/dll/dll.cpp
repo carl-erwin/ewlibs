@@ -25,106 +25,106 @@ using ew::console::cerr;
 class dll::private_data
 {
 public:
-	private_data(const char * name)
-	{
-		_fileName = ew::utils::c_string_dup(name);
-	}
+    private_data(const char * name)
+    {
+        _fileName = ew::utils::c_string_dup(name);
+    }
 
-	~private_data()
-	{
-		::delete [] _fileName;
-		_fileName = 0;
-		_handler = 0;
-	}
+    ~private_data()
+    {
+        ::delete [] _fileName;
+        _fileName = 0;
+        _handler = 0;
+    }
 
-	char * _fileName = 0;
-	void * _handler  = 0;
+    char * _fileName = 0;
+    void * _handler  = 0;
 };
 
 // ------------------------------------------------------------------------------
 
 
 dll::dll(const char * name)
-	:
-	d(::new private_data(name))
+    :
+    d(::new private_data(name))
 {
-	set_name(name);
+    set_name(name);
 }
 
 
 bool dll::load()
 {
-	if (d->_handler)
-		return true;
+    if (d->_handler)
+        return true;
 
-	d->_handler = ::dlopen(d->_fileName, RTLD_NOW);
-	if (!d->_handler) {
-		cerr << "::dlerror() : " << ::dlerror() << "\n";
-		ew::Throw(dll_loading_error());
+    d->_handler = ::dlopen(d->_fileName, RTLD_NOW);
+    if (!d->_handler) {
+        cerr << "::dlerror() : " << ::dlerror() << "\n";
+        ew::Throw(dll_loading_error());
 
-		return false;
-	}
-	return true;
+        return false;
+    }
+    return true;
 }
 
 bool dll::unload()
 {
-	if (d->_handler == 0)
-		return true;
+    if (d->_handler == 0)
+        return true;
 
-	if (::dlclose((void *) d->_handler)) {
-		cerr << "::dlerror() : " << ::dlerror() << "\n";
-		ew::Throw(dll_unloading_error());
+    if (::dlclose((void *) d->_handler)) {
+        cerr << "::dlerror() : " << ::dlerror() << "\n";
+        ew::Throw(dll_unloading_error());
 
-		return false;
-	}
+        return false;
+    }
 
-	d->_handler = 0;
-	return true;
+    d->_handler = 0;
+    return true;
 }
 
 dll::~dll()
 {
-	unload();
-	delete d;
+    unload();
+    delete d;
 }
 
 const char * dll::filename()
 {
-	return 0;
+    return 0;
 }
 
 const char * dll::class_name() const
 {
-	return "ew::core::dll";
+    return "ew::core::dll";
 }
 
 
 bool dll::is_loaded(void)
 {
-	return (d->_handler != 0) ? true : false;
+    return (d->_handler != 0) ? true : false;
 }
 
 void * dll::symbol_by_name(const char * _symbol)
 {
-	void * sym = ::dlsym((void *) d->_handler, _symbol);
-	if (!sym) {
-		std::cerr << "cannot found symbol '" << _symbol << "' in '" << name() << "' dll\n";
-		ew::Throw(dll_symbol_not_found());
-	}
+    void * sym = ::dlsym((void *) d->_handler, _symbol);
+    if (!sym) {
+        std::cerr << "cannot found symbol '" << _symbol << "' in '" << name() << "' dll\n";
+        ew::Throw(dll_symbol_not_found());
+    }
 
-	return (sym);
+    return (sym);
 }
 
 // sub system init
 bool init(void)
 {
-	return true;
+    return true;
 }
 
 bool quit(void)
 {
-	return true;
+    return true;
 }
 
 }

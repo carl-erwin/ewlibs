@@ -10,7 +10,7 @@ namespace system
 
 void exit(ssize_t status)
 {
-	::exit(static_cast<int>(status));
+    ::exit(static_cast<int>(status));
 }
 
 }
