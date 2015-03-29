@@ -4,7 +4,7 @@ cd $(dirname $0)
 
 root_dir='..'
 
-ASTYLE_OPTS="--style=linux -T8"
+ASTYLE_OPTS="--style=linux -s4"
 
 EXT="
 cc
