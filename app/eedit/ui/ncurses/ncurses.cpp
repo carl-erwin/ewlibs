@@ -440,6 +440,11 @@ eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int 
 	}
 	break;
 
+	case KEY_DC: {
+		/* delete-character key */
+		kval = keys::Delete;
+	}
+	break;
 
 	default: {
 		abort();
