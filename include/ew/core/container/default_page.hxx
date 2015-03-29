@@ -119,19 +119,6 @@ namespace ew
                 }
 
                 virtual inline void  dump_page(const char * pgname = 0) const {
-                    //  return;
-#ifndef NDEBUG
-                    if (pgname) {
-                        std::cerr << "page[ " << pgname << "] : ";
-                    }
-                    std::cerr << "_ptr       = " << (void *)simple_array<T>::_ptr << " , ";
-                    std::cerr << "skip       = " << simple_array<T>::skipped() << " , ";
-                    std::cerr << "used       = " << simple_array<T>::size() << " , ";
-                    std::cerr << "alloc      = " << simple_array<T>::allocated() << ", ";
-                    std::cerr << "_is_mapped = " << is_mapped() << ", ";
-                    std::cerr << "nr_ref     = " << nr_ref();
-                    std::cerr << "\n";
-#endif
                 }                
 
             };

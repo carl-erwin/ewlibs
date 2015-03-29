@@ -1546,8 +1546,6 @@ inline bool  flexible_array<T, P>::pop_front(T * val)
 template <class T,  class P>
 inline bool flexible_array<T, P>::alloc_sub_tree_pages(node * cur_node)
 {
-    static int debug = 1;
-
     P * cur_pg = nullptr;
     size_t index = 0;
 
@@ -1556,7 +1554,7 @@ inline bool flexible_array<T, P>::alloc_sub_tree_pages(node * cur_node)
         cur_pg = new P(/* cur_node->size() , */ m_max_page_size);
         cur_node->set_page(cur_pg);
 
-        if (debug) {
+        if (0) {
             std::cerr << " alloc(" << index << ") , n = " << cur_node << ", ";
             std::cerr << " , n->size() = " << cur_node->size() << ", ";
             std::cerr << " , cur_pg->size() = " << cur_pg->size() << ", ";
