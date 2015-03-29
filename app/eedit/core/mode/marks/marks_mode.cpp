@@ -50,8 +50,6 @@ enum operation_mask_e {
     EDITOR_OP_DELETE_AT_MARK = 1 << 2,
 };
 
-
-
 /*
   The operation are executed in this order:
   insert
@@ -296,6 +294,19 @@ void mark_mode_register_modules_function()
 }
 
 /* TODO:
+
+	mode_id_t editor_register_mode(const char * name); // std::map<std::string, mode_info_t{ id, mode_ops } >
+	int editor_unregister_mode(mode_id_t); // std::map<std::string, mode_info_t{ id, mode_ops } >
+
+        view -> config -> "core:mark-mode"/mode_id_t    ->
+          editor_view_mode_setup(ebid, view, mode_id_t) ->
+          mode_ctx_t * mode_context_new();
+          mode_context_release(mode_ctx_t *);
+
+          view_add_mode_ctx(view, mode_id, mode_ctx_t *)
+          view_add_mode_ctx(view, mode_id, mode_ctx_t *)
+
+
 	provide function to update the view from external modules :
 
 	ex: if sync view on mark move
