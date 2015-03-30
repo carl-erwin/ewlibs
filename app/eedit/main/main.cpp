@@ -6,7 +6,7 @@
 #include <memory>
 #include "application/application.hpp"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 namespace eedit
 {

@@ -9,7 +9,7 @@
 
 #include "ew/ew_config.hpp"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 #include "../include/codec.h"
 

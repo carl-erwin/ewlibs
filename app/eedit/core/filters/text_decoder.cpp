@@ -1,4 +1,4 @@
-#include "../log.hpp"
+#include "core/log/log.hpp"
 
 #include "../../api/include/text_codec.h"
 

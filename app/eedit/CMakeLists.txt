@@ -22,7 +22,7 @@ ${EW_PROJECT_ROOT}/app/eedit/application/application.cpp
 
 # TODO: core/CMakeLists.txt
 ${EW_PROJECT_ROOT}/app/eedit/core/core.cpp
-${EW_PROJECT_ROOT}/app/eedit/core/log.cpp
+${EW_PROJECT_ROOT}/app/eedit/core/log/log.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/input/event/input_event_map.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/module/module.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/rpc/rpc.cpp

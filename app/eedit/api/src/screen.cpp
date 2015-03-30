@@ -5,7 +5,7 @@
 #include <string>
 #include "ew/graphics/font/font.hpp"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 #include "../../api/include/codepoint_info.h"
 // #include "../../api/include/screen_line.h"  // TODO

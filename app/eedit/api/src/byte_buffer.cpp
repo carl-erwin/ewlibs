@@ -12,7 +12,7 @@
 
 #include "../include/byte_buffer.h"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 struct byte_buffer_s {
     typedef ew::filesystem::mapped_file file_t;

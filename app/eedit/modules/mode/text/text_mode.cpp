@@ -388,7 +388,7 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
 
     int count = 0;
     int found = 0;
-    u64 restart_offset = 0;
+    // u64 restart_offset = 0;
 
     codepoint_info_s start_cpi;
     start_cpi.offset = rewind_off;
@@ -452,7 +452,7 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
             const codepoint_info_s * cpi = nullptr;
 
             screen_line_get_cpinfo(l, 0, &cpi, screen_line_hint_no_column_fix);
-            restart_offset = cpi->offset;
+            // restart_offset = cpi->offset;
             editor_view_set_start_offset(ed_view, cpi->offset);
 
             // FIXME:   define editor_log() like printf // app_log << " found restart_offset(" << restart_offset << ") on screen count "<< count << "\n";

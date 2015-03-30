@@ -158,7 +158,7 @@ void set_application(std::shared_ptr<application> app_)
 
 application::application()
     :
-    m_priv(std::make_unique<application_private>())
+    m_priv(std::unique_ptr<application_private>(new application_private))
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 }
@@ -444,7 +444,7 @@ bool application::application_private::setup_modules()
 
     for (auto & libname : mod_vec) {
 
-        auto lib = std::make_unique<ew::core::dll>(libname.c_str());
+        auto lib = std::unique_ptr<ew::core::dll>(new ew::core::dll(libname.c_str()));
         app_log << "try to load file '" << libname << "'\n";
         if (lib->load() == false) {
             app_log << "cannot load file '" << libname << "'\n";
@@ -518,7 +518,7 @@ bool application::application_private::setup_modules()
 
             std::string prefix;
 
-            auto modinfo = std::make_unique<module_info_s>();
+            auto modinfo = std::unique_ptr<module_info_s>(new module_info_s);
 
             modinfo->lib = std::move(lib);
 
@@ -819,7 +819,7 @@ bool application::run(int ac, char ** av)
     ret = m_priv->setup_buffers();
 
     // start core thread
-    m_priv->core_thread = std::make_unique<std::thread>(eedit::core::main, app);
+    m_priv->core_thread = std::unique_ptr<std::thread>(new std::thread(eedit::core::main, app));
 
     // ui main loop
     ret = m_priv->main_loop();

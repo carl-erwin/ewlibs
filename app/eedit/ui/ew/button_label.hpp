@@ -1,6 +1,6 @@
 #include "ew/graphics/gui/widget/widget.hpp"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 #include "label.hpp"
 

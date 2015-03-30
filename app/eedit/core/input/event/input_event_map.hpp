@@ -11,7 +11,7 @@
 #include "ew/graphics/gui/event/event.hpp"
 #include "ew/codecs/text/unicode/utf8/utf8.hpp"
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 //string_tools.h:
 #define STRINGIFY(X)   #X

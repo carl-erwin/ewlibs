@@ -55,7 +55,9 @@ uint64_t           screen_line_last_offset(const screen_line_t * l);
 uint64_t           screen_get_buffer_size(const screen_t * scr);
 /* */
 int                screen_contains_offset(const screen_t * scr, const uint64_t offset);
+
 screen_t *         get_previous_screen_by_id(uint64_t screen_id); // HERE ?
+
 int                screen_set_start_offset(screen_t * scr, uint64_t start_offset);
 
 EDITOR_EXPORT

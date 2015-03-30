@@ -20,7 +20,7 @@
 #include "../implementation/common/graphics/renderer/opengl/libGLU.hpp"
 using namespace ew::implementation::graphics::rendering::opengl;
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 
 #include "scroll_bar.hpp"

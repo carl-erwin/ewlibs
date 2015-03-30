@@ -4,7 +4,7 @@
 #include <list>
 #include <cstring>
 
-#include "core/log.hpp"
+#include "core/log/log.hpp"
 
 
 #include "../include/buffer_log.h"

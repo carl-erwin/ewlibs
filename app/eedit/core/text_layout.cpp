@@ -5,7 +5,7 @@
 #include "text_layout.hpp"
 
 #include "ew/core/time/time.hpp"
-#include "log.hpp"
+#include "log/log.hpp"
 
 namespace eedit
 {
