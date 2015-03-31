@@ -44,7 +44,7 @@ struct core_context_t {
     std::mutex m_mtx;
     bool core_started = false;
     bool core_running = true;
-    event_queue<eedit::core::event *> m_msg_queue;
+    editor_event_queue_s * m_msg_queue;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

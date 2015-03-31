@@ -65,8 +65,9 @@ enum editor_actor_kind_e {
 #include <ew/Utils.hpp>
 
 #include "../../core/input/event/input_event_map.hpp"
-#include "../../api/include/screen.h"
-#include "../../core/message_queue.hpp"
+
+#include "screen.h"
+#include "editor_event_queue.h"
 
 
 
@@ -87,7 +88,7 @@ struct event;
 
 struct event_address {
     editor_actor_kind_e kind = EDITOR_ACTOR_INVALID_KIND;
-    event_queue<::eedit::core::event *> * queue = nullptr;
+    editor_event_queue_s * queue = nullptr;
 };
 
 

@@ -29,7 +29,7 @@ using namespace ew::filesystem;
 #include "application.hpp"
 
 #include "../core/core.hpp"
-#include "../core/message_queue.hpp"
+#include "editor_event_queue.h"
 
 #include "editor_buffer.h"
 

@@ -5,7 +5,7 @@
 
 #include "../../../core/core.hpp"// FIXME: C apis
 
-#include "../../../core/message_queue.hpp"// FIXME: C apis
+#include "editor_event_queue.h"
 
 #include "../../../core/text_layout.hpp"   // FIXME: C apis
 

@@ -11,7 +11,7 @@
 ///
 #include "../application/application.hpp"
 #include "../core/core.hpp"
-#include "../core/message_queue.hpp"
+#include "editor_event_queue.h"
 
 #include "../api/include/screen.h"
 #include "../api/include/codec.h"
@@ -496,6 +496,9 @@ void main(std::shared_ptr<application> app)
     }
 
 
+    core_ctx.m_msg_queue = editor_event_queue_new();
+
+
     // TODO: use .so modules
     // from config file -> load-module path/to/file.so ?
     register_core_modules_function();
@@ -547,6 +550,8 @@ void main(std::shared_ptr<application> app)
     }
 
     // TODO: send quit to others process/threads and join them
+
+      editor_event_queue_delete(core_ctx.m_msg_queue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

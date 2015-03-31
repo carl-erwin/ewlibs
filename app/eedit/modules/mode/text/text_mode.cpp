@@ -2,7 +2,7 @@
 
 #include "../../../application/application.hpp"
 #include "../../../core/core.hpp"
-#include "../../../core/message_queue.hpp"
+#include "editor_event_queue.h"
 #include "../../../core/text_layout.hpp"
 #include "../../../core/module/module.hpp"
 #include "../../../core/rpc/rpc.hpp"

@@ -24,7 +24,8 @@ void send_rpc_answer(const eedit::core::event * ev_in,   rpc_answer * msg)
 
     msg->src = ev_in->dst;
     msg->dst = ev_in->src;
-    msg->dst.queue->push(msg);
+
+    editor_event_queue_push(msg->dst.queue, msg);
 }
 
 // FIXME: move the application class to core

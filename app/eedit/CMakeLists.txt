@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES(${EW_PROJECT_ROOT}/app/eedit/api/include)
 ADD_EXECUTABLE(${EW_APP_NAME}.exe
 
 
-# TODO: app/CMakeLists.txt
+# api
 ${EW_PROJECT_ROOT}/app/eedit/api/src/byte_buffer.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/buffer_log.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/screen.cpp
@@ -15,7 +15,10 @@ ${EW_PROJECT_ROOT}/app/eedit/api/src/text_codec.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/mark.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_buffer.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_view.cpp
+${EW_PROJECT_ROOT}/app/eedit/api/src/editor_event_queue.cpp
 
+
+#
 ${EW_PROJECT_ROOT}/app/eedit/main/main.cpp
 ${EW_PROJECT_ROOT}/app/eedit/application/application.cpp
 
