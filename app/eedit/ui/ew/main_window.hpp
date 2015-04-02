@@ -66,8 +66,8 @@ public:
 
     ///////
 
-    virtual bool set_event_queue(eedit::core::event_queue<eedit::core::event *> * q);
-    virtual eedit::core::event_queue<eedit::core::event *> * event_queue(void);
+    virtual bool set_event_queue(struct editor_event_s_queue<struct editor_event_s *> * q);
+    virtual struct editor_event_s_queue<struct editor_event_s *> * event_queue(void);
 
     virtual void process_event_queue(void);
 };

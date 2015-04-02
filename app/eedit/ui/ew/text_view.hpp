@@ -603,7 +603,7 @@ public:
     }
 
     //
-    void setup_event_common_part(eedit::core::event * msg)
+    void setup_event_common_part(struct editor_event_s * msg)
     {
 
         msg->id            = m_last_msg_id++;
@@ -627,7 +627,7 @@ public:
     bool on_key_press(const  ew::graphics::gui::events::keyboard_event * ev)
     {
         app_log << __PRETTY_FUNCTION__ <<  "\n";
-        // TODO: translate keyboard_event to eedit::core::event ?
+        // TODO: translate keyboard_event to struct editor_event_s ?
         // send translated event to core thread
 
         if (this->m_have_buffer_id == false) {

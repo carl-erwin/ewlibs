@@ -1,5 +1,6 @@
 #include "../../core/core.hpp"
-#include "../../core/event/event.hpp"
+
+#include "editor_event.h"
 
 #include "editor_buffer.h"
 #include "editor_view.h"
@@ -14,7 +15,7 @@ namespace eedit
 namespace core
 {
 
-void send_rpc_answer(const eedit::core::event * ev_in,   rpc_answer * msg)
+void send_rpc_answer(const struct editor_event_s * ev_in,   rpc_answer * msg)
 {
     assert (ev_in->src.queue);
     if (ev_in->src.queue == nullptr) {

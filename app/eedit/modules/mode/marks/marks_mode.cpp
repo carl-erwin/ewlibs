@@ -59,7 +59,7 @@ enum operation_mask_e {
   delete is last because delete-left-char is implemented like this : move the marks to the left and then delete the codepoint(s)
 
  */
-bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, int move_direction)
+bool mark_operation(struct editor_event_s * msg, int op_mask, int32_t codepoint, int move_direction)
 {
     // TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
 
@@ -170,21 +170,21 @@ bool mark_operation(eedit::core::event * msg, int op_mask, int32_t codepoint, in
 }
 
 
-bool mark_move_backward(eedit::core::event * msg)
+bool mark_move_backward(struct editor_event_s * msg)
 {
     return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_BACKWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool mark_move_forward(eedit::core::event * msg)
+bool mark_move_forward(struct editor_event_s * msg)
 {
     return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_FORWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool insert_codepoint_val(eedit::core::event * _msg, int32_t codepoint)
+bool insert_codepoint_val(struct editor_event_s * _msg, int32_t codepoint)
 {
     input_event * msg = static_cast<input_event *>(_msg);
     mark_operation(msg, EDITOR_OP_INSERT_AT_MARK|EDITOR_OP_MARK_MOVE, codepoint, MOVE_FORWARD);
@@ -192,7 +192,7 @@ bool insert_codepoint_val(eedit::core::event * _msg, int32_t codepoint)
 }
 
 
-bool insert_codepoint(eedit::core::event * _msg)
+bool insert_codepoint(struct editor_event_s * _msg)
 {
     input_event * msg = static_cast<input_event *>(_msg);
     insert_codepoint_val(_msg, msg->ev->start_value);
@@ -200,7 +200,7 @@ bool insert_codepoint(eedit::core::event * _msg)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool insert_newline(eedit::core::event * _msg)
+bool insert_newline(struct editor_event_s * _msg)
 {
     insert_codepoint_val(_msg, (s32)'\n');
     return true;
@@ -208,7 +208,7 @@ bool insert_newline(eedit::core::event * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool delete_left_char(eedit::core::event * _msg)
+bool delete_left_char(struct editor_event_s * _msg)
 {
     mark_operation(_msg, EDITOR_OP_MARK_MOVE|EDITOR_OP_DELETE_AT_MARK, INVALID_CP, MOVE_BACKWARD);
     return true;
@@ -216,7 +216,7 @@ bool delete_left_char(eedit::core::event * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool delete_right_char(eedit::core::event * _msg)
+bool delete_right_char(struct editor_event_s * _msg)
 {
     mark_operation(_msg, EDITOR_OP_DELETE_AT_MARK, INVALID_CP, NO_MOVE);
     return true;
@@ -230,38 +230,38 @@ bool delete_right_char(eedit::core::event * _msg)
  * all clone operation depends on main mark
  *
  */
-bool mark_clone_and_move_left(eedit::core::event * _msg)
+bool mark_clone_and_move_left(struct editor_event_s * _msg)
 {
 
     return true;
 }
 
-bool mark_clone_and_move_right(eedit::core::event * _msg)
+bool mark_clone_and_move_right(struct editor_event_s * _msg)
 {
     return true;
 }
 
-bool mark_clone_and_move_up(eedit::core::event * _msg)
+bool mark_clone_and_move_up(struct editor_event_s * _msg)
 {
     return true;
 }
 
-bool mark_clone_and_move_down(eedit::core::event * _msg)
+bool mark_clone_and_move_down(struct editor_event_s * _msg)
 {
     return true;
 }
 
-bool mark_delete(eedit::core::event * _msg)
+bool mark_delete(struct editor_event_s * _msg)
 {
     return true;
 }
 
-bool mark_select_next(eedit::core::event * _msg)
+bool mark_select_next(struct editor_event_s * _msg)
 {
     return true;
 }
 
-bool mark_select_previous(eedit::core::event * _msg)
+bool mark_select_previous(struct editor_event_s * _msg)
 {
     return true;
 }

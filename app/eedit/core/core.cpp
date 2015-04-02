@@ -226,7 +226,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool push_event(eedit::core::event * msg)
+bool push_event(struct editor_event_s * msg)
 {
     if (core_ctx.core_running == false) {
         // do not allow event push while quitting
@@ -263,13 +263,13 @@ bool push_event(eedit::core::event * msg)
     }
     }
 
-    return  core_ctx.m_msg_queue.push(msg);
+    return  editor_event_queue_push(core_ctx.m_msg_queue, msg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: move to proper file event.h
-void send_event_to_ui(const eedit::core::event * ev_in, eedit::core::event * ev_out)
+void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s * ev_out)
 {
     static u32 id = 1;
 
@@ -289,7 +289,7 @@ void send_event_to_ui(const eedit::core::event * ev_in, eedit::core::event * ev_
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: move to proper file
-void send_new_layout_event_to_ui(const eedit::core::event * ev_in,
+void send_new_layout_event_to_ui(const struct editor_event_s * ev_in,
                                  screen_t * screen)
 {
     auto msg           = new eedit::core::layout_event(EDITOR_LAYOUT_NOTIFICATION_EVENT);
@@ -551,7 +551,7 @@ void main(std::shared_ptr<application> app)
 
     // TODO: send quit to others process/threads and join them
 
-      editor_event_queue_delete(core_ctx.m_msg_queue);
+    editor_event_queue_delete(core_ctx.m_msg_queue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

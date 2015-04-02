@@ -73,7 +73,7 @@ public:
         m_main_window = new main_window(gui_dpy, properties);
 
         // setup core event queue : the core send event here
-        m_main_window->set_event_queue(new eedit::core::event_queue<eedit::core::event *>);
+        m_main_window->set_event_queue(new struct editor_event_s_queue<struct editor_event_s *>);
 
         ret = gui_dpy->unlock();
         assert(ret);

@@ -85,9 +85,9 @@ struct ncurses_ui_interface : public user_interface {
 
     ncurses_display * dpy = nullptr; // FIXME: not allocted
 
-    eedit::core::event_queue<eedit::core::event *> * m_event_queue = nullptr;
+    struct editor_event_s_queue<struct editor_event_s *> * m_event_queue = nullptr;
 
-    bool process_editor_ui_event(eedit::core::event * msg);
+    bool process_editor_ui_event(struct editor_event_s * msg);
     bool process_editor_new_layout_ui_event(eedit::core::layout_event * msg);
     bool process_editor_new_rpc_answer_ui_event(eedit::core::rpc_answer * msg);
     bool quit();
@@ -180,7 +180,7 @@ bool ncurses_ui_interface::main_loop()
 {
     ncurses_ui = this;
 
-    m_event_queue = new eedit::core::event_queue<eedit::core::event *>;
+    m_event_queue = new struct editor_event_s_queue<struct editor_event_s *>;
 
     signal(SIGINT, sigint_handler);
 
@@ -232,7 +232,7 @@ bool ncurses_ui_interface::main_loop()
         static size_t default_wait_time = 20;
         size_t wait_time = default_wait_time;
 
-        eedit::core::event * msg = nullptr;
+        struct editor_event_s * msg = nullptr;
         q->wait(wait_time);
         auto nr = q->size();
         while (nr) {
@@ -254,7 +254,7 @@ bool ncurses_ui_interface::main_loop()
 
     q->wait(1);
     auto nr = q->size();
-    eedit::core::event * core_msg = nullptr;
+    struct editor_event_s * core_msg = nullptr;
     while (nr) {
         q->get(core_msg);
         process_editor_ui_event(core_msg);
@@ -695,7 +695,7 @@ bool ncurses_ui_interface::quit()
 }
 
 
-bool ncurses_ui_interface::process_editor_ui_event(eedit::core::event * msg)
+bool ncurses_ui_interface::process_editor_ui_event(struct editor_event_s * msg)
 {
     bool ret = false;
 

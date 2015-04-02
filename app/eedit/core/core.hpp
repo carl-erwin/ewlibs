@@ -1,9 +1,11 @@
 #pragma once
 
+#include <mutex>
 #include <memory>
 
 #include "../application/application.hpp"
-#include "../core/event/event.hpp"
+#include "editor_event.h"
+
 #include "../core/process_event_ctx.h"
 
 
@@ -70,9 +72,9 @@ struct screen_cache {
 // FIXME: cleanup/remove all this ????
 void main(std::shared_ptr<application> app);
 
-bool push_event(eedit::core::event * msg);
+bool push_event(struct editor_event_s * msg);
 
-bool process_rpc_call_event(eedit::core::rpc_call * msg);
+bool process_rpc_call_event(struct editor_event_s * msg);
 
 screen_cache * get_screen_cache(u64 id);
 
@@ -80,7 +82,7 @@ void set_last_screen(u64 id, screen_t * scr);
 
 screen_t * get_last_screen(u64 id);
 
-bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_screen = false);
+bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start_cpi, bool send_screen = false);
 
 screen_t * get_previous_screen_by_id(u64 id);
 
@@ -91,11 +93,11 @@ bool resync_screen_layout(uint64_t editor_buffer_id, uint64_t bid, u64 screen_id
 
 bool setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t bid, editor_view_id_t sid, screen_dimension_t & dim);
 
-void send_event_to_ui(const eedit::core::event * ev_in, eedit::core::event * ev_out);
+void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s * ev_out);
 
-void send_new_layout_event_to_ui(const eedit::core::event * ev_in, screen_t * screen);
+void send_new_layout_event_to_ui(const struct editor_event_s * ev_in, screen_t * screen);
 
-bool build_screen_layout_from_event(event * msg, const codepoint_info_s * start_cpi, screen_t * scr);
+bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint_info_s * start_cpi, screen_t * scr);
 
 
 bool save_buffer(event * msg);

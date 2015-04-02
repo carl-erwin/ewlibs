@@ -176,7 +176,7 @@ bool to_next_screen_line_internal(event * _msg, codepoint_info_s & next_start_cp
 
 bool to_next_screen_line(event * _msg);
 
-bool page_up(eedit::core::event * _msg);
+bool page_up(struct editor_event_s * _msg);
 
 bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_start_cpi);
 
@@ -184,9 +184,9 @@ bool to_previous_screen_line(event * msg);
 
 bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi);
 
-// bool page_down_internal(eedit::core::event * _msg, codepoint_info_s & start_cpi);
+// bool page_down_internal(struct editor_event_s * _msg, codepoint_info_s & start_cpi);
 
-// bool page_down(eedit::core::event * _msg);
+// bool page_down(struct editor_event_s * _msg);
 
 bool goto_beginning_of_line(event * msg);
 
@@ -489,7 +489,7 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool page_down_internal(eedit::core::event * _msg)
+bool page_down_internal(struct editor_event_s * _msg)
 {
     input_event * msg = (input_event *)_msg;
     auto view   = msg->view_id; // FIXEM: to check
@@ -523,7 +523,7 @@ bool page_down_internal(eedit::core::event * _msg)
     return true;
 }
 
-bool page_down(eedit::core::event * _msg)
+bool page_down(struct editor_event_s * _msg)
 {
     return page_down_internal(_msg);
 }
@@ -1430,7 +1430,7 @@ bool end_selection(event * msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool insert_codepoint(eedit::core::event * _msg)
+bool insert_codepoint(struct editor_event_s * _msg)
 {
     input_event * msg = static_cast<input_event *>(_msg);
 

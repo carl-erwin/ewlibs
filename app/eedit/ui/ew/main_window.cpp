@@ -115,7 +115,7 @@ public:
 
     std::shared_ptr<ew::graphics::fonts::font> m_font;
 
-    eedit::core::event_queue<eedit::core::event *> * m_event_queue = nullptr;
+    struct editor_event_s_queue<struct editor_event_s *> * m_event_queue = nullptr;
 
     // ?
     double bg_r;
@@ -140,7 +140,7 @@ main_window::~main_window()
     delete m_priv;
 }
 
-bool main_window::set_event_queue(eedit::core::event_queue<eedit::core::event *> * q)
+bool main_window::set_event_queue(struct editor_event_s_queue<struct editor_event_s *> * q)
 {
     m_priv->m_event_queue = q;
     return true;
@@ -151,7 +151,7 @@ bool main_window::set_event_queue(eedit::core::event_queue<eedit::core::event *>
     return m_priv->m_buffer_view->m_text_view;
 }
 
-eedit::core::event_queue<eedit::core::event *> * main_window::event_queue(void)
+struct editor_event_s_queue<struct editor_event_s *> * main_window::event_queue(void)
 {
     return m_priv->m_event_queue;
 }
@@ -212,7 +212,7 @@ bool process_editor_new_rpc_answer_ui_event(main_window * win, eedit::core::rpc_
 }
 
 
-bool release_editor_ui_event(eedit::core::event * msg)
+bool release_editor_ui_event(struct editor_event_s * msg)
 {
     delete msg;
     return true;
@@ -223,7 +223,7 @@ bool release_editor_ui_event(eedit::core::event * msg)
  * TODO: from msg get targeted child (view,  status_bar,  menu_bar,  line_number,  ...)
  *
  */
-bool process_editor_ui_event(main_window * win, eedit::core::event * msg)
+bool process_editor_ui_event(main_window * win, struct editor_event_s * msg)
 {
     bool ret = false;
 
@@ -270,7 +270,7 @@ void main_window::process_event_queue(void)
     static size_t default_wait_time = 20;
     size_t wait_time = default_wait_time;
 
-    eedit::core::event * msg = nullptr;
+    struct editor_event_s * msg = nullptr;
     q->wait(wait_time);
     auto nr = q->size();
     while (nr) {
