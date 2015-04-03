@@ -5,6 +5,9 @@
 #include "ew/graphics/gui/widget/widget_properties.hpp"
 #include "ew/graphics/gui/widget/window/window_properties.hpp"
 
+
+#include <core/log/log.hpp>
+
 #include "ui.h"
 #include "main_window.hpp"
 
@@ -73,7 +76,9 @@ public:
         m_main_window = new main_window(gui_dpy, properties);
 
         // setup core event queue : the core send event here
-        m_main_window->set_event_queue(new struct editor_event_s_queue<struct editor_event_s *>);
+        auto q = editor_event_queue_new();
+
+        m_main_window->set_event_queue(q);
 
         ret = gui_dpy->unlock();
         assert(ret);

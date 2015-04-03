@@ -1,3 +1,5 @@
+#include <ew/utils/utils.hpp>
+
 #include "../../core/core.hpp"
 
 #include "editor_event.h"
@@ -7,7 +9,11 @@
 
 #include "rpc.hpp"
 
+
+#include "core/log/log.hpp"
+
 #include "../process_event_ctx.h"
+
 
 namespace eedit
 {
@@ -15,23 +21,23 @@ namespace eedit
 namespace core
 {
 
-void send_rpc_answer(const struct editor_event_s * ev_in,   rpc_answer * msg)
+void send_rpc_answer(const struct editor_event_s * ev_in, struct editor_event_s * ev_out)
 {
     assert (ev_in->src.queue);
     if (ev_in->src.queue == nullptr) {
-        delete msg;
+        editor_event_free(ev_out);
         return;
     }
 
-    msg->src = ev_in->dst;
-    msg->dst = ev_in->src;
+    ev_out->src = ev_in->dst;
+    ev_out->dst = ev_in->src;
 
-    editor_event_queue_push(msg->dst.queue, msg);
+    editor_event_queue_push(ev_out->dst.queue, ev_out);
 }
 
 // FIXME: move the application class to core
 //
-void get_buffer_id_list(eedit::core::rpc_call *request, int ac,  char * av[])
+void get_buffer_id_list(struct editor_event_s * request, int ac,  char * av[])
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -48,24 +54,24 @@ void get_buffer_id_list(eedit::core::rpc_call *request, int ac,  char * av[])
         ans_av[i] = ew::utils::c_string_dup(buffer);
         ++i;
     }
-    rpc_answer * rpc_ans = new rpc_answer(request, i, (const char **)ans_av);
+    struct editor_event_s *  rpc_ans = editor_rpc_answer_new(request, i, (const char **)ans_av);
     send_rpc_answer(request, rpc_ans);
 }
 
-void set_screen_id_start_offset(eedit::core::rpc_call *request, int ac,  char * av[])
+void set_screen_id_start_offset(struct editor_event_s * request, int ac,  char * av[])
 {
     // orig -> core -> rpc -> core -> orig
-    auto msg             = new eedit::core::layout_event(EDITOR_BUILD_LAYOUT_EVENT);
+    auto msg             = editor_layout_event_new(EDITOR_BUILD_LAYOUT_EVENT);
     msg->src             = request->src;
     msg->dst.kind        = EDITOR_ACTOR_CORE;
 
 
     assert(request->byte_buffer_id);
 
-    msg->editor_buffer_id = request->editor_buffer_id;
-    msg->byte_buffer_id   = request->byte_buffer_id; //
-    msg->view_id          = request->view_id; //
-    msg->screen_dim       = request->screen_dim;
+    msg->editor_buffer_id  = request->editor_buffer_id;
+    msg->byte_buffer_id    = request->byte_buffer_id; //
+    msg->view_id           = request->view_id; //
+    msg->screen_dim        = request->screen_dim;
 
     // TODO: move to offset, add offset to msg + resync flag ?
     //       set resync flag
@@ -109,20 +115,20 @@ void set_screen_id_start_offset(eedit::core::rpc_call *request, int ac,  char * 
 
 
 
-bool process_rpc_call_event(eedit::core::rpc_call * msg)
+bool process_rpc_call_event(struct editor_event_s * msg)
 {
-    if (msg->ac == 0) {
+    if (msg->rpc.ac == 0) {
         return false;
     }
 
-    auto f_name = std::string(msg->av[0]);
+    auto f_name = std::string(msg->rpc.av[0]);
 
     if (f_name == "get_buffer_id_list") {
-        get_buffer_id_list(msg, msg->ac-1, msg->av+1);
+        get_buffer_id_list(msg, msg->rpc.ac-1, msg->rpc.av+1);
     }
 
     if (f_name == "set_screen_id_start_offset") {
-        set_screen_id_start_offset(msg, msg->ac-1, msg->av+1);
+        set_screen_id_start_offset(msg, msg->rpc.ac-1, msg->rpc.av+1);
     }
 
     return true;

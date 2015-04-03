@@ -1,9 +1,18 @@
+#include <cstring>
 #include <memory>
 #include <functional>
 #include <ew/Utils.hpp>
 #include "../../core/input/event/input_event_map.hpp"
 
 #include "editor_event.h"
+
+extern "C"
+struct editor_event_s * editor_event_alloc()
+{
+    struct editor_event_s * ev = static_cast<struct editor_event_s *>(::operator new (sizeof (struct editor_event_s)));
+    memset(ev, 0, sizeof (struct editor_event_s));
+    return ev;
+}
 
 
 // move  to .cpp
@@ -24,7 +33,7 @@ static inline void release_args(const int ac, char ** & av)
     av = 0;
 }
 
-static inline void print_args(const int ac, char ** & av)
+inline void print_args(const int ac, char ** & av)
 {
     for (int i = 0; i < ac; ++i) {
         app_log <<  "av[" << i << "] = " << av[i] <<  "\n";
@@ -33,56 +42,46 @@ static inline void print_args(const int ac, char ** & av)
 }
 
 
-struct rpc_call : public event {
 
-    rpc_call(const int ac_,  const char ** av_) : event(EDITOR_RPC_CALL_EVENT)
-    {
-        duplicate_args(ac_, av_, ac,  av);
-        //print_args(ac, av);
+struct editor_event_s * editor_layout_event_new(editor_event_type_e type)
+{
+    auto ev = editor_event_alloc();
+    ev->type = type;
+    return ev;
+}
+
+struct editor_event_s * editor_rpc_call_new(int call_ac, const char ** call_av)
+{
+    auto ev = editor_event_alloc();
+    ev->type = EDITOR_RPC_CALL_EVENT;
+    duplicate_args(call_ac, call_av, ev->rpc.ac, ev->rpc.av);
+    return ev;
+}
+
+struct editor_event_s * editor_rpc_answer_new(struct editor_event_s * request, int answer_ac, const char ** anwser_av)
+{
+    auto ev = editor_event_alloc();
+    ev->type = EDITOR_RPC_ANSWER_EVENT;
+    duplicate_args(answer_ac, anwser_av, ev->rpc.ac, ev->rpc.av);
+    return ev;
+}
+
+
+extern "C"
+void editor_event_free(struct editor_event_s * ev)
+{
+    if (!ev)
+        return;
+
+    switch (ev->type) {
+    case EDITOR_RPC_CALL_EVENT:
+    case EDITOR_RPC_ANSWER_EVENT:
+        release_args(ev->rpc.ac, ev->rpc.av);
+        break;
+    default:
+        break;
     }
 
-    virtual ~rpc_call()
-    {
-        release_args(ac, av);
-    }
 
-    int  ac    = 0;
-    char ** av = nullptr;
-};
-
-struct rpc_answer : public event {
-    rpc_answer(const rpc_call * request,  const int ac_,  const char ** av_) : event(EDITOR_RPC_ANSWER_EVENT)
-    {
-        if (request)
-            this->id = request->id;
-
-        duplicate_args(ac_, av_, ac,  av);
-        //print_args(ac, av);
-    }
-
-    virtual ~rpc_answer()
-    {
-        release_args(ac, av);
-    }
-
-    int  ac    = 0;
-    char ** av = nullptr;
-};
-
-
-struct input_event : public event {
-    input_event(editor_event_type_e type)
-        : event(type)
-    {
-
-    }
-
-    ::eedit::input_event_s * ev      = nullptr; // move to ? src_ctx ?
-
-    virtual ~input_event()
-    {
-        delete ev; // per event type
-    }
-
-};
-
+    if (ev) ::operator delete ((void *)ev);
+}

@@ -15,16 +15,17 @@ namespace keys
 
 // todo: key_value -> key_type_value
 enum key_value {
+    NO_KEY = -1, /* empty event */
     NUL = 0,
-    NO_KEY, /* empty event */
-    Tab,
+
+    Tab = '\t', // move to unicode ?
     Linefeed,
     Clear,
-    Return,
+    Return, // '\n' ?
     Pause,
     ScrollLock,
     SysReq,
-    Escape,
+    Escape = 127,
     Delete,
     BackSpace,
     Home,
@@ -49,11 +50,12 @@ enum key_value {
     F11,
     F12,
     ///
-    Keypad_Plus, // add other keys
+    Keypad_Plus, // FIXME: add other keys
     ///
     UNICODE = 0xFF,
     LastKey,
     MaxKey = LastKey,
+
 };
 
 inline const char * c_string(const enum key_value val)

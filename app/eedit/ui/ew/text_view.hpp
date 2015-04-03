@@ -1,11 +1,15 @@
 #pragma once
 
+#include <vector>
 #include <memory> /* for shared_ptr<> */
 #include <mutex>
 
 #include "ew/graphics/gui/event/event.hpp"
 
 #include "core/core.hpp"
+#include "core/log/log.hpp"
+
+
 #include "ui/ew/main_window.hpp"
 
 #include "scroll_bar.hpp"
@@ -79,7 +83,7 @@ public:
 
     bool send_rpc_event(const int ac,  const char ** av,  editor_buffer_id_t ebid, byte_buffer_id_t bid, editor_view_id_t screen_id, const screen_dimension_t & screen_dim)
     {
-        auto msg       =  new eedit::core::rpc_call(ac, av);
+        auto msg       =  editor_rpc_call_new(ac, av);
         msg->src.kind  =  EDITOR_ACTOR_UI;
         msg->src.queue =  get_main_window()->event_queue();  //  TODO: ctx ?
         msg->dst.kind  =  EDITOR_ACTOR_CORE;
@@ -542,8 +546,9 @@ public:
         }
 
         // ask for new layout
-        auto msg             = new eedit::core::layout_event(EDITOR_BUILD_LAYOUT_EVENT);
-        msg->id = 7;
+        auto msg             = editor_event_alloc();
+        msg->type            = EDITOR_BUILD_LAYOUT_EVENT;
+        msg->id              = 7; /// TODO
         msg->src.kind        = EDITOR_ACTOR_UI;
         msg->src.queue       = get_main_window()->event_queue();
         msg->dst.kind        = EDITOR_ACTOR_CORE;
@@ -635,23 +640,22 @@ public:
             return true;
         }
 
-        auto msg           = new eedit::core::keyboard_event();
+        struct editor_event_s  * msg = editor_event_alloc();
+        msg->type = EDITOR_KEYBOARD_EVENT; // FIXME : input event
         setup_event_common_part(msg);
 
-        u32 mod_mask = 0;
-        if (ev->ctrl != false) mod_mask |= input_event_s::mod_ctrl;
-        if (ev->altL != false) mod_mask |= input_event_s::mod_altL;
-        if (ev->altR != false) mod_mask |= input_event_s::mod_altR;
+        msg->input.ev.type = keypress;
+        msg->input.ev.ctrl = ev->ctrl;
+        msg->input.ev.altL = ev->altL;
+        msg->input.ev.altR = ev->altR;
 
-        // if (ev->ctrl != false) mod_mask |= keymap_key::mod_oskey;
-
-        msg->ev = new eedit::input_event_s(ev->key,
-                                           input_event_s::no_range,
-                                           mod_mask,
-                                           ev->unicode);
+        msg->input.ev.key         = (editor_key_e)ev->key;
+        msg->input.ev.is_range    = false;
+        msg->input.ev.start_value = ev->unicode;
+        msg->input.ev.end_value   = ev->unicode;
 
         // display current key on console
-        msg->ev->dump_event();
+        editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
         app_log << "\n";
 
         eedit::core::push_event(msg);
@@ -665,11 +669,14 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        auto msg           = new eedit::core::button_press_event();
-
+        struct editor_event_s  * msg = editor_event_alloc();
+        msg->type = EDITOR_POINTER_BUTTON_PRESS_EVENT;
         setup_event_common_part(msg);
 
-        msg->ev = new eedit::input_event_s(input_event_s::button_press, ev->x, ev->y, ev->button);
+        msg->input.ev.type = button_press;
+        msg->input.ev.x = ev->x;
+        msg->input.ev.y = ev->y;
+        msg->input.ev.button_press_mask = 1 << ev->button;
 
         eedit::core::push_event(msg);
 
@@ -683,11 +690,14 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        auto msg           = new eedit::core::button_release_event();
-
+        struct editor_event_s  * msg = editor_event_alloc();
+        msg->type = EDITOR_POINTER_BUTTON_RELEASE_EVENT; // FIXME: EDITOR_INPUT_EVENT
         setup_event_common_part(msg);
 
-        msg->ev = new eedit::input_event_s(input_event_s::button_release, ev->x, ev->y, ev->button);
+        msg->input.ev.type = button_release;
+        msg->input.ev.x = ev->x;
+        msg->input.ev.y = ev->y;
+        msg->input.ev.button_press_mask = 1 << ev->button;
 
         eedit::core::push_event(msg);
 
@@ -701,11 +711,14 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        auto msg           = new eedit::core::button_press_event();
-
+        struct editor_event_s  * msg = editor_event_alloc();
+        msg->type = EDITOR_POINTER_WHEEL_UP;
         setup_event_common_part(msg);
 
-        msg->ev = new eedit::input_event_s(input_event_s::button_press, ev->x, ev->y, ev->button);
+        msg->input.ev.type = wheel_up;
+        msg->input.ev.x = ev->x;
+        msg->input.ev.y = ev->y;
+        msg->input.ev.button_press_mask = 1 << ev->button;
 
         eedit::core::push_event(msg);
 
@@ -719,11 +732,15 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        auto msg           = new eedit::core::button_press_event();
-
+        struct editor_event_s  * msg = editor_event_alloc();
+        msg->type = EDITOR_POINTER_WHEEL_DOWN;
         setup_event_common_part(msg);
 
-        msg->ev = new eedit::input_event_s(input_event_s::button_press, ev->x, ev->y, ev->button);
+        msg->input.ev.type = wheel_down;
+
+        msg->input.ev.x = ev->x;
+        msg->input.ev.y = ev->y;
+        msg->input.ev.button_press_mask = 1 << ev->button;
 
         eedit::core::push_event(msg);
 
@@ -778,26 +795,26 @@ public:
         return true;
     }
 
-    bool process_editor_new_rpc_answer_ui_event(eedit::core::rpc_answer * msg)
+    bool process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg)
     {
         app_log << __PRETTY_FUNCTION__ << " core -> ui @" << ew::core::time::get_ticks() << "\n";
 
-        if (msg->ac == 0) {
+        if (msg->rpc.ac == 0) {
             assert(0);
             return false;
         }
 
-        std::string cmd(msg->av[0]);
+        std::string cmd(msg->rpc.av[0]);
 
         switch (view_state) {
         case request_buffer_id_list: {
             if (cmd ==  "get_buffer_id_list") {
-                if (msg->ac < 2) {
+                if (msg->rpc.ac < 2) {
                     return false;
                 }
 
                 this->m_have_buffer_id = 1;
-                this->m_ebuffer_id = atoi(msg->av[1]);
+                this->m_ebuffer_id = atoi(msg->rpc.av[1]);
                 this->m_buffer_id = 0;
 
                 app_log << __PRETTY_FUNCTION__ << " select buffer_id " <<  m_ebuffer_id <<  "\n";

@@ -8,12 +8,12 @@
 #include <string>
 #include <set>
 
-#include "ew/graphics/gui/event/event.hpp"
 #include "ew/codecs/text/unicode/utf8/utf8.hpp"
 
 #include "core/log/log.hpp"
 
 #include "editor_input_event.h"
+#include "editor_event.h"
 
 
 //string_tools.h:
@@ -71,9 +71,6 @@ struct input_action {
 };
 
 
-using namespace ew::graphics::gui::events;
-using namespace ew::graphics::gui::events::keys;
-
 ///////////////////////////
 
 
@@ -86,23 +83,24 @@ using namespace ew::graphics::gui::events::keys;
 
 struct input_map_entry {
 
-    input_event_s ev;
+    struct editor_input_event_s ev;
 
-    input_map_entry(input_event_s::key_type kt = NUL,
-                    input_event_s::range_type rt = input_event_s::no_range,
+    input_map_entry(editor_input_event_type_e type,
+                    editor_key_e kt = (editor_key_e)0,
+                    editor_input_key_range_e rt = no_range,
                     u32 mod_mask = 0,
                     u32 start_val = 0,
                     u32 end_val = 0)
     {
-
-        ev.key        = kt;
-        ev.is_range    = rt ==  input_event_s::simple_range ? true : false;
+        ev.type        = type;
+        ev.key         = kt;
+        ev.is_range    = rt ==  simple_range ? true : false;
         ev.start_value = start_val;
         ev.end_value   = end_val;
-        ev.ctrl        = mod_mask & input_event_s::mod_ctrl;
-        ev.altL        = mod_mask & input_event_s::mod_altL;
-        ev.altR        = mod_mask & input_event_s::mod_altR;
-        ev.oskey       = mod_mask & input_event_s::mod_oskey;
+        ev.ctrl        = mod_mask & mod_ctrl;
+        ev.altL        = mod_mask & mod_altL;
+        ev.altR        = mod_mask & mod_altR;
+        ev.oskey       = mod_mask & mod_oskey;
     }
 
     ~input_map_entry()
@@ -119,9 +117,9 @@ struct input_map_entry {
 
     void dump_event()
     {
-        return;
 
-        ev.dump_event();
+        editor_input_event_dump(&ev, __PRETTY_FUNCTION__);
+
         if (action != nullptr) {
             app_log << " = action(" << (action ? action->fn_name : "") << ")";
         }
@@ -217,7 +215,7 @@ struct parse_context {
     u8 * p    = nullptr;
     const u8 * pend = nullptr;
 
-    enum key_value tmp_kval;
+    editor_key_e tmp_kval;
     u32  button_mask_val;
 
     editor_input_event_map * current_input_map = nullptr;
@@ -464,13 +462,14 @@ inline input_map_token_type get_token_keyname(parse_context * ctx)
     }
 
     // check keymap str table
-    ctx->tmp_kval = c_string_to_key_value((const char *)buff);
+    ctx->tmp_kval = c_string_to_editor_key_value((const char *)buff);
 
     app_log << "found ctx->tmp_kval str '" << buff << "'\n";
     app_log << "found ctx->tmp_kval : " << ctx->tmp_kval << "\n";
 
     delete [] buff;
 
+    ctx->current_input_map_entry->ev.type = keypress;
     ctx->current_input_map_entry->ev.key = ctx->tmp_kval;
     return TOK_KEYVAL;
 }
@@ -649,7 +648,8 @@ inline bool parse_unicode_value(parse_context * ctx, u32 * out_value)
 /* "unicode('a' <=> 'Z') => self_insert" */
 inline bool parse_unicode(parse_context * ctx)
 {
-    ctx->current_input_map_entry->ev.key = keys::UNICODE;
+    ctx->current_input_map_entry->ev.type = keypress;
+    ctx->current_input_map_entry->ev.key = UNICODE;
 
     enum steps {
         parse_open_paren,
@@ -673,7 +673,7 @@ inline bool parse_unicode(parse_context * ctx)
 
         skip_blanks(ctx);
 
-        input_map_entry kmap_entry;
+        input_map_entry kmap_entry(keypress);
 
         switch (parse_step) {
 
@@ -780,13 +780,15 @@ inline bool parse_unicode(parse_context * ctx)
 
 inline bool parse_page_up(parse_context * ctx)
 {
-    ctx->current_input_map_entry->ev.key = keys::PageUp;
+    ctx->current_input_map_entry->ev.type = keypress;
+    ctx->current_input_map_entry->ev.key = PageUp;
     return true;
 }
 
 inline bool parse_page_down(parse_context * ctx)
 {
-    ctx->current_input_map_entry->ev.key = keys::PageDown;
+    ctx->current_input_map_entry->ev.type = keypress;
+    ctx->current_input_map_entry->ev.key = PageDown;
     return true;
 }
 
@@ -797,7 +799,7 @@ inline bool parse_mouse_button(parse_context * ctx)
     extract_int(ctx, &val);
 
     assert(val > 0);
-    ctx->current_input_map_entry->ev.button_mask = (1 << (val - 1));
+    ctx->current_input_map_entry->ev.button_press_mask = (1 << (val - 1));
 
     if (expect_c_string(ctx, "-", 1) == false) {
         assert(0);
@@ -806,12 +808,12 @@ inline bool parse_mouse_button(parse_context * ctx)
 
     // check_c_string ?
     if (expect_c_string(ctx, "press", 5)) {
-        ctx->current_input_map_entry->ev.type = input_event_s::button_press;
+        ctx->current_input_map_entry->ev.type = button_press;
         return true;
     }
 
     if (expect_c_string(ctx, "release", 7)) {
-        ctx->current_input_map_entry->ev.type = input_event_s::button_release;
+        ctx->current_input_map_entry->ev.type = button_release;
         return true;
     }
 
@@ -828,6 +830,8 @@ inline bool parse_alt(parse_context * ctx)
     if (expect_c_string(ctx, "+", 1) == false) {
         return false;
     }
+
+    ctx->current_input_map_entry->ev.type = keypress;
 
     if (ctx->current_input_map_entry->ev.altL == true) {
         app_log << "alt already defined !\n";
@@ -923,7 +927,7 @@ inline bool  push_current_keymap_entry(parse_context * ctx)
     //    ctx->current_keymap_entry->dump();
 
     // alloc next: do not forget parse_context destructor
-    ctx->current_input_map_entry = new input_map_entry;
+    ctx->current_input_map_entry = new input_map_entry(invalid_input_event);
     return true;
 }
 
@@ -961,7 +965,7 @@ inline bool find_seq_nodes(int depth, const std::vector<input_map_entry *> & key
             // app_log << " ====================\n";
         }
 
-        if ((*a).ev == (*b).ev) {
+        if (editor_input_event_is_equal(&(*a).ev, &(*b).ev)) {
 
             if (debug) {
                 app_log << "{ ";
@@ -1164,7 +1168,7 @@ inline bool parse_input_map_config(const u8 * start, const u8 * pend, std::map<s
 
     ctx.current_input_map = new editor_input_event_map;
     ctx.current_input_map->was_init = false;
-    ctx.current_input_map_entry = new input_map_entry;
+    ctx.current_input_map_entry = new input_map_entry(invalid_input_event);
 
     ctx.p    = (u8 *)start;
     ctx.pend = (u8 *)pend;
@@ -1187,23 +1191,32 @@ inline bool parse_input_map_config(const u8 * start, const u8 * pend, std::map<s
 }
 
 
-inline bool eval_input_event(const input_event_s * ev,
+inline bool eval_input_event(const editor_input_event_s * ev,
                              std::vector<input_map_entry *> * current_level,
                              input_map_entry ** match_found)
 {
+    editor_input_event_dump(ev, __PRETTY_FUNCTION__);
+
     for (auto it = current_level->rbegin(); it != current_level->rend(); ++it) {
 
         input_map_entry * a = *it;
 
-        if ((*a).ev == *ev) {
-            *match_found = *it;
+        editor_input_event_dump(&a->ev, "&a->ev ");
+        editor_input_event_dump(ev,     "user_ev");
+
+        if (editor_input_event_is_equal(&(a->ev), ev)) {
+            *match_found = a;
             return true;
         }
 
-        if ((*it)->ev.contains(*ev)) {
-            *match_found = *it;
+        app_log << "is equal ---> false...\n";
+
+        if (editor_input_event_contains(&(a->ev), ev)) {
+            *match_found = a;
             return true;
         }
+
+        app_log << "contains --> false...\n";
     }
 
     *match_found = nullptr;
@@ -1257,6 +1270,9 @@ inline bool setup_default_input_map(std::map<std::string, editor_input_event_map
 #else
     const u8  * start = (const u8 *)"unicode(0x00000000 <=> 0xFFFFFFFF ) = self-insert\n";
 #endif
+
+//    start = (const u8 *)"left         = left-char\n";
+//    start = (const u8 *)"ctrl + unicode('x'), ctrl + unicode('c') = quit-editor\n";
 
     const u8  * end = start + strlen((const char *)start);
 

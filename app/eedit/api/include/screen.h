@@ -1,10 +1,5 @@
 #pragma once
 
-/*
-    the screen is a 2D array of screen_lines
- */
-
-
 #include <assert.h>
 
 #include "editor_export.h"

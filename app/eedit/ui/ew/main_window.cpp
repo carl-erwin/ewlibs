@@ -88,7 +88,7 @@ public:
 
     ~main_window_private()
     {
-        delete m_event_queue;
+        editor_event_queue_delete(m_event_queue);
         delete m_tab_bar;
         delete m_buffer_view;
         delete m_status_bar;
@@ -115,7 +115,7 @@ public:
 
     std::shared_ptr<ew::graphics::fonts::font> m_font;
 
-    struct editor_event_s_queue<struct editor_event_s *> * m_event_queue = nullptr;
+    struct editor_event_queue_s * m_event_queue = nullptr;
 
     // ?
     double bg_r;
@@ -140,7 +140,7 @@ main_window::~main_window()
     delete m_priv;
 }
 
-bool main_window::set_event_queue(struct editor_event_s_queue<struct editor_event_s *> * q)
+bool main_window::set_event_queue(struct editor_event_queue_s * q)
 {
     m_priv->m_event_queue = q;
     return true;
@@ -151,26 +151,26 @@ bool main_window::set_event_queue(struct editor_event_s_queue<struct editor_even
     return m_priv->m_buffer_view->m_text_view;
 }
 
-struct editor_event_s_queue<struct editor_event_s *> * main_window::event_queue(void)
+struct editor_event_queue_s * main_window::event_queue(void)
 {
     return m_priv->m_event_queue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_editor_new_layout_ui_event(main_window * win, eedit::core::layout_event * msg)
+bool process_editor_new_layout_ui_event(main_window * win, struct editor_event_s * msg)
 {
     // move notification screen to ui_widget
     auto view = win->get_text_view();     // the message must contain a private ref to the "view" widget instead of  win->get_text_view2();
 
-    if (!msg->screen) {
+    if (!msg->layout.screen) {
         app_log << __PRETTY_FUNCTION__ << " no screen in layout_event\n";
         return true;
     }
 
     // replace screen
-    view->screen(msg->screen);
-    msg->screen = nullptr;
+    view->screen(msg->layout.screen);
+    msg->layout.screen = nullptr;
 
     screen_set_ready_flag(view->screen(), 1);
 
@@ -186,19 +186,19 @@ bool process_editor_new_layout_ui_event(main_window * win, eedit::core::layout_e
     return true;
 }
 
-bool process_editor_new_rpc_answer_ui_event(main_window * win, eedit::core::rpc_answer * msg)
+bool process_editor_new_rpc_answer_ui_event(main_window * win, struct editor_event_s * msg)
 {
     app_log <<  __PRETTY_FUNCTION__ << "***************\n";
 
-    for (auto i = 0; i < msg->ac; ++i) {
-        app_log <<  __PRETTY_FUNCTION__ << " msg->av["<< i << "] = " <<  msg->av[i] << "\n";
+    for (auto i = 0; i < msg->rpc.ac; ++i) {
+        app_log <<  __PRETTY_FUNCTION__ << " msg->rpc.av["<< i << "] = " <<  msg->rpc.av[i] << "\n";
     }
 
-    if (msg->ac ==  0) {
+    if (msg->rpc.ac ==  0) {
         return false;
     }
 
-    std::string  cmd(msg->av[0]);
+    std::string  cmd(msg->rpc.av[0]);
 
     if (cmd !=  "get_buffer_id_list")
         return false;
@@ -214,7 +214,7 @@ bool process_editor_new_rpc_answer_ui_event(main_window * win, eedit::core::rpc_
 
 bool release_editor_ui_event(struct editor_event_s * msg)
 {
-    delete msg;
+    editor_event_free(msg);
     return true;
 }
 
@@ -229,12 +229,12 @@ bool process_editor_ui_event(main_window * win, struct editor_event_s * msg)
 
     switch (msg->type) {
     case EDITOR_LAYOUT_NOTIFICATION_EVENT: {
-        ret = process_editor_new_layout_ui_event(win, (eedit::core::layout_event *)msg);
+        ret = process_editor_new_layout_ui_event(win, msg);
     }
     break;
 
     case EDITOR_RPC_ANSWER_EVENT: {
-        ret = process_editor_new_rpc_answer_ui_event(win, (eedit::core::rpc_answer *)msg);
+        ret = process_editor_new_rpc_answer_ui_event(win, msg);
     }
     break;
 
@@ -271,10 +271,10 @@ void main_window::process_event_queue(void)
     size_t wait_time = default_wait_time;
 
     struct editor_event_s * msg = nullptr;
-    q->wait(wait_time);
-    auto nr = q->size();
+    editor_event_queue_wait(q, wait_time);
+    auto nr = editor_event_queue_size(q);
     while (nr) {
-        q->get(msg);
+        msg = editor_event_queue_get(q);
         process_editor_ui_event(this, msg);
         --nr;
     }
@@ -282,7 +282,7 @@ void main_window::process_event_queue(void)
     auto t1 = ew::core::time::get_ticks();
     if (0) {
         app_log << "["<<t1<<"] ui time to process event  = " << t1 - t0 << "\n";
-        app_log << "["<<t1<<"] ui event queue size = " << q->size() << "\n";
+        app_log << "["<<t1<<"] ui event queue size = " << editor_event_queue_size(q) << "\n";
     }
 }
 
@@ -557,7 +557,8 @@ bool main_window::on_resize(const widget_event * ev)
 
 bool main_window::on_close(const widget_event * ev)
 {
-    auto msg       =  new eedit::core::application_event(EDITOR_QUIT_APPLICATION_DEFAULT);
+    auto msg       =  editor_event_alloc();
+    msg->type = (EDITOR_QUIT_APPLICATION_DEFAULT);
     msg->src.kind  =  EDITOR_ACTOR_UI;
     msg->src.queue =  event_queue();  //  TODO: ctx ?
     msg->dst.kind  =  EDITOR_ACTOR_CORE;

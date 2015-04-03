@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include "editor_export.h"
 
 #ifdef __cplusplus

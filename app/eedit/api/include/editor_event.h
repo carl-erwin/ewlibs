@@ -2,6 +2,7 @@
 
 /* The editor event interface */
 
+#include "editor_export.h"
 #include "editor_types.h"
 #include "editor_event_queue.h"
 #include "editor_input_event.h"
@@ -11,7 +12,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 
 typedef enum editor_event_type_e {
@@ -27,6 +27,9 @@ typedef enum editor_event_type_e {
     EDITOR_POINTER_BUTTON_EVENT_FAMILY  = 0x0300,
     EDITOR_POINTER_BUTTON_PRESS_EVENT   = EDITOR_POINTER_BUTTON_EVENT_FAMILY  | 0x1,
     EDITOR_POINTER_BUTTON_RELEASE_EVENT = EDITOR_POINTER_BUTTON_EVENT_FAMILY  | 0x2,
+    EDITOR_POINTER_WHEEL_UP             = EDITOR_POINTER_BUTTON_EVENT_FAMILY  | 0x4,
+    EDITOR_POINTER_WHEEL_DOWN           = EDITOR_POINTER_BUTTON_EVENT_FAMILY  | 0x8,
+
     EDITOR_POINTER_MOTION_EVENT         = 0x0600,
 
     EDITOR_RPC_CALL_EVENT               = 0x0700,
@@ -45,8 +48,7 @@ typedef enum editor_event_type_e {
 
     // system -> core
     EDITOR_SYSTEM_EVENT                 = 0x0F00,  // halt, reboot, suspend, resume ?
-}
-editor_event_type_e;
+} editor_event_type_e;
 
 
 typedef enum editor_actor_kind_e {
@@ -58,11 +60,6 @@ typedef enum editor_actor_kind_e {
 
 
 
-
-struct editor_event_s;
-
-struct editor_event_s * editor_application_event_alloc();
-void editor_event_free(struct editor_event_s * ev);
 
 
 
@@ -84,13 +81,16 @@ struct editor_event_s {
     byte_buffer_id_t    byte_buffer_id;
     editor_view_id_t    view_id;
 
+    screen_dimension_t             screen_dim; // layout/input
+
     union {
         struct {
-            screen_dimension_t             screen_dim; // layout
-            screen_t * screen = nullptr;
+            screen_t * screen;
         } layout;
 
-        editor_input_event_s input;
+        struct {
+            editor_input_event_s ev;
+        } input;
 
         struct {
             int     ac;
@@ -99,6 +99,22 @@ struct editor_event_s {
     };
 };
 
+EDITOR_EXPORT
+struct editor_event_s * editor_event_alloc();
+
+EDITOR_EXPORT
+struct editor_event_s * editor_layout_event_new(editor_event_type_e type);
+
+EDITOR_EXPORT
+struct editor_event_s * editor_rpc_call_new(int call_ac, const char ** call_av);
+
+EDITOR_EXPORT
+struct editor_event_s * editor_rpc_answer_new(struct editor_event_s * request, int answer_ac, const char ** anwser_av);
+
+EDITOR_EXPORT
+void editor_event_free(struct editor_event_s * ev); // CHECK PTR
+
+
 #ifdef __cplusplus
-}
+} //
 #endif

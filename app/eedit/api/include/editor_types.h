@@ -2,6 +2,11 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /*
  * editor objects are hidden behind uint64_t handles
  * the value 0 is used for invalid objects/no context
@@ -28,3 +33,8 @@ typedef uint64_t editor_font_t;             // just a hack to mask pointer type
 #define INVALID_CODEC_ID         ((codec_id_t)0)
 #define INVALID_CODEC_CONTEXT_ID ((codec_context_id_t)0)
 
+
+
+#ifdef __cplusplus
+}
+#endif

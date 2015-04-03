@@ -1,6 +1,7 @@
 #include <thread>
 #include <mutex>
 
+#include <map>
 #include <functional>
 #include <getopt.h>
 #include <string>
@@ -24,11 +25,15 @@ using namespace ew::core::time;
 #include <ew/filesystem/mapped_file.hpp>
 using namespace ew::filesystem;
 
+#include <ew/codecs/text/Unicode.hpp>
 
 /////////
 #include "application.hpp"
 
 #include "../core/core.hpp"
+#include "../core/log/log.hpp"
+
+
 #include "editor_event_queue.h"
 
 #include "editor_buffer.h"

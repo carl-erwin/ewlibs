@@ -13,7 +13,7 @@ namespace core
 {
 
 
-bool process_event(core_context_t * core_ctx, event * msg)
+bool process_event(core_context_t * core_ctx, struct editor_event_s * msg)
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -42,7 +42,7 @@ bool process_event(core_context_t * core_ctx, event * msg)
     switch (msg->type & EDITOR_EVENT_TYPE_FAMILY_MASK) {
 
     case EDITOR_APPLICATION_EVENT_FAMILY: {
-        ret = process_application_event(core_ctx, static_cast<eedit::core::application_event *>(msg));
+        ret = process_application_event(core_ctx, msg);
     }
     break;
 
@@ -59,12 +59,12 @@ bool process_event(core_context_t * core_ctx, event * msg)
         app_log << __PRETTY_FUNCTION__ << " EDITOR_BUILD_LAYOUT_EVENT\n";
 
         check_input_msg(msg);
-        ret = process_build_layout_event(static_cast<eedit::core::layout_event *>(msg));
+        ret = process_build_layout_event(msg);
     }
     break;
 
     case EDITOR_RPC_CALL_EVENT: {
-        ret = eedit::core::process_rpc_call_event(static_cast<eedit::core::rpc_call *>(msg));
+        ret = eedit::core::process_rpc_call_event(msg);
     }
     break;
 
@@ -109,13 +109,9 @@ bool process_event(core_context_t * core_ctx, event * msg)
 	the first input event is match against the tree's root
 	if a match is found, the node is selected as the next root
  */
-bool eval_input_event(event * base_msg)
+bool eval_input_event(struct editor_event_s * msg)
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
-
-    input_event * msg = static_cast<input_event *>(base_msg);
-
-    assert(msg->ev);
 
     auto buffer = editor_buffer_check_id(msg->editor_buffer_id);
     if (buffer == INVALID_EDITOR_BUFFER_ID) {
@@ -154,7 +150,7 @@ bool eval_input_event(event * base_msg)
 
     // read input event
     input_map_entry * match_found = nullptr;
-    bool found = eval_input_event(msg->ev, cur_seq, &match_found);
+    bool found = eval_input_event(&msg->input.ev, cur_seq, &match_found);
     if (!found) {
         //
         app_log << "no match : reset user keymap context\n";
@@ -179,14 +175,13 @@ bool eval_input_event(event * base_msg)
 
     // exec action
     assert(cur_seq->size() == 0);
-    assert(msg->ev);
 
     // TODO: cache fn in action
     module_fn fn = editor_get_module_function(match_found->action->fn_name);
     if (fn) {
         app_log << "'" << match_found->action->fn_name << "' is defined\n";
         app_log << "BEGIN '" << match_found->action->fn_name << "'\n";
-        fn(base_msg);
+        fn(msg);
         app_log << "END '" << match_found->action->fn_name << "'\n";
     } else {
         app_log << "'" << match_found->action->fn_name << "' is not defined\n";
@@ -202,7 +197,7 @@ bool eval_input_event(event * base_msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_input_event(event * msg)
+bool process_input_event(struct editor_event_s * msg)
 {
     eval_input_event(msg);
     return true;
@@ -210,13 +205,14 @@ bool process_input_event(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_application_event(core_context_t * core_ctx, application_event * msg)
+bool process_application_event(core_context_t * core_ctx, struct editor_event_s * msg)
 {
     switch (msg->type) {
     case EDITOR_QUIT_APPLICATION_DEFAULT:
     case EDITOR_QUIT_APPLICATION_FORCED: {
         // here ?
-        application_event * quit_ans = new application_event(EDITOR_QUIT_APPLICATION_DEFAULT);
+        struct editor_event_s * quit_ans = editor_event_alloc();
+        quit_ans->type = EDITOR_QUIT_APPLICATION_DEFAULT;
         send_event_to_ui(msg, quit_ans);
         core_ctx->core_running = false;
 

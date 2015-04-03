@@ -1,10 +1,15 @@
 #pragma once
 
 #include <list>
-#include <ew/filesystem/file.hpp>
-
 #include <condition_variable>
 
+// api
+#include "editor_event.h"
+#include "editor_event_queue.h"
+#include "editor_buffer.h"
+
+// ui
+#include <ew/filesystem/file.hpp>
 #include <ew/graphics/graphics.hpp>
 #include <ew/graphics/gui/widget/window/window.hpp>
 #include <ew/graphics/gui/event/event.hpp>
@@ -12,11 +17,8 @@
 #include "widget_layout.hpp"
 #include "status_bar.hpp"
 
-#include "../../core/event/event.hpp"
-#include "../../core/message_queue.hpp"
 
-#include "editor_buffer.h"
-
+// internal
 using namespace ew::filesystem; // TODO::remove
 
 namespace  eedit
@@ -66,8 +68,8 @@ public:
 
     ///////
 
-    virtual bool set_event_queue(struct editor_event_s_queue<struct editor_event_s *> * q);
-    virtual struct editor_event_s_queue<struct editor_event_s *> * event_queue(void);
+    virtual bool set_event_queue(struct editor_event_queue_s * q);
+    virtual struct editor_event_queue_s * event_queue(void);
 
     virtual void process_event_queue(void);
 };

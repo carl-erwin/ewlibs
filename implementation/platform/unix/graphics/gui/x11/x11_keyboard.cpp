@@ -181,7 +181,7 @@ enum events::keys::key_value  display::private_data::X11::xkeysym_to_event_key(c
     case XK_Hyper_R:
     default:
         // TODO: unknown:
-        // dbg << __FUNCTION__ << "unhandled keysym : '" << XKeysymToString(keysym) << "'\n";
+        std::cerr << __FUNCTION__ << "unhandled keysym : '" << XKeysymToString(__keysym) << "'\n";
         return events::keys::NUL;
     }
 }
@@ -215,19 +215,19 @@ bool display::private_data::X11::x11key_to_unicode(ew::graphics::gui::display * 
 
     XKeyPressedEvent * xkPressEvent = (XKeyPressedEvent *)&xevent->xkey;
 
-    //#define DEBUG_KEYPRESS_EVENT 1
+    #define DEBUG_KEYPRESS_EVENT 1
 #ifdef DEBUG_KEYPRESS_EVENT
-    cerr << "--------------------------\n";
-    cerr << " xkPressEvent->state & ControlMask = " << std::hex << (xkPressEvent->state & ControlMask) << "\n";
-    cerr << " xkPressEvent->state & Mod1Mask    = " << std::hex << (xkPressEvent->state & Mod1Mask) << "\n";
-    cerr << " xkPressEvent->state & Mod5Mask    = " << std::hex << (xkPressEvent->state & Mod5Mask) << "\n";
-    cerr << " xkPressEvent->state & ShiftMask   = " << std::hex << (xkPressEvent->state & ShiftMask) << "\n";
-    cerr << " xkPressEvent->state & LockMask   = " << std::hex << (xkPressEvent->state & LockMask) << "\n";
-    cerr << " xkPressEvent->state & Button1Mask   = " << std::hex << (xkPressEvent->state & Button1Mask) << "\n";
-    cerr << " xkPressEvent->state & Button2Mask   = " << std::hex << (xkPressEvent->state & Button2Mask) << "\n";
-    cerr << " xkPressEvent->state & Button3Mask   = " << std::hex << (xkPressEvent->state & Button3Mask) << "\n";
-    cerr << " xkPressEvent->state & Button4Mask   = " << std::hex << (xkPressEvent->state & Button4Mask) << "\n";
-    cerr << " xkPressEvent->state & Button5Mask   = " << std::hex << (xkPressEvent->state & Button5Mask) << "\n";
+    std::cerr << "--------------------------\n";
+    std::cerr << " xkPressEvent->state & ControlMask = " << std::hex << (xkPressEvent->state & ControlMask) << "\n";
+    std::cerr << " xkPressEvent->state & Mod1Mask    = " << std::hex << (xkPressEvent->state & Mod1Mask) << "\n";
+    std::cerr << " xkPressEvent->state & Mod5Mask    = " << std::hex << (xkPressEvent->state & Mod5Mask) << "\n";
+    std::cerr << " xkPressEvent->state & ShiftMask   = " << std::hex << (xkPressEvent->state & ShiftMask) << "\n";
+    std::cerr << " xkPressEvent->state & LockMask   = " << std::hex << (xkPressEvent->state & LockMask) << "\n";
+    std::cerr << " xkPressEvent->state & Button1Mask   = " << std::hex << (xkPressEvent->state & Button1Mask) << "\n";
+    std::cerr << " xkPressEvent->state & Button2Mask   = " << std::hex << (xkPressEvent->state & Button2Mask) << "\n";
+    std::cerr << " xkPressEvent->state & Button3Mask   = " << std::hex << (xkPressEvent->state & Button3Mask) << "\n";
+    std::cerr << " xkPressEvent->state & Button4Mask   = " << std::hex << (xkPressEvent->state & Button4Mask) << "\n";
+    std::cerr << " xkPressEvent->state & Button5Mask   = " << std::hex << (xkPressEvent->state & Button5Mask) << "\n";
 
 
 #endif

@@ -1,15 +1,21 @@
 #pragma once
 
+#include <stdint.h>
 
 #include "editor_export.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef enum {
-    invalid,
+    invalid_input_event,
     keypress,
     button_press,
     button_release,
+    wheel_up,
+    wheel_down
 } editor_input_event_type_e;
 
 // FIXME: align some key with their unicode value
@@ -57,6 +63,8 @@ typedef enum  {
 
 } editor_key_e;
 
+
+
 typedef enum  {
     no_range,
     simple_range
@@ -95,15 +103,15 @@ EDITOR_EXPORT
 struct editor_input_event_s *
 editor_input_event_new(editor_input_event_type_e type,
                        editor_key_e key, editor_input_key_range_e rt,
-                       u32 mod_mask,
-                       u32 key_start_val, u32 key_end_val,
-                       int32_t x, int32_t y, u32 button_mask);
+                       uint32_t mod_mask,
+                       uint32_t key_start_val, uint32_t key_end_val,
+                       int32_t x, int32_t y, uint32_t button_mask);
 
 EDITOR_EXPORT
 void editor_input_event_delete(struct editor_input_event_s * ev);
 
 EDITOR_EXPORT
-void editor_input_event_dump(const struct editor_input_event_s * ev);
+void editor_input_event_dump(const struct editor_input_event_s * ev, const char * name);
 
 EDITOR_EXPORT
 bool editor_input_event_contains(const editor_input_event_s * a, const editor_input_event_s * b);
@@ -114,3 +122,9 @@ bool editor_input_event_is_equal(const editor_input_event_s * a, const editor_in
 EDITOR_EXPORT
 bool editor_input_event_is_not_equal(const editor_input_event_s * a, const editor_input_event_s * b);
 
+EDITOR_EXPORT
+editor_key_e c_string_to_editor_key_value(const char * c_str);
+
+#ifdef __cplusplus
+}
+#endif

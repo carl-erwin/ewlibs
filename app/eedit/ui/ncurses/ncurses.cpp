@@ -10,14 +10,15 @@
 #include "ew/core/time/time.hpp"
 
 #include "ui.h"
-#include "../../core/core.hpp"
-#include "../../core/event/event.hpp"
-#include "../../core/input/event/input_event_map.hpp"
-#include "../../api/include/byte_buffer.h"
-#include "../../api/include/editor_buffer.h"
-#include "../../api/include/editor_view.h"
+#include "editor_event.h"
+#include "byte_buffer.h"
+#include "editor_buffer.h"
+#include "editor_view.h"
+#include "screen.h"
 
-#include "../../api/include/screen.h"
+#include "../../core/core.hpp"
+#include "../../core/input/event/input_event_map.hpp"
+
 
 // simple enough, no size checks
 bool utf8_put_cp(const s32 codepoint, u8 * utf8)
@@ -85,16 +86,16 @@ struct ncurses_ui_interface : public user_interface {
 
     ncurses_display * dpy = nullptr; // FIXME: not allocted
 
-    struct editor_event_s_queue<struct editor_event_s *> * m_event_queue = nullptr;
+    struct editor_event_queue_s * m_event_queue = nullptr;
 
     bool process_editor_ui_event(struct editor_event_s * msg);
-    bool process_editor_new_layout_ui_event(eedit::core::layout_event * msg);
-    bool process_editor_new_rpc_answer_ui_event(eedit::core::rpc_answer * msg);
+    bool process_editor_new_layout_ui_event(struct editor_event_s * msg);
+    bool process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg);
     bool quit();
 
     bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim);
     bool send_build_layout_event(u32 w, u32 h) const;
-    eedit::input_event_s * ncurses_keycode_to_eedit_event(int keycode);
+    struct editor_input_event_s ncurses_keycode_to_eedit_event(int keycode);
 
     byte_buffer_id_t m_cur_ebid = 0; // current buffer;
     editor_view_id_t m_cur_view_id = 0;
@@ -124,7 +125,8 @@ bool ncurses_ui_interface::setup(application * app)
 
 bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim)
 {
-    auto msg       =  new eedit::core::rpc_call(ac, av);
+    struct editor_event_s * msg       =  editor_event_alloc();
+    msg->type = EDITOR_RPC_CALL_EVENT;
     msg->src.kind  =  EDITOR_ACTOR_UI;
     msg->src.queue =  m_event_queue;  //  TODO: ctx ?
     msg->dst.kind  =  EDITOR_ACTOR_CORE;
@@ -151,7 +153,9 @@ void sigint_handler(int sig)
     int col;
     getmaxyx(stdscr, row, col);
 
-    auto msg              = new eedit::core::keyboard_event();
+    struct editor_event_s * msg = editor_event_alloc();
+    msg->type = EDITOR_KEYBOARD_EVENT;
+
     msg->id               = 0; // FIXME: id++
     msg->editor_buffer_id = ncurses_ui->m_cur_ebid;
     msg->byte_buffer_id   = 0;
@@ -166,11 +170,10 @@ void sigint_handler(int sig)
     msg->src.queue = ncurses_ui->m_event_queue;
     msg->dst.kind  = EDITOR_ACTOR_CORE;
 
-    msg->ev = ncurses_ui->ncurses_keycode_to_eedit_event(3);
+    msg->input.ev = ncurses_ui->ncurses_keycode_to_eedit_event(3);
 
     // display current key on console
-    if (msg->ev)
-        msg->ev->dump_event();
+    editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
 
     app_log << __PRETTY_FUNCTION__ << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
     eedit::core::push_event(msg);
@@ -180,7 +183,7 @@ bool ncurses_ui_interface::main_loop()
 {
     ncurses_ui = this;
 
-    m_event_queue = new struct editor_event_s_queue<struct editor_event_s *>;
+    m_event_queue = editor_event_queue_new();
 
     signal(SIGINT, sigint_handler);
 
@@ -252,11 +255,11 @@ bool ncurses_ui_interface::main_loop()
 
 #endif
 
-    q->wait(1);
-    auto nr = q->size();
+    editor_event_queue_wait(q, 1);
+    auto nr = editor_event_queue_size(q);
     struct editor_event_s * core_msg = nullptr;
     while (nr) {
-        q->get(core_msg);
+        core_msg = editor_event_queue_get(q);
         process_editor_ui_event(core_msg);
         --nr;
     }
@@ -281,7 +284,8 @@ bool ncurses_ui_interface::main_loop()
     ::sleep(1);
 #endif
 
-    auto msg              = new eedit::core::keyboard_event();
+    auto msg              = editor_event_alloc();
+    msg->type             = EDITOR_KEYBOARD_EVENT;
     msg->id               = 0; // FIXME: id++
     msg->editor_buffer_id = m_cur_ebid;
     msg->byte_buffer_id   = 0;
@@ -303,11 +307,10 @@ bool ncurses_ui_interface::main_loop()
 
     // if (ev->ctrl != false) mod_mask |= keymap_key::mod_oskey;
 #endif
-    msg->ev = ncurses_keycode_to_eedit_event(keycode);
+    msg->input.ev = ncurses_keycode_to_eedit_event(keycode);
 
     // display current key on console
-    if (msg->ev)
-        msg->ev->dump_event();
+    editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
 
     app_log << "\n";
 
@@ -362,30 +365,34 @@ eedit::user_interface * new_ncurses_ui()
  */
 
 
-eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int keycode)
+struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event(int keycode)
 {
-    using namespace ew::graphics::gui::events::keys;
 
-    enum key_value  kval = NO_KEY;
+    editor_input_event_s iev;
+
+    memset(&iev, 0, sizeof (iev));
+
+    iev.key = NO_KEY;
+
     u32 mod_mask = 0;
     u32 unicode  = 0;
 
     switch (keycode) {
     case KEY_DOWN:
-        kval = Down;
+        iev.key =  Down;
         break;
     case KEY_UP:
-        kval = Up;
+        iev.key =  Up;
         break;
     case KEY_LEFT:
-        kval = Left;
+        iev.key =  Left;
         break;
     case KEY_RIGHT:
-        kval = Right;
+        iev.key =  Right;
         break;
 
     case 0 ... 26: {
-        kval = keys::UNICODE;
+        iev.key =  UNICODE;
         switch (keycode + 'a' - 1) {
         case 'j': {
             unicode = '\n';
@@ -397,7 +404,7 @@ eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int 
         break;
         default: {
             unicode = keycode + 'a' - 1;
-            mod_mask |= input_event_s::mod_ctrl;
+            mod_mask |= mod_ctrl;
         }
         break;
         }
@@ -405,47 +412,47 @@ eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int 
     break;
 
     case 27 ... 127: {
-        kval = keys::UNICODE;
+        iev.key =  UNICODE;
         unicode = keycode;
     }
     break;
 
     case KEY_HOME:
-        kval = keys::Home;
+        iev.key =  Home;
         break;
 
     case KEY_BACKSPACE:
-        kval = keys::BackSpace;
+        iev.key =  BackSpace;
         break;
 
     case KEY_NPAGE:
-        kval = keys::PageDown;
+        iev.key =  PageDown;
         break;
     case KEY_PPAGE:
-        kval = keys::PageUp;
+        iev.key =  PageUp;
         break;
 
 
     case KEY_END:
-        kval = keys::End;
+        iev.key =  End;
         break;
 
     case KEY_SEND: {
-        kval = keys::End;
-        mod_mask |= input_event_s::mod_shift;
+        iev.key =  End;
+        mod_mask |= mod_shift;
     }
     break;
 
 
     case KEY_SHOME: {
-        kval = keys::Home;
-        mod_mask |= input_event_s::mod_shift;
+        iev.key =  Home;
+        mod_mask |= mod_shift;
     }
     break;
 
     case KEY_DC: {
         /* delete-character key */
-        kval = keys::Delete;
+        iev.key =  Delete;
     }
     break;
 
@@ -559,22 +566,34 @@ eedit::input_event_s * ncurses_ui_interface::ncurses_keycode_to_eedit_event(int 
         break;
 #endif
 
-        return new input_event_s(NUL, input_event_s::no_range, mod_mask, unicode);
+        iev.key = NUL;
+        iev.is_range = false;
+        iev.button_press_mask = 0;
+        iev.start_value = unicode;
+        iev.end_value = unicode;
     }
     break;
 
 
     } // ! switch(keycode)
 
-    return new input_event_s(kval, input_event_s::no_range, mod_mask, unicode);
+    iev.type = keypress;
+    iev.key = NUL;
+    iev.is_range = false;
+    iev.button_press_mask = 0;
+    iev.start_value = unicode;
+    iev.end_value = unicode;
 
+    iev.ctrl = mod_mask & mod_ctrl;
+    iev.shift = mod_mask & mod_shift;
 
+    return iev;
 }
 
 
 
 ////////
-bool ncurses_ui_interface::process_editor_new_layout_ui_event(eedit::core::layout_event * msg)
+bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_event_s * msg)
 {
     int row;
     int col;
@@ -582,7 +601,7 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(eedit::core::layou
     clear();				/* clear the screen */
 
 
-    const auto scr = msg->screen;
+    const auto scr = msg->layout.screen;
     u32 limax = std::min((u32)row, screen_get_number_of_used_lines(scr));
     for (u32 li = 0; li < limax; li++) {
 
@@ -611,7 +630,7 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(eedit::core::layou
 
     refresh();
 
-    screen_release(msg->screen);
+    screen_release(msg->layout.screen);
     return true;
 }
 
@@ -626,8 +645,9 @@ bool ncurses_ui_interface::send_build_layout_event(u32 w, u32 h) const
     }
 
     // ask for new layout
-    auto msg             = new eedit::core::layout_event(EDITOR_BUILD_LAYOUT_EVENT);
-    msg->id = 7;
+    auto msg             = editor_event_alloc();
+    msg->type            = EDITOR_BUILD_LAYOUT_EVENT;
+    msg->id              = 7; // TODO
     msg->src.kind        = EDITOR_ACTOR_UI;
     msg->src.queue       = m_event_queue;
     msg->dst.kind        = EDITOR_ACTOR_CORE;
@@ -653,25 +673,25 @@ bool ncurses_ui_interface::send_build_layout_event(u32 w, u32 h) const
 }
 
 
-bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(eedit::core::rpc_answer * msg)
+bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg)
 {
-    app_log << __FUNCTION__ << "  recv " << msg->av[0] << "\n";
+    app_log << __FUNCTION__ << "  recv " << msg->rpc.av[0] << "\n";
 
-    if (msg->ac == 0) {
+    if (msg->rpc.ac == 0) {
         assert(0);
         return false;
     }
 
-    std::string cmd(msg->av[0]);
+    std::string cmd(msg->rpc.av[0]);
 
     switch (ui_state) {
     case request_buffer_id_list: {
         if (cmd ==  "get_buffer_id_list") {
-            if (msg->ac < 2) {
+            if (msg->rpc.ac < 2) {
                 return false;
             }
 
-            this->m_cur_ebid = atoi(msg->av[1]);
+            this->m_cur_ebid = atoi(msg->rpc.av[1]);
 
             app_log << __PRETTY_FUNCTION__ << " select buffer_id " <<  m_cur_ebid <<  "\n";
             send_build_layout_event(0,0);
@@ -701,12 +721,12 @@ bool ncurses_ui_interface::process_editor_ui_event(struct editor_event_s * msg)
 
     switch (msg->type) {
     case EDITOR_LAYOUT_NOTIFICATION_EVENT: {
-        ret = process_editor_new_layout_ui_event((eedit::core::layout_event *)msg);
+        ret = process_editor_new_layout_ui_event(msg);
     }
     break;
 
     case EDITOR_RPC_ANSWER_EVENT: {
-        ret = process_editor_new_rpc_answer_ui_event((eedit::core::rpc_answer *)msg);
+        ret = process_editor_new_rpc_answer_ui_event(msg);
     }
     break;
 
@@ -723,7 +743,7 @@ bool ncurses_ui_interface::process_editor_ui_event(struct editor_event_s * msg)
 
     }
 
-    delete msg;
+    editor_event_free(msg);
     return ret;
 }
 

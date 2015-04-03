@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <map>
 
 #include "../../../application/application.hpp"
@@ -170,29 +172,29 @@ bool rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
 
 
 
-bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi);
+bool to_next_screen_line_by_offset(struct editor_event_s * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi);
 
-bool to_next_screen_line_internal(event * _msg, codepoint_info_s & next_start_cpi);
+bool to_next_screen_line_internal(struct editor_event_s * _msg, codepoint_info_s & next_start_cpi);
 
-bool to_next_screen_line(event * _msg);
+bool to_next_screen_line(struct editor_event_s * _msg);
 
 bool page_up(struct editor_event_s * _msg);
 
-bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_start_cpi);
+bool to_previous_screen_line_internal(struct editor_event_s * msg, codepoint_info_s ** next_start_cpi);
 
-bool to_previous_screen_line(event * msg);
+bool to_previous_screen_line(struct editor_event_s * msg);
 
-bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi);
+bool page_up_internal(struct editor_event_s * _msg, codepoint_info_s  & start_cpi);
 
 // bool page_down_internal(struct editor_event_s * _msg, codepoint_info_s & start_cpi);
 
 // bool page_down(struct editor_event_s * _msg);
 
-bool goto_beginning_of_line(event * msg);
+bool goto_beginning_of_line(struct editor_event_s * msg);
 
-bool goto_end_of_line(event * msg);
+bool goto_end_of_line(struct editor_event_s * msg);
 
-bool goto_beginning_of_screen_line(event * _msg);
+bool goto_beginning_of_screen_line(struct editor_event_s * _msg);
 
 
 
@@ -412,8 +414,9 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
         const codepoint_info_s * first_cpinfo = nullptr;
 
         screen_get_first_cpinfo(tmp_scr, &first_cpinfo);
-        u64 first_off = first_cpinfo->offset;
-
+#ifndef NDEBUG
+	u64 first_off = first_cpinfo->offset;
+#endif
         const codepoint_info_s * last_cpinfo  = nullptr;
         screen_get_last_cpinfo(tmp_scr, &last_cpinfo);
 
@@ -489,9 +492,8 @@ bool build_screen_line_list(editor_buffer_id_t ed_buffer,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool page_down_internal(struct editor_event_s * _msg)
+bool page_down_internal(struct editor_event_s * msg)
 {
-    input_event * msg = (input_event *)_msg;
     auto view   = msg->view_id; // FIXEM: to check
     auto screen = get_previous_screen_by_id(msg->view_id);
 
@@ -536,10 +538,8 @@ bool page_down(struct editor_event_s * _msg)
 // 3 choose new screen start
 //
 
-bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
+bool page_up_internal(struct editor_event_s * msg, codepoint_info_s  & start_cpi)
 {
-    input_event * msg = (input_event *)_msg;
-
     auto buffer = editor_buffer_check_id(msg->byte_buffer_id);
     auto view   = msg->view_id;
     auto screen = get_previous_screen_by_id(msg->view_id);
@@ -615,7 +615,7 @@ bool page_up_internal(event * _msg, codepoint_info_s  & start_cpi)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool page_up(event * _msg)
+bool page_up(struct editor_event_s * _msg)
 {
     codepoint_info_s  start_cpi;
     return page_up_internal(_msg,start_cpi);
@@ -651,7 +651,7 @@ bool fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_
 }
 
 
-bool goto_beginning_of_buffer(event * msg)
+bool goto_beginning_of_buffer(struct editor_event_s * msg)
 {
     codepoint_info_t cpi;
     codepoint_info_reset(&cpi);
@@ -663,7 +663,7 @@ bool goto_beginning_of_buffer(event * msg)
 }
 
 
-bool goto_end_of_buffer(event * msg)
+bool goto_end_of_buffer(struct editor_event_s * msg)
 {
     auto view   = msg->view_id;
 
@@ -750,7 +750,7 @@ bool it_to_previous_line(text_buffer::iterator & ref)
 */
 
 
-bool to_previous_line(event * _msg)
+bool to_previous_line(struct editor_event_s * _msg)
 {
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
@@ -812,7 +812,7 @@ bool it_to_next_physical_line(text_buffer::iterator & ref)
 
 
 /* physical line */
-bool to_next_line(event * _msg)
+bool to_next_line(struct editor_event_s * _msg)
 {
     input_event * msg = (input_event *)_msg;
     auto d = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
@@ -853,7 +853,7 @@ bool scroll_down(editor_buffer_id_t ed_buffer, u32 n, screen_t * screen)
  * avoid layout recomputations by updating the last screen directly ? and send a clone ?
  *
 */
-bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi)
+bool to_next_screen_line_by_offset(struct editor_event_s * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi)
 {
     new_screen_offset = screen_offset;
 
@@ -1017,7 +1017,7 @@ bool to_next_screen_line_by_offset(event * _msg, const u64 screen_offset, u64 & 
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: remove cursor_it -> replace by mark list
-bool to_next_screen_line_internal(event * _msg, codepoint_info_s & next_start_cpi)
+bool to_next_screen_line_internal(struct editor_event_s * _msg, codepoint_info_s & next_start_cpi)
 {
     auto buffer = get_buffer_info_by_ll_bid(_msg->byte_buffer_id);
 
@@ -1036,7 +1036,7 @@ bool to_next_screen_line_internal(event * _msg, codepoint_info_s & next_start_cp
 
 // FIXME: must sync screen arround mark
 // remove mark dep ?
-bool to_next_screen_line(event * _msg)
+bool to_next_screen_line(struct editor_event_s * _msg)
 {
     codepoint_info_s cpi;
     auto b = to_next_screen_line_internal(_msg, cpi);
@@ -1057,7 +1057,7 @@ bool to_next_screen_line(event * _msg)
  *  pass mark offset as parameter
  *  and add : cons u64 in_offset, u64 & out_offset
 */
-bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_start_cpi)
+bool to_previous_screen_line_internal(struct editor_event_s * msg, codepoint_info_s ** next_start_cpi)
 {
     // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : Enter\n";
 
@@ -1181,7 +1181,7 @@ bool to_previous_screen_line_internal(event * msg, codepoint_info_s ** next_star
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool to_previous_screen_line(event * msg)
+bool to_previous_screen_line(struct editor_event_s * msg)
 {
     return to_previous_screen_line_internal(msg, nullptr);
 }
@@ -1192,7 +1192,7 @@ bool to_previous_screen_line(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 /* if end - start > screen set to begin */
-bool goto_beginning_of_line(event * msg)
+bool goto_beginning_of_line(struct editor_event_s * msg)
 {
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
@@ -1252,7 +1252,7 @@ bool goto_beginning_of_line(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool goto_end_of_line(event * msg)
+bool goto_end_of_line(struct editor_event_s * msg)
 {
     // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
@@ -1303,7 +1303,7 @@ bool goto_end_of_line(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool goto_beginning_of_screen_line(event * _msg)
+bool goto_beginning_of_screen_line(struct editor_event_s * _msg)
 {
     // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     return true;
@@ -1311,7 +1311,7 @@ bool goto_beginning_of_screen_line(event * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool goto_end_of_screen_line(event * _msg)
+bool goto_end_of_screen_line(struct editor_event_s * _msg)
 {
     // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     return true;
@@ -1346,7 +1346,7 @@ struct {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool begin_selection(event * msg)
+bool begin_selection(struct editor_event_s * msg)
 {
     // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
@@ -1406,7 +1406,7 @@ bool begin_selection(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool end_selection(event * msg)
+bool end_selection(struct editor_event_s * msg)
 {
     // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
@@ -1473,7 +1473,7 @@ bool insert_codepoint(struct editor_event_s * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool insert_newline(event * _msg)
+bool insert_newline(struct editor_event_s * _msg)
 {
     // FIXME: CR LF ?
     // input_event * msg = (input_event *)_msg;
@@ -1499,7 +1499,7 @@ bool insert_newline(event * _msg)
 
   the new screen is computed using the ctx->current_screen (remmeber that keyboard event is from )
 */
-bool  remove_current_char(event * msg)
+bool  remove_current_char(struct editor_event_s * msg)
 {
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
 
@@ -1535,7 +1535,7 @@ bool  remove_current_char(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // TODO: gfx_ctx->center_screen arround cursor = true;
-bool remove_previous_char(event * msg)
+bool remove_previous_char(struct editor_event_s * msg)
 {
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
 
@@ -1554,7 +1554,7 @@ bool remove_previous_char(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // TODO: use intermediate cursor class, pass cursor as parameter
-bool to_beginning_of_line(event * msg)
+bool to_beginning_of_line(struct editor_event_s * msg)
 {
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
 
@@ -1567,7 +1567,7 @@ bool to_beginning_of_line(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool to_end_of_line(event * msg)
+bool to_end_of_line(struct editor_event_s * msg)
 {
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
 
@@ -1607,7 +1607,7 @@ bool belong_to_word(const s32 c)
 
 
 // dump version : what behavior in fold ?
-bool right_word(event * msg)
+bool right_word(struct editor_event_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
@@ -1639,7 +1639,7 @@ bool right_word(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // dump version : what behavior in fold ?
-bool left_word(event * msg)
+bool left_word(struct editor_event_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
@@ -1685,7 +1685,7 @@ bool left_word(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool mouse_wheel_up(event * msg)
+bool mouse_wheel_up(struct editor_event_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
@@ -1710,7 +1710,7 @@ bool mouse_wheel_up(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool mouse_wheel_down(event * msg)
+bool mouse_wheel_down(struct editor_event_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack

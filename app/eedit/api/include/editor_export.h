@@ -6,7 +6,7 @@
 
 #ifdef WIN32 // find better define
 
-# define SHOW_SYMBOL    __declspec(dllexport)
+# define EDITOR_EXPORT    __declspec(dllexport)
 
 #else
 

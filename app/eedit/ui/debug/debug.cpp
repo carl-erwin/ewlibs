@@ -4,6 +4,7 @@
 
 
 #include "../../core/core.hpp"
+#include "../../core/log/log.hpp"
 
 namespace eedit
 {
@@ -44,12 +45,14 @@ bool debug_ui_interface::setup(application * app)
 
 bool debug_ui_interface::main_loop()
 {
-    auto msg       =  new eedit::core::application_event(EDITOR_QUIT_APPLICATION_DEFAULT);
+    auto msg       =  editor_event_alloc();
+    msg->type      =  EDITOR_QUIT_APPLICATION_DEFAULT;
     msg->src.kind  =  EDITOR_ACTOR_UI;
     msg->src.queue =  nullptr; // event_queue();  //  TODO: ctx ?
     msg->dst.kind  =  EDITOR_ACTOR_CORE;
     msg->view_id =  0;
 
+    ew::core::time::sleep(100);
     app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
     eedit::core::push_event(msg);
 

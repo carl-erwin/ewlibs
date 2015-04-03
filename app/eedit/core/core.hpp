@@ -100,26 +100,26 @@ void send_new_layout_event_to_ui(const struct editor_event_s * ev_in, screen_t *
 bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint_info_s * start_cpi, screen_t * scr);
 
 
-bool save_buffer(event * msg);
+bool save_buffer(struct editor_event_s * msg);
 
-bool dump_buffer_log(event * msg);
+bool dump_buffer_log(struct editor_event_s * msg);
 
-bool quit_editor(event * msg);
+bool quit_editor(struct editor_event_s * msg);
 
 
-bool eval_input_event(event * base_msg);
-bool process_input_event(event * msg);
-bool release_event(event * msg);
+bool eval_input_event(struct editor_event_s * base_msg);
+bool process_input_event(struct editor_event_s * msg);
+bool release_event(struct editor_event_s * msg);
 
-bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_screen);
+bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start_cpi, bool send_screen);
 
-bool process_build_layout_event(eedit::core::layout_event * msg);
+bool process_build_layout_event(struct editor_event_s * msg);
 
-bool check_input_msg(event * msg);
+bool check_input_msg(struct editor_event_s * msg);
 
-bool process_application_event(core_context_t * core_ctx, application_event * msg);
+bool process_application_event(core_context_t * core_ctx, struct editor_event_s * msg);
 
-bool process_event(core_context_t * core_ctx, event * msg);
+bool process_event(core_context_t * core_ctx, struct editor_event_s * msg);
 
 
 

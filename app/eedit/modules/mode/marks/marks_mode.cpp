@@ -184,18 +184,16 @@ bool mark_move_forward(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool insert_codepoint_val(struct editor_event_s * _msg, int32_t codepoint)
+bool insert_codepoint_val(struct editor_event_s * msg, int32_t codepoint)
 {
-    input_event * msg = static_cast<input_event *>(_msg);
     mark_operation(msg, EDITOR_OP_INSERT_AT_MARK|EDITOR_OP_MARK_MOVE, codepoint, MOVE_FORWARD);
     return true;
 }
 
 
-bool insert_codepoint(struct editor_event_s * _msg)
+bool insert_codepoint(struct editor_event_s * msg)
 {
-    input_event * msg = static_cast<input_event *>(_msg);
-    insert_codepoint_val(_msg, msg->ev->start_value);
+    insert_codepoint_val(msg, msg->input.ev.start_value);
     return true;
 }
 

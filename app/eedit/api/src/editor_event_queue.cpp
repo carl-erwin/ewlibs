@@ -96,6 +96,9 @@ size_t editor_event_queue_size(struct editor_event_queue_s * q_)
 
 bool editor_event_queue_push(struct editor_event_queue_s * q_, struct editor_event_s *ev)
 {
+    if (!q_)
+        return false;
+
     eedit::event_queue<void *> * q = (eedit::event_queue<void *> *)q_;
     return q->push(ev);
 }

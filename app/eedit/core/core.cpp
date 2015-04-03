@@ -1,5 +1,6 @@
 #include <thread>
 #include <mutex>
+#include <map>
 #include <queue>
 #include <condition_variable>
 #include <chrono>
@@ -15,6 +16,9 @@
 
 #include "../api/include/screen.h"
 #include "../api/include/codec.h"
+
+#include "../core/log/log.hpp"
+
 
 #include "../core/text_layout.hpp"
 #include "../core/module/module.hpp"
@@ -279,9 +283,9 @@ void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s
 
     if (ev_out->dst.queue != nullptr) {
         // app_log << " core : push event("<< ev_out->id <<") : core -> ui @" << ew::core::time::get_ticks() << "\n";
-        ev_out->dst.queue->push(ev_out);
+        editor_event_queue_push(ev_out->dst.queue, ev_out);
     } else {
-        delete ev_out;
+        editor_event_free(ev_out);
         // app_log << " send_event_to_ui : no destination queue\n";
     }
 }
@@ -292,8 +296,8 @@ void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s
 void send_new_layout_event_to_ui(const struct editor_event_s * ev_in,
                                  screen_t * screen)
 {
-    auto msg           = new eedit::core::layout_event(EDITOR_LAYOUT_NOTIFICATION_EVENT);
-    msg->screen        = screen; // the new screen
+    auto msg           = editor_layout_event_new(EDITOR_LAYOUT_NOTIFICATION_EVENT);
+    msg->layout.screen = screen; // the new screen
 
     send_event_to_ui(ev_in, msg);
 }
@@ -329,7 +333,7 @@ struct selection_record_s selection_record;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool save_buffer(event * msg)
+bool save_buffer(struct editor_event_s * msg)
 {
     //auto buffer = get_buffer_by_id(msg->byte_buffer_id);
 
@@ -350,7 +354,7 @@ bool save_buffer(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool dump_buffer_log(event * msg)
+bool dump_buffer_log(struct editor_event_s * msg)
 {
     buffer_log_dump(msg->byte_buffer_id);
     return true;
@@ -358,7 +362,7 @@ bool dump_buffer_log(event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool release_event(event * msg)
+bool release_event(struct editor_event_s * msg)
 {
     delete msg;
     return true;
@@ -368,7 +372,7 @@ bool release_event(event * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // remove/rename this
-bool build_screen_layout_from_event(event * msg, const codepoint_info_s * start_cpi, screen_t * scr)
+bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint_info_s * start_cpi, screen_t * scr)
 {
     // now the screen is opaque we must not use it
     auto buffer = editor_buffer_check_id(msg->editor_buffer_id);
@@ -399,7 +403,7 @@ bool build_screen_layout_from_event(event * msg, const codepoint_info_s * start_
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: replace bool by enum : SEND_SCREEN_TO_UI
-bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_screen)
+bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start_cpi, bool send_screen)
 {
     bool notify = false;
 
@@ -436,7 +440,7 @@ bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_build_layout_event(eedit::core::layout_event * msg)
+bool process_build_layout_event(struct editor_event_s * msg)
 {
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     return true;
@@ -444,7 +448,7 @@ bool process_build_layout_event(eedit::core::layout_event * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool check_input_msg(event* msg)
+bool check_input_msg(struct editor_event_s * msg)
 {
     assert(msg->editor_buffer_id);
     assert(msg->view_id);
@@ -457,13 +461,17 @@ bool check_input_msg(event* msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool quit_editor(event * msg)
+bool quit_editor(struct editor_event_s * msg)
 {
-    application_event quit_msg(EDITOR_QUIT_APPLICATION_DEFAULT);
-    quit_msg.src = msg->src;
-    quit_msg.dst = msg->dst;
+    editor_event_s * quit_msg = editor_event_alloc();
 
-    process_application_event(&core_ctx, &quit_msg);
+    quit_msg->type = EDITOR_QUIT_APPLICATION_DEFAULT;
+    quit_msg->src = msg->src;
+    quit_msg->dst = msg->dst;
+
+    process_application_event(&core_ctx, quit_msg);
+    editor_event_free(quit_msg);
+
     return true;
 }
 
@@ -485,6 +493,9 @@ void register_core_modules_function()
 
 void main(std::shared_ptr<application> app)
 {
+    core_ctx.m_msg_queue = editor_event_queue_new();
+    app_log << "core_ctx.m_msg_queue @" << core_ctx.m_msg_queue << "\n";
+
     {
         std::lock_guard<std::mutex> lock(core_ctx.m_mtx);
         if (core_ctx.core_started == true) {
@@ -496,7 +507,6 @@ void main(std::shared_ptr<application> app)
     }
 
 
-    core_ctx.m_msg_queue = editor_event_queue_new();
 
 
     // TODO: use .so modules
@@ -511,21 +521,21 @@ void main(std::shared_ptr<application> app)
     size_t wait_time = default_wait_time;
     while (core_ctx.core_running == true) {
 //		auto w0 = get_ticks();
-        core_ctx.m_msg_queue.wait(wait_time);
+        editor_event_queue_wait(core_ctx.m_msg_queue, wait_time);
 //		auto w1 = get_ticks();
 //		app_log << "["<<w1<<"] wait time (" << w1 - w0 << ")\n";
 
-        auto nr = core_ctx.m_msg_queue.size();
+        auto nr = editor_event_queue_size(core_ctx.m_msg_queue);
         while (nr) {
-            event * msg = nullptr;
+            struct editor_event_s * msg = nullptr;
             auto t0 = ew::core::time::get_ticks();
 
             if (0) {
-                app_log << "["<<t0<<"] queue size (" << core_ctx.m_msg_queue.size() << ")\n";
+                app_log << "["<<t0<<"] queue size (" << editor_event_queue_size(core_ctx.m_msg_queue) << ")\n";
                 app_log << "["<<t0<<"] nr events to process(" << nr << ")\n";
             }
 
-            core_ctx.m_msg_queue.get(msg);
+            msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
             process_event(&core_ctx, msg);
             auto t1 = ew::core::time::get_ticks();
@@ -534,14 +544,14 @@ void main(std::shared_ptr<application> app)
             }
 
             // --nr;
-            nr = core_ctx.m_msg_queue.size();
+            nr = editor_event_queue_size(core_ctx.m_msg_queue);
         }
     }
 
     // clear message queue -> use stl container interface to allow for each ...
-    while (core_ctx.m_msg_queue.size()) {
-        event * msg = nullptr;
-        core_ctx.m_msg_queue.get(msg);
+    while (editor_event_queue_size(core_ctx.m_msg_queue)) {
+        struct editor_event_s * msg = editor_event_queue_get(core_ctx.m_msg_queue);
+        editor_event_free(msg);
     }
 
     // release res
