@@ -10,6 +10,7 @@ std::map<std::string, editor_key_e> str_to_keyval_map;
 static bool was_init = false;
 
 
+/* not used yet */
 struct editor_input_event_s *
 editor_input_event_new(editor_input_event_type_e type,
                        editor_key_e key, editor_input_key_range_e rt,
@@ -27,7 +28,7 @@ editor_input_event_new(editor_input_event_type_e type,
     case Tab: {
         ev->key = UNICODE;
         key_start_val = '\t';
-        key_end_val   = '\t';
+        key_end_val   = key_start_val;
     }
     break;
     default: {
@@ -196,10 +197,22 @@ bool editor_input_event_is_equal(const editor_input_event_s * a, const editor_in
 
         if ((a->is_range ) && (a->end_value != b->end_value)) return false;
 
-        if (a->ctrl        != b->ctrl)        { app_log << "case 5\n"; return false; }
-        if (a->altL        != b->altL)        { app_log << "case 6\n"; return false; }
-        if (a->altR        != b->altR)        { app_log << "case 7\n"; return false; }
-        if (a->oskey       != b->oskey)       { app_log << "case 8\n"; return false; }
+        if (a->ctrl        != b->ctrl)        {
+            app_log << "case 5\n";
+            return false;
+        }
+        if (a->altL        != b->altL)        {
+            app_log << "case 6\n";
+            return false;
+        }
+        if (a->altR        != b->altR)        {
+            app_log << "case 7\n";
+            return false;
+        }
+        if (a->oskey       != b->oskey)       {
+            app_log << "case 8\n";
+            return false;
+        }
 
         return true;
     }
@@ -312,7 +325,6 @@ inline const char * c_string(const editor_key_e val)
 
 
 
-// populate map : move to gui::init ?
 bool init_str_keyval_map()
 {
     if (was_init == true)

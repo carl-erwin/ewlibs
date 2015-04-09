@@ -117,6 +117,9 @@ void set_screen_id_start_offset(struct editor_event_s * request, int ac,  char *
 
 bool process_rpc_call_event(struct editor_event_s * msg)
 {
+    assert(msg->rpc.ac);
+    assert(msg->rpc.av);
+
     if (msg->rpc.ac == 0) {
         return false;
     }
@@ -125,12 +128,16 @@ bool process_rpc_call_event(struct editor_event_s * msg)
 
     if (f_name == "get_buffer_id_list") {
         get_buffer_id_list(msg, msg->rpc.ac-1, msg->rpc.av+1);
+        return true;
     }
 
     if (f_name == "set_screen_id_start_offset") {
         set_screen_id_start_offset(msg, msg->rpc.ac-1, msg->rpc.av+1);
+        return true;
     }
 
+    app_log << "rpc function " << f_name << "not found\n";
+    assert(0);
     return true;
 }
 

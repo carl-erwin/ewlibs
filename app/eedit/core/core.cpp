@@ -21,7 +21,7 @@
 
 
 #include "../core/text_layout.hpp"
-#include "../core/module/module.hpp"
+#include "../core/module/event_function.h"
 #include "../core/rpc/rpc.hpp"
 
 #include "text_layout.hpp"
@@ -354,10 +354,10 @@ bool save_buffer(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool dump_buffer_log(struct editor_event_s * msg)
+int dump_buffer_log(struct editor_event_s * msg)
 {
     buffer_log_dump(msg->byte_buffer_id);
-    return true;
+    return EDITOR_STATUS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -461,7 +461,7 @@ bool check_input_msg(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool quit_editor(struct editor_event_s * msg)
+int quit_editor(struct editor_event_s * msg)
 {
     editor_event_s * quit_msg = editor_event_alloc();
 
@@ -472,7 +472,7 @@ bool quit_editor(struct editor_event_s * msg)
     process_application_event(&core_ctx, quit_msg);
     editor_event_free(quit_msg);
 
-    return true;
+    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -480,12 +480,12 @@ bool quit_editor(struct editor_event_s * msg)
 void register_core_modules_function()
 {
     //
-    editor_register_module_function("quit-editor",               (module_fn)quit_editor);
+    editor_register_module_function("quit-editor",               quit_editor);
 
     // undo mode
-    editor_register_module_function("undo",                      (module_fn)buffer_undo);
-    editor_register_module_function("redo",                      (module_fn)buffer_redo);
-    editor_register_module_function("dump-buffer-log",           (module_fn)dump_buffer_log);
+    editor_register_module_function("undo",                      buffer_undo);
+    editor_register_module_function("redo",                      buffer_redo);
+    editor_register_module_function("dump-buffer-log",           dump_buffer_log);
 
 }
 
@@ -504,10 +504,8 @@ void main(std::shared_ptr<application> app)
         }
         core_ctx.core_started = true;
         core_ctx.core_running = true;
+        // FIXME: find a proper way to notify clients
     }
-
-
-
 
     // TODO: use .so modules
     // from config file -> load-module path/to/file.so ?

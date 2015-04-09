@@ -1,6 +1,6 @@
 #include "../../core/core.hpp"
 
-#include "../../core/module/module.hpp"
+#include "../../core/module/event_function.h"
 
 #include "editor_view.h"
 #include "../../api/src/editor_view_internal.h"
@@ -177,7 +177,7 @@ bool eval_input_event(struct editor_event_s * msg)
     assert(cur_seq->size() == 0);
 
     // TODO: cache fn in action
-    module_fn fn = editor_get_module_function(match_found->action->fn_name);
+    editor_module_function_t fn = editor_get_module_function(match_found->action->fn_name);
     if (fn) {
         app_log << "'" << match_found->action->fn_name << "' is defined\n";
         app_log << "BEGIN '" << match_found->action->fn_name << "'\n";

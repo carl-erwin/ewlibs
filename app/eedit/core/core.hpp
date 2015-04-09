@@ -51,7 +51,7 @@ struct core_context_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// FIXME: rename
+// FIXME: move to view
 struct screen_cache {
     screen_cache()
     {
@@ -63,8 +63,8 @@ struct screen_cache {
         screen_release(last_screen);
     }
 
-    screen_dimension_t dim;
     u64 start_offset = 0;
+    screen_dimension_t dim;
     screen_t * last_screen = nullptr;
 };
 
@@ -88,7 +88,6 @@ screen_t * get_previous_screen_by_id(u64 id);
 
 screen_t * get_new_screen_by_id(u64 screen_id);
 
-bool resync_screen_layout(uint64_t editor_buffer_id, uint64_t bid, u64 screen_id, screen_dimension_t & dim);
 
 
 bool setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t bid, editor_view_id_t sid, screen_dimension_t & dim);
@@ -102,9 +101,9 @@ bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint
 
 bool save_buffer(struct editor_event_s * msg);
 
-bool dump_buffer_log(struct editor_event_s * msg);
+int dump_buffer_log(struct editor_event_s * msg);
 
-bool quit_editor(struct editor_event_s * msg);
+int quit_editor(struct editor_event_s * msg);
 
 
 bool eval_input_event(struct editor_event_s * base_msg);
@@ -114,11 +113,8 @@ bool release_event(struct editor_event_s * msg);
 bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start_cpi, bool send_screen);
 
 bool process_build_layout_event(struct editor_event_s * msg);
-
 bool check_input_msg(struct editor_event_s * msg);
-
 bool process_application_event(core_context_t * core_ctx, struct editor_event_s * msg);
-
 bool process_event(core_context_t * core_ctx, struct editor_event_s * msg);
 
 

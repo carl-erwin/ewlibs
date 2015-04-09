@@ -215,7 +215,7 @@ bool display::private_data::X11::x11key_to_unicode(ew::graphics::gui::display * 
 
     XKeyPressedEvent * xkPressEvent = (XKeyPressedEvent *)&xevent->xkey;
 
-    #define DEBUG_KEYPRESS_EVENT 1
+#define DEBUG_KEYPRESS_EVENT 1
 #ifdef DEBUG_KEYPRESS_EVENT
     std::cerr << "--------------------------\n";
     std::cerr << " xkPressEvent->state & ControlMask = " << std::hex << (xkPressEvent->state & ControlMask) << "\n";

@@ -7,6 +7,7 @@
 #include "../../core/log/log.hpp"
 
 #include "undo.h"
+#include "../../core/module/event_function.h"
 
 namespace eedit
 {
@@ -14,7 +15,7 @@ namespace eedit
 namespace core
 {
 
-bool buffer_undo(struct editor_event_s * msg)
+int buffer_undo(struct editor_event_s * msg)
 {
     buffer_log_id_t        log = -1;
     buffer_commit_rev_t    rev = -1;
@@ -61,12 +62,12 @@ bool buffer_undo(struct editor_event_s * msg)
     //FIXME:    set_buffer_changed_flag(process_ev_ctx); // send remove/insert event
 
 
-    return true;
+    return EDITOR_STATUS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool buffer_redo(struct editor_event_s * msg)
+int buffer_redo(struct editor_event_s * msg)
 {
     buffer_log_id_t log = -1;
     buffer_commit_rev_t rev = -1;

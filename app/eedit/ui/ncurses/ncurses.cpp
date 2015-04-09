@@ -125,12 +125,10 @@ bool ncurses_ui_interface::setup(application * app)
 
 bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim)
 {
-    struct editor_event_s * msg       =  editor_event_alloc();
-    msg->type = EDITOR_RPC_CALL_EVENT;
+    struct editor_event_s * msg = editor_rpc_call_new(ac, av);
     msg->src.kind  =  EDITOR_ACTOR_UI;
     msg->src.queue =  m_event_queue;  //  TODO: ctx ?
     msg->dst.kind  =  EDITOR_ACTOR_CORE;
-
     msg->editor_buffer_id  =  ebid;
     msg->byte_buffer_id    =  buffer_id;
     msg->view_id           =  screen_id;
@@ -194,10 +192,8 @@ bool ncurses_ui_interface::main_loop()
     keypad(stdscr, TRUE); /* for F1, arrow etc ... */
     clear();
     noecho();
-//	cbreak();/* Line buffering disabled. pass on everything */
     raw();
     halfdelay(1); // 20ms
-
 
     // TODO: build state machine
     int row;
@@ -206,15 +202,12 @@ bool ncurses_ui_interface::main_loop()
 
     app_log << " screen row = " << row << "\n";
     app_log << " screen col = " << col << "\n";
-
     app_log << " vscreen w = " << col * get_application()->font_width()  << "\n";
     app_log << " vscreen h = " << row * get_application()->font_height() << "\n";
 
     // FIXME: depending on ui the font must be monospace...
 
     const char * func = "get_buffer_id_list";
-
-
 
     screen_dimension_t scr_dim {
         uint32_t(row),
@@ -230,113 +223,83 @@ bool ncurses_ui_interface::main_loop()
 
     while (!m_quit) {
 
-#if 0
-        auto t0 = get_ticks();
-        static size_t default_wait_time = 20;
-        size_t wait_time = default_wait_time;
-
-        struct editor_event_s * msg = nullptr;
-        q->wait(wait_time);
-        auto nr = q->size();
+        editor_event_queue_wait(q, 1);
+        auto nr = editor_event_queue_size(q);
+        struct editor_event_s * core_msg = nullptr;
         while (nr) {
-            q->get(msg);
-            process_editor_ui_event(this, msg);
+            core_msg = editor_event_queue_get(q);
+            process_editor_ui_event(core_msg);
             --nr;
         }
 
-        auto t1 = get_ticks();
-        if (0) {
-            app_log << "["<<t1<<"] ui time to process event  = " << t1 - t0 << "\n";
-            app_log << "["<<t1<<"] ui event queue size = " << q->size() << "\n";
-        }
+        if (m_quit)
+            break;
 
+        int keycode = wgetch(stdscr);			/* Wait for user input */ // FIXE: use timer to check core event
+        if (keycode == ERR)
+            continue;
+
+        app_log << " keycode = " << keycode << "\n";
+
+
+        const char *name = keyname( keycode );
+        app_log << "ncurses : you entered: code(" << keycode << ") -> '" << name <<"'\n";
+
+        auto msg              = editor_event_alloc();
+        msg->type             = EDITOR_KEYBOARD_EVENT;
+        msg->id               = 0; // FIXME: id++
+        msg->editor_buffer_id = m_cur_ebid;
+        assert(msg->editor_buffer_id);
+        msg->byte_buffer_id   = 0;
+        msg->view_id          = m_cur_view_id;             //
+        assert(msg->view_id);
+
+        msg->screen_dim.w = col * get_application()->font_width();
+        msg->screen_dim.h = row * get_application()->font_height();
+        msg->screen_dim.c = col;
+        msg->screen_dim.l = row;
+
+        msg->src.kind  = EDITOR_ACTOR_UI;
+        msg->src.queue = m_event_queue;
+        msg->dst.kind  = EDITOR_ACTOR_CORE;
+
+#if 0
+        if (ev->ctrl != false) mod_mask |= input_event_s::mod_ctrl;
+        if (ev->altL != false) mod_mask |= input_event_s::mod_altL;
+        if (ev->altR != false) mod_mask |= input_event_s::mod_altR;
+        // if (ev->ctrl != false) mod_mask |= keymap_key::mod_oskey;
+#endif
+        msg->input.ev = ncurses_keycode_to_eedit_event(keycode);
+
+        // display current key on console
+        editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
+
+        app_log << "\n";
+
+        app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+        eedit::core::push_event(msg);
+    }
+#if 0
+    while (win->loop() == true) {
+        // TODO: abstract for all registered ui
+        // here application is tied to ew/ui
+        win->process_event_queue();
+        process_events();
     }
 
+    gui_dpy->lock();
+    delete win;
+    gui_dpy->unlock();
 
+    gui_dpy->close();
+    delete gui_dpy;
+    gui_dpy = nullptr;
 #endif
 
-    editor_event_queue_wait(q, 1);
-    auto nr = editor_event_queue_size(q);
-    struct editor_event_s * core_msg = nullptr;
-    while (nr) {
-        core_msg = editor_event_queue_get(q);
-        process_editor_ui_event(core_msg);
-        --nr;
-    }
+    endwin();
+    resetty();
 
-    if (m_quit)
-        break;
-
-    int keycode = wgetch(stdscr);			/* Wait for user input */ // FIXE: use timer to check core event
-    if (keycode == ERR)
-        continue;
-
-    app_log << " keycode = " << keycode << "\n";
-
-
-#if 0
-    const char *name = keyname( keycode );
-
-    move( 2, 2 );
-    clear();
-    printw( "You entered: code(%d) -> '%s'", keycode, name );
-    refresh();
-    ::sleep(1);
-#endif
-
-    auto msg              = editor_event_alloc();
-    msg->type             = EDITOR_KEYBOARD_EVENT;
-    msg->id               = 0; // FIXME: id++
-    msg->editor_buffer_id = m_cur_ebid;
-    msg->byte_buffer_id   = 0;
-    msg->view_id          = m_cur_view_id;             //
-
-    msg->screen_dim.w = col * get_application()->font_width();
-    msg->screen_dim.h = row * get_application()->font_height();
-    msg->screen_dim.c = col;
-    msg->screen_dim.l = row;
-
-    msg->src.kind  = EDITOR_ACTOR_UI;
-    msg->src.queue = m_event_queue;
-    msg->dst.kind  = EDITOR_ACTOR_CORE;
-
-#if 0
-    if (ev->ctrl != false) mod_mask |= input_event_s::mod_ctrl;
-    if (ev->altL != false) mod_mask |= input_event_s::mod_altL;
-    if (ev->altR != false) mod_mask |= input_event_s::mod_altR;
-
-    // if (ev->ctrl != false) mod_mask |= keymap_key::mod_oskey;
-#endif
-    msg->input.ev = ncurses_keycode_to_eedit_event(keycode);
-
-    // display current key on console
-    editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
-
-    app_log << "\n";
-
-
-    app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
-    eedit::core::push_event(msg);
-}
-#if 0
-while (win->loop() == true)
-{
-    // TODO: abstract for all registered ui
-    // here application is tied to ew/ui
-    win->process_event_queue();
-    process_events();
-}
-
-gui_dpy->lock();
-delete win;
-gui_dpy->unlock();
-
-gui_dpy->close();
-delete gui_dpy;
-gui_dpy = nullptr;
-#endif
-
-return true;
+    return true;
 }
 
 ew::graphics::gui::display * ncurses_ui_interface::get_display()
@@ -566,11 +529,14 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
         break;
 #endif
 
+        iev.type = keypress;
         iev.key = NUL;
         iev.is_range = false;
         iev.button_press_mask = 0;
         iev.start_value = unicode;
         iev.end_value = unicode;
+        return iev;
+
     }
     break;
 
@@ -578,7 +544,6 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
     } // ! switch(keycode)
 
     iev.type = keypress;
-    iev.key = NUL;
     iev.is_range = false;
     iev.button_press_mask = 0;
     iev.start_value = unicode;
@@ -692,6 +657,8 @@ bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_
             }
 
             this->m_cur_ebid = atoi(msg->rpc.av[1]);
+
+            assert(m_cur_ebid);
 
             app_log << __PRETTY_FUNCTION__ << " select buffer_id " <<  m_cur_ebid <<  "\n";
             send_build_layout_event(0,0);

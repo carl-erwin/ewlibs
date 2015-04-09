@@ -100,7 +100,7 @@ struct editor_event_s {
 };
 
 EDITOR_EXPORT
-struct editor_event_s * editor_event_alloc();
+struct editor_event_s * editor_event_alloc(); // REMOVE THIS be more specific ?
 
 EDITOR_EXPORT
 struct editor_event_s * editor_layout_event_new(editor_event_type_e type);
