@@ -152,7 +152,7 @@ void filter_codepoint(const s32 previous_cp, const s32 cur_cp, s32 * fcp, enum b
 /////////////////////////////////////////////////////
 
 struct screen_mode_context_t {
-    eedit::core::editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
     u32 max_width_px;
     u32 max_height_px;

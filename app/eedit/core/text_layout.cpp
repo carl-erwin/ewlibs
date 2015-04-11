@@ -7,10 +7,6 @@
 #include "ew/core/time/time.hpp"
 #include "log/log.hpp"
 
-namespace eedit
-{
-namespace core
-{
 
 
 editor_layout_builder_context_s::editor_layout_builder_context_s(
@@ -66,6 +62,10 @@ editor_layout_builder_context_s::editor_layout_builder_context_s(
 }
 
 
+namespace eedit
+{
+namespace core
+{
 // TODO: layout_mode/glyph.hhp
 
 void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info)
@@ -335,12 +335,12 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
 
     assert(view);
 
-    eedit::core::editor_layout_builder_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
+    editor_layout_builder_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
 
     u32 t0 = ew::core::time::get_ticks();
 
 
-    build_layout(blctx);                         // TODO: the layout code does not need to know the the screen
+    eedit::core::build_layout(blctx);                         // TODO: the layout code does not need to know the the screen
 
     // u64 rdr_end_off   = (u64)-1; // ed_buffer->rdr_end(); // FROM SID
 #if 0

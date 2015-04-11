@@ -102,11 +102,6 @@ inline void filter_io_init(editor_layout_filter_io_t * io)
 
 
 
-namespace eedit
-{
-namespace core
-{
-
 // TODO :  editor_layout_builder_context_t -> editor_layout_builder_context_s
 struct editor_layout_builder_context_s {
 
@@ -140,6 +135,13 @@ struct editor_layout_builder_context_s {
 };
 
 typedef struct editor_layout_builder_context_s editor_layout_builder_context_t;
+
+
+
+namespace eedit
+{
+namespace core
+{
 
 void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info);
 
