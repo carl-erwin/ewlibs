@@ -200,7 +200,7 @@ int insert_codepoint(struct editor_message_s * msg)
 ////////////////////////////////////////////////////////////////////////////////
 int insert_newline(struct editor_message_s * _msg)
 {
-    insert_codepoint_val(_msg, (s32)'\n');
+    insert_codepoint_val(_msg, (int32_t)'\n');
     return EDITOR_STATUS_OK;
 }
 

@@ -38,7 +38,7 @@ public:
 
     ////////
 
-    virtual bool resize(u32 w, u32 h)
+    virtual bool resize(uint32_t w, uint32_t h)
     {
         bool ret = widget::resize(w, h);
         return ret;

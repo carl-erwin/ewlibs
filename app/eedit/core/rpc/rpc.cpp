@@ -84,7 +84,7 @@ void set_screen_id_start_offset(struct editor_message_s * request, int ac,  char
     }
 
 
-    u64 target_offset = atof(av[2]);
+    uint64_t target_offset = atof(av[2]);
 
     // check overflow
     size_t buf_size;
@@ -92,7 +92,7 @@ void set_screen_id_start_offset(struct editor_message_s * request, int ac,  char
     if (target_offset > buf_size)
         target_offset = buf_size;
 
-    u64 cur_start_offset = editor_view_get_start_offset(view);
+    uint64_t cur_start_offset = editor_view_get_start_offset(view);
     if (target_offset == cur_start_offset) {
         return;
     }

@@ -111,27 +111,27 @@ public:
 
 
     // text manipulation : add codec support ?
-    s32  get_char(void); // start @ point
-    void get_string(s32 * string, u32 count);  // start @ point, add offset ?
+    int32_t  get_char(void); // start @ point
+    void get_string(int32_t * string, uint32_t count);  // start @ point, add offset ?
     int  get_num_chars(void); // optionall
     int  get_num_lines(void); // optionall
 
-    void   insert_codepoint(s32 c);
-    void   insert_string(s32 * string, size_t nr_cp);
-    void   replace_char(s32 c);
-    void   replace_string(s32 * string, size_t nr_cp);
+    void   insert_codepoint(int32_t c);
+    void   insert_string(int32_t * string, size_t nr_cp);
+    void   replace_char(int32_t c);
+    void   replace_string(int32_t * string, size_t nr_cp);
     status delete_codepoints(size_t count);
     status delete_region(mark_name name);
     status copy_region(char * buffer_name, mark_name name);
 
     // search api
-    status search_forward(s32 * string, int len);
-    status search_backward(s32 * string);
-    flag   is_a_match(s32 * string, int len);
-    status find_first_in_forward(s32 * string, int len);
-    status find_first_in_backward(s32 * string, int len);
-    status find_first_not_in_forward(s32 * string, int len);
-    status find_first_not_in_backward(s32  * string, int len);
+    status search_forward(int32_t * string, int len);
+    status search_backward(int32_t * string);
+    flag   is_a_match(int32_t * string, int len);
+    status find_first_in_forward(int32_t * string, int len);
+    status find_first_in_backward(int32_t * string, int len);
+    status find_first_not_in_forward(int32_t * string, int len);
+    status find_first_not_in_backward(int32_t  * string, int len);
 
     // modes like a pipe line
     status mode_append(char * mode_name, status(*add_proc)(), flag is_front);
@@ -146,9 +146,9 @@ public:
 private:
     char     buffer_name[1024];
     location point;
-    u64      cur_line;
-    u64      num_chars;
-    u64      num_lines;
+    uint64_t      cur_line;
+    uint64_t      num_chars;
+    uint64_t      num_lines;
 
     raw_buffer * ll_buffer;
 

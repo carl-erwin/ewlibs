@@ -54,7 +54,7 @@ std::map<editor_view_id_t, screen_cache *> screen_id_map;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-screen_cache * get_screen_cache(u64 id)
+screen_cache * get_screen_cache(uint64_t id)
 {
     auto ret = screen_id_map.find(id);
     if (ret->first != id) {
@@ -69,7 +69,7 @@ screen_cache * get_screen_cache(u64 id)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void set_last_screen(u64 id, screen_t * scr)
+void set_last_screen(uint64_t id, screen_t * scr)
 {
     screen_cache * cache = get_screen_cache(id);
 
@@ -84,7 +84,7 @@ void set_last_screen(u64 id, screen_t * scr)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-screen_t * get_last_screen(u64 id)
+screen_t * get_last_screen(uint64_t id)
 {
     screen_cache * cache = get_screen_cache(id);
     assert(cache);
@@ -93,14 +93,14 @@ screen_t * get_last_screen(u64 id)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-screen_t * get_previous_screen_by_id(u64 id)
+screen_t * get_previous_screen_by_id(uint64_t id)
 {
     return get_last_screen(id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-screen_t * get_new_screen_by_id(u64 screen_id)
+screen_t * get_new_screen_by_id(uint64_t screen_id)
 {
     auto cache = get_screen_cache(screen_id);
     if (!cache) {
@@ -177,7 +177,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
 
     // TODO: compute_screen_dimensions(w, h, font_config);
     ew::graphics::fonts::font_glyph_info tmp_glyph_info;
-    s32 cp = ' ';
+    int32_t cp = ' ';
     auto bret = ft->get_codepoint_glyph_info(cp, tmp_glyph_info);
     if (bret == false) {
         assert(0);
@@ -185,13 +185,13 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     }
 
     // FIXME: use this to compute ncurses screen dimension
-    s32 hadvance = tmp_glyph_info.hori_advance;
-    s32 vadvance = tmp_glyph_info.vert_advance;
+    int32_t hadvance = tmp_glyph_info.hori_advance;
+    int32_t vadvance = tmp_glyph_info.vert_advance;
     // border + cp height + border
     auto number_of_lines       = dim.h / (vadvance + 0 /* interline*/)  + ((dim.h % vadvance) != 0);
     auto number_of_cp_per_line = dim.w / hadvance + ((dim.w % hadvance) != 0);
-    dim.l = std::max<s32>(number_of_lines, 1);
-    dim.c = std::max<s32>(number_of_cp_per_line, 1);
+    dim.l = std::max<int32_t>(number_of_lines, 1);
+    dim.c = std::max<int32_t>(number_of_cp_per_line, 1);
 
     if (debug) {
         app_log <<  " normalized dim.c = " <<  dim.c <<  "\n";
@@ -272,7 +272,7 @@ bool push_event(struct editor_message_s * msg)
 // FIXME: move to proper file event.h
 void send_event_to_ui(const struct editor_message_s * ev_in, struct editor_message_s * ev_out)
 {
-    static u32 id = 1;
+    static uint32_t id = 1;
 
     ev_out->id = id++;
     ev_out->src = ev_in->dst;
@@ -335,13 +335,13 @@ bool save_buffer(struct editor_message_s * msg)
     //auto buffer = get_buffer_by_id(msg->byte_buffer_id);
 
     app_log << " SAVING buffer...\n";
-    u32 t0 = ew::core::time::get_ticks();
+    uint32_t t0 = ew::core::time::get_ticks();
     assert(0);
     size_t sz = 0;
     byte_buffer_size( editor_buffer_get_byte_buffer_id(msg->editor_buffer_id), &sz);
     // buffer_write_to_disk(msg->byte_buffer_id, &sz);
 //    buffer->txt_buffer()->save_buffer();
-    u32 t1 = ew::core::time::get_ticks();
+    uint32_t t1 = ew::core::time::get_ticks();
     app_log << " ok...\n";
     app_log << " buffer saved in " << (t1 - t0) << "ms\n";
 

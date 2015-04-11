@@ -28,7 +28,7 @@ status_bar::~status_bar()
 
 }
 
-bool status_bar::set_content(const s32 * str, size_t nr_char)
+bool status_bar::set_content(const int32_t * str, size_t nr_char)
 {
     if (str == nullptr)
         return false;
@@ -39,7 +39,7 @@ bool status_bar::set_content(const s32 * str, size_t nr_char)
 
     if (m_content != nullptr)
         delete [] m_content;
-    m_content = new s32 [nr_char];
+    m_content = new int32_t [nr_char];
     std::copy(str, str + nr_char, m_content);
 
     m_content_sz = nr_char;

@@ -77,8 +77,8 @@ public:
         nr_cp = 0;
         nr_new_line = 0;
     }
-    u32 nr_cp;
-    u32 nr_new_line;
+    uint32_t nr_cp;
+    uint32_t nr_new_line;
 };
 */
 
@@ -88,10 +88,10 @@ struct index_context {
     eedit::text_buffer * text_buffer;
     /* codec */
     u8  prev_byte = 0;
-    s32 state = 0;
-    s32 prev_cp = 0;
+    int32_t state = 0;
+    int32_t prev_cp = 0;
 
-    s32 cp = 0;
+    int32_t cp = 0;
 };
 
 
@@ -159,7 +159,7 @@ bool on_node_unlink(buffer::node * n, index_context * ctx)
 }
 
 
-void index_node(buffer::node * n, u64 * nr_lines, index_context * ctx,
+void index_node(buffer::node * n, uint64_t * nr_lines, index_context * ctx,
                 bool generate_on_node_index_event = true)
 {
     // app_log << "------------------------------------------\n";
@@ -190,7 +190,7 @@ void index_node(buffer::node * n, u64 * nr_lines, index_context * ctx,
         u8 * e = p->end();
         pi->m_nr_new_line = 0;
         // FIXME: must allocate codec_context for indexer
-        u64 nr_new_line = pi->m_nr_new_line;
+        uint64_t nr_new_line = pi->m_nr_new_line;
         ctx->text_buffer->codec()->count_new_line(/* codec_ctx */ b, e, ctx->prev_byte, nr_new_line);
         pi->m_nr_new_line = nr_new_line;
     }
@@ -207,7 +207,7 @@ void index_node(buffer::node * n, u64 * nr_lines, index_context * ctx,
 
 bool on_node_insert(buffer::node * n, index_context * ctx)
 {
-    u64 nr_lines = 0;
+    uint64_t nr_lines = 0;
     index_node(n, &nr_lines, ctx);
     return true;
 }
@@ -228,12 +228,12 @@ bool on_node_modified(buffer::node * n, index_context * ctx)
 
     //   app_log << __FUNCTION__ << " n(" << n << ") pi->m_nr_new_line = " << pi->m_nr_new_line << "\n";
 
-    u64 nr_lines = 0;
+    uint64_t nr_lines = 0;
     index_node(n, &nr_lines, ctx, false);
 
     pi->m_nr_new_line = nr_lines;
 
-    u64 diff = 0;
+    uint64_t diff = 0;
 
     app_log << " before_pi.m_nr_new_line " << before_pi.m_nr_new_line << "\n";
     app_log << " nr lines " << nr_lines << "\n";
@@ -372,12 +372,12 @@ bool text_buffer_indexer::build_index(text_buffer * text_buffer)
         n_last = n_last->next();
     }
 
-    u64 total_nr_lines = 0;
+    uint64_t total_nr_lines = 0;
 
     bool abort_flag = false;
 
     while (n != n_last) {
-        u64 nr_lines = 0;
+        uint64_t nr_lines = 0;
         index_node(n, &nr_lines, text_buffer->index_ctx);
         total_nr_lines += nr_lines;
 

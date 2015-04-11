@@ -18,8 +18,8 @@ enum build_layout_action_e {
 
 // local struct -> screen mode(s) ?
 struct advance {
-    u32 x;
-    u32 y;
+    uint32_t x;
+    uint32_t y;
 };
 
 
@@ -36,8 +36,8 @@ struct advance {
   no_enough_space
 */
 
-layout_status_e codepoint_fits(const s32 cp, const u32 max_width,
-                               const u32 x, const u32 y, ew::graphics::fonts::font * ft, advance & adv, s32 * cp_filtered)
+layout_status_e codepoint_fits(const int32_t cp, const uint32_t max_width,
+                               const uint32_t x, const uint32_t y, ew::graphics::fonts::font * ft, advance & adv, int32_t * cp_filtered)
 {
     adv.x = 0;
     adv.y = 0;
@@ -64,23 +64,23 @@ layout_status_e codepoint_fits(const s32 cp, const u32 max_width,
 
 // FIXME: add interline
 // resize the output screen : take space(' ') as reference
-bool maximize_screen(const u32 max_width,  const u32 max_height,
+bool maximize_screen(const uint32_t max_width,  const uint32_t max_height,
                      ew::graphics::fonts::font * ft,
                      screen_t * output_screen)
 {
 
     ew::graphics::fonts::font_glyph_info space_glyph_info;
 
-    s32 cp = ' ';
+    int32_t cp = ' ';
     get_codepoint_glyph_info(ft, cp, &cp, space_glyph_info);
-    u32 tmpc = screen_get_max_width_px(output_screen) / space_glyph_info.hori_advance;
-    u32 tmpc2 = screen_get_max_width_px(output_screen) % space_glyph_info.hori_advance;
+    uint32_t tmpc = screen_get_max_width_px(output_screen) / space_glyph_info.hori_advance;
+    uint32_t tmpc2 = screen_get_max_width_px(output_screen) % space_glyph_info.hori_advance;
     if (tmpc2 != 0)
         tmpc += 1; // add 1 column for remaining pixels
 
-    u32 interline = 0;     // TODO: interline/kerning in ui config
-    u32 tmpl = (interline  + screen_get_max_height_px(output_screen))  / space_glyph_info.vert_advance;
-    u32 tmpl2 = (interline + screen_get_max_height_px(output_screen)) % space_glyph_info.vert_advance;
+    uint32_t interline = 0;     // TODO: interline/kerning in ui config
+    uint32_t tmpl = (interline  + screen_get_max_height_px(output_screen))  / space_glyph_info.vert_advance;
+    uint32_t tmpl2 = (interline + screen_get_max_height_px(output_screen)) % space_glyph_info.vert_advance;
     if (tmpl2 != 0)
         tmpl += 1;  // add 1 line for remaining pixels
 
@@ -96,9 +96,9 @@ bool maximize_screen(const u32 max_width,  const u32 max_height,
   slow ?
   todo pass previous cp
 */
-void filter_codepoint(const s32 previous_cp, const s32 cur_cp, s32 * fcp, enum build_layout_action_e * action)
+void filter_codepoint(const int32_t previous_cp, const int32_t cur_cp, int32_t * fcp, enum build_layout_action_e * action)
 {
-    const s32 NEW_LINE_SUB = ' '; // 0x21B2;
+    const int32_t NEW_LINE_SUB = ' '; // 0x21B2;
 
 // TODO: filter cp
     switch (cur_cp) {
@@ -154,20 +154,20 @@ void filter_codepoint(const s32 previous_cp, const s32 cur_cp, s32 * fcp, enum b
 struct screen_mode_context_t {
     editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
-    u32 max_width_px;
-    u32 max_height_px;
-    u32 x;
-    u32 y;
+    uint32_t max_width_px;
+    uint32_t max_height_px;
+    uint32_t x;
+    uint32_t y;
 
-    u32 col;
-    u32 row;
+    uint32_t col;
+    uint32_t row;
 
-    u32 max_col;
-    u32 max_row;
+    uint32_t max_col;
+    uint32_t max_row;
 
-    u32 cp_count;
+    uint32_t cp_count;
 
-    s32 previous_cp;
+    int32_t previous_cp;
     ew::graphics::fonts::font_glyph_info space_glyph_info;
 };
 
@@ -179,7 +179,7 @@ bool screen_mode_init(editor_layout_builder_context_t * blayout_ctx, editor_layo
     mode_ctx->blayout_ctx = blayout_ctx;
 
     // FIXME:  can be  done once if no multifont
-    s32 cp = ' ';
+    int32_t cp = ' ';
     bool bret = get_codepoint_glyph_info(mode_ctx->blayout_ctx->ft, cp, &cp, mode_ctx->space_glyph_info);
     if (bret == false) {
         assert(0);

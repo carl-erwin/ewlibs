@@ -106,10 +106,10 @@ public:
     bool debug                 = false;
     bool offscreen_buffer_flag = false;
     bool build_index_flag      = true;
-    u32  nrthreads             = 0;
+    uint32_t  nrthreads             = 0;
 
     std::mutex nr_running_threads_mtx;
-    u32   nr_running_threads = 0;
+    uint32_t   nr_running_threads = 0;
 
     std::string ui_name;
     std::string m_font_file_name;
@@ -119,9 +119,9 @@ public:
     std::unique_ptr<ew::graphics::gui::display> gui_dpy;
 
     // move to user configuration: init file
-    u32 DEFAULT_FONT_SIZE   = 12;
-    u32 font_width = DEFAULT_FONT_SIZE;
-    u32 font_height = DEFAULT_FONT_SIZE;
+    uint32_t DEFAULT_FONT_SIZE   = 12;
+    uint32_t font_width = DEFAULT_FONT_SIZE;
+    uint32_t font_height = DEFAULT_FONT_SIZE;
 
     std::shared_ptr<ew::graphics::fonts::font> font;
 
@@ -172,7 +172,7 @@ application::application()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void application::set_default_font_size(u32 sz)
+void application::set_default_font_size(uint32_t sz)
 {
     m_priv->DEFAULT_FONT_SIZE   = sz;
     m_priv->font_width = sz;
@@ -342,14 +342,14 @@ const std::string & application::font_file_name() const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-u32 application::font_width()
+uint32_t application::font_width()
 {
     return m_priv->font_width;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-u32 application::font_height()
+uint32_t application::font_height()
 {
     return m_priv->font_height;
 }

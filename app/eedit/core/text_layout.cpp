@@ -22,9 +22,9 @@ editor_layout_builder_context_s::editor_layout_builder_context_s(
     out(out_)
 {
     //        out_->dump(__PRETTY_FUNCTION__);
-    u32 L = screen_get_max_number_of_lines(out);
+    uint32_t L = screen_get_max_number_of_lines(out);
     assert(L);
-    u32 C = screen_get_max_number_of_columns(out);
+    uint32_t C = screen_get_max_number_of_columns(out);
     assert(C);
 
     screen_reset(out);
@@ -43,7 +43,7 @@ editor_layout_builder_context_s::editor_layout_builder_context_s(
     size_t buffer_sz = 0;
     byte_buffer_size(bid, &buffer_sz);
 
-    maximum_cp  = 1 + std::min<u64>( buffer_sz, (L) * (C)); // FIXME: interline
+    maximum_cp  = 1 + std::min<uint64_t>( buffer_sz, (L) * (C)); // FIXME: interline
 
     max_width_px  = screen_get_max_width_px(out);
     max_height_px = screen_get_max_height_px(out);
@@ -85,9 +85,9 @@ void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info)
 // put in screen ?
 //
 
-static std::map<s32, ew::graphics::fonts::font_glyph_info> glyph_info_cache;
+static std::map<int32_t, ew::graphics::fonts::font_glyph_info> glyph_info_cache;
 
-bool get_glyph_info_from_cache(const s32 cp,
+bool get_glyph_info_from_cache(const int32_t cp,
                                ew::graphics::fonts::font_glyph_info & out)
 {
     auto it = glyph_info_cache.find(cp);
@@ -99,16 +99,16 @@ bool get_glyph_info_from_cache(const s32 cp,
     return true;
 }
 
-inline void add_glyph_info_to_cache(const s32 cp,
+inline void add_glyph_info_to_cache(const int32_t cp,
                                     const ew::graphics::fonts::font_glyph_info & glyph_info)
 {
     glyph_info_cache[cp] = glyph_info;
 }
 
-bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const s32 cp, s32 * cp_filtered, ew::graphics::fonts::font_glyph_info & glyph_info)
+bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const int32_t cp, int32_t * cp_filtered, ew::graphics::fonts::font_glyph_info & glyph_info)
 {
     // isvisible ? char expension plugins...
-    s32 vcp = cp;
+    int32_t vcp = cp;
     bool bret = get_glyph_info_from_cache(vcp, glyph_info);
     if (bret == false) {
         bret = ft->get_codepoint_glyph_info(vcp, glyph_info);
@@ -337,15 +337,15 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
 
     editor_layout_builder_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
 
-    u32 t0 = ew::core::time::get_ticks();
+    size_t t0 = ew::core::time::get_ticks();
 
 
     eedit::core::build_layout(blctx);                         // TODO: the layout code does not need to know the the screen
 
-    // u64 rdr_end_off   = (u64)-1; // ed_buffer->rdr_end(); // FROM SID
+    // uint64_t rdr_end_off   = (uint64_t)-1; // ed_buffer->rdr_end(); // FROM SID
 #if 0
-    u64 rdr_begin_off = ed_buffer->rdr_begin()->offset();
-    u64 cursor_off    = ed_buffer->cursor_it()->offset();
+    uint64_t rdr_begin_off = ed_buffer->rdr_begin()->offset();
+    uint64_t cursor_off    = ed_buffer->cursor_it()->offset();
 
     app_log << " rdr_begin_off = " << rdr_begin_off << "\n";
     app_log << " rdr_end_off   = " << rdr_end_off   << "\n";
@@ -381,7 +381,7 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
 
     // ed_buffer->rdr_end() = rdr_end_off;
 
-    u32 t1 = ew::core::time::get_ticks();
+    size_t t1 = ew::core::time::get_ticks();
     if (0) {
         app_log << " time to build layout = " << (t1 - t0) << " ms, nr put " << blctx.nr_put << "\n";
     }

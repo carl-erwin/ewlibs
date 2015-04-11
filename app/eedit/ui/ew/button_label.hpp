@@ -39,13 +39,13 @@ public:
         return m_label->set_text(str);
     }
 
-    virtual const std::vector<s32> & get_text() const
+    virtual const std::vector<int32_t> & get_text() const
     {
         return m_label->get_text();
     }
 
 
-    virtual bool set_width(u32 w)
+    virtual bool set_width(uint32_t w)
     {
         app_log << __PRETTY_FUNCTION__ << " : w " << w << "\n";
         assert(w != 0);
@@ -54,7 +54,7 @@ public:
         return m_label->set_width(w);
     }
 
-    virtual bool set_height(u32 h)
+    virtual bool set_height(uint32_t h)
     {
         app_log << __PRETTY_FUNCTION__ << " : h " << h << "\n";
 

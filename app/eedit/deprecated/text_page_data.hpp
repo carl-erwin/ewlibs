@@ -48,8 +48,8 @@ public:
         return *this;
     }
 
-    u32 m_nr_cp;
-    u32 m_nr_new_line;
+    uint32_t m_nr_cp;
+    uint32_t m_nr_new_line;
 };
 
 

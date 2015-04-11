@@ -46,17 +46,17 @@ class Counter
 public:
     Counter() : _count(0) { }
 
-    void increment(u64 val = 1)
+    void increment(uint64_t val = 1)
     {
         _count += val;
     }
 
-    void decrement(u64 val = 1)
+    void decrement(uint64_t val = 1)
     {
         _count -= val;
     }
 
-    void set(u64 val)
+    void set(uint64_t val)
     {
         _count = val;
     }
@@ -233,11 +233,11 @@ public:
 
     // move to indexer ???
     // line
-    Counter<u64> numberOfLines; // nr of '\n' + 1
-    Counter<u64> numberOfCodepoints;
+    Counter<uint64_t> numberOfLines; // nr of '\n' + 1
+    Counter<uint64_t> numberOfCodepoints;
 
-    // ? rename haveLineNumber(u64 n)
-    u64 checkLine(u64 num)
+    // ? rename haveLineNumber(uint64_t n)
+    uint64_t checkLine(uint64_t num)
     {
         if (!num)
             return 1;
@@ -254,7 +254,7 @@ public:
      *  if the line was not found return the last indexed line start
      */
     // TODO: return bool , take output iterator as argument
-    iterator get_line(u64 line, u64 column)
+    iterator get_line(uint64_t line, uint64_t column)
     {
         //  cerr << __FUNCTION__ << " line = " << line << ", " << "column = " << column << "\n";
         // this->check_line_number();
@@ -330,7 +330,7 @@ public:
 
         if (this->is_indexed() == true) {
             it.d.line   = numberOfLines();
-            it.d.column = (u64) - 1; // this->get_column(it);
+            it.d.column = (uint64_t) - 1; // this->get_column(it);
         } else {
             it.d.line   = 0;
             it.d.column = 0;
@@ -339,7 +339,7 @@ public:
         return it;
     }
 
-    iterator get_iterator(u64 off)
+    iterator get_iterator(uint64_t off)
     {
         text_buffer::iterator it;
         it.d.owner = this;
@@ -349,7 +349,7 @@ public:
     }
 
     //
-    bool remove(u64 buffer_id, const text_buffer::iterator & it0, const text_buffer::iterator & it1, int do_log = 1)
+    bool remove(uint64_t buffer_id, const text_buffer::iterator & it0, const text_buffer::iterator & it1, int do_log = 1)
     {
         if (do_log) {
             // SAVE
@@ -369,13 +369,13 @@ public:
         return true;
     }
 
-    bool insert(const text_buffer::iterator & it, const u8 * data, u64 data_size);
+    bool insert(const text_buffer::iterator & it, const u8 * data, uint64_t data_size);
 
 
     /* TODO: should take a cursor as parameter
      *  must have TextBuffer::iterator
      */
-    bool remove_previous_char(u64 buffer_id, const text_buffer::iterator & it)
+    bool remove_previous_char(uint64_t buffer_id, const text_buffer::iterator & it)
     {
         if (it.offset() == 0) {
             return true;
@@ -385,8 +385,8 @@ public:
         return remove_current_char(buffer_id, itprev);
     }
     // TODO: add buffer->remove(const buffer::iterator & , const buffer::iterator & );
-    // TODO: add buffer->remove(const buffer::iterator, const u64 len);
-    bool remove_current_char(u64 buffer_id, const text_buffer::iterator & it0, int do_log = 1)
+    // TODO: add buffer->remove(const buffer::iterator, const uint64_t len);
+    bool remove_current_char(uint64_t buffer_id, const text_buffer::iterator & it0, int do_log = 1)
     {
         iterator it1(it0);
         ++it1;
@@ -397,19 +397,19 @@ public:
     }
 
     // extern ?
-    bool buffer_insert(u64 buffer_id, u64 offset, u8 * payload, size_t len)
+    bool buffer_insert(uint64_t buffer_id, uint64_t offset, u8 * payload, size_t len)
     {
         return 0;
     }
 
     /* TODO: must move line offsets */
-    bool insert_codepoint(u64 buffer_id, const s32 codepoint, const text_buffer::iterator & it, int do_log = 1)
+    bool insert_codepoint(uint64_t buffer_id, const int32_t codepoint, const text_buffer::iterator & it, int do_log = 1)
     {
-        u64 nrWritten;
+        uint64_t nrWritten;
 
         // current codec
         u8 utf8[8];
-        u32 utf8_sz = 7;
+        uint32_t utf8_sz = 7;
         switch (codepoint) {
         default:
             if (d.codec->put_cp(codepoint, utf8, &utf8_sz)) {
@@ -420,7 +420,7 @@ public:
 
 
 
-        u64 off = it.d.buff_it.offset();
+        uint64_t off = it.d.buff_it.offset();
 
         if (do_log) {
             buffer_commit_rev_t commit;
@@ -440,20 +440,20 @@ public:
     // move to text codec template ?
 
     bool read(const text_buffer::iterator & textbuffer_it,
-              s32 * cps,
-              u64 max,
-              u64 * cp_offset,
-              u32 * nr_cp_read)
+              int32_t * cps,
+              uint64_t max,
+              uint64_t * cp_offset,
+              uint32_t * nr_cp_read)
     {
         textbuffer_it.check_invariants();
 
         auto s = textbuffer_it.d.buff_it;
         auto end = d.buffer->end();
 
-        u32 & nr_fwd_cp = *nr_cp_read;
-        u32 nr_fwd_ok = 0;
-        u32 nr_fwd_error = 0;
-        s32 unicode;
+        uint32_t & nr_fwd_cp = *nr_cp_read;
+        uint32_t nr_fwd_ok = 0;
+        uint32_t nr_fwd_error = 0;
+        int32_t unicode;
         *cp_offset++ = s.offset();
         while (s < end) {
             auto next   = ew::codecs::text::get_cp<decltype(s)>(d.codec, s, end, &unicode);
@@ -535,11 +535,11 @@ public:
 
         inline buffer::iterator read_codepoint(int * cp)
         {
-            u64 maximum_codepoint_size = d.owner->d.codec->maximum_codepoint_size();
+            uint64_t maximum_codepoint_size = d.owner->d.codec->maximum_codepoint_size();
 
-            u64 off = d.buff_it.offset();
+            uint64_t off = d.buff_it.offset();
 
-            u64 diff = d.owner->d.buffer->size() - off;
+            uint64_t diff = d.owner->d.buffer->size() - off;
 
             diff = ew::maths::min(diff, maximum_codepoint_size);
 
@@ -550,7 +550,7 @@ public:
             return ew::codecs::text::get_cp<buffer::iterator>(d.owner->d.codec, d.buff_it, cp_limit, cp);
         }
 
-        inline s32  operator *()
+        inline int32_t  operator *()
         {
             if (d.cache_c != INVALID_CP_CACHE) {
                 return d.cache_c;
@@ -562,9 +562,9 @@ public:
 
         inline iterator & operator++()
         {
-            // u64 buff_sz = d.owner->buffer()->size();
-            u64 buff_sz = d.owner->d.buffer->size();
-            u64 prev_offset = d.buff_it.offset();
+            // uint64_t buff_sz = d.owner->buffer()->size();
+            uint64_t buff_sz = d.owner->d.buffer->size();
+            uint64_t prev_offset = d.buff_it.offset();
 
             if (prev_offset >= buff_sz) {
                 d.cache_c = INVALID_CP_CACHE;
@@ -611,7 +611,7 @@ public:
 // --it
         inline iterator & operator--()
         {
-            u64 off = d.buff_it.offset();
+            uint64_t off = d.buff_it.offset();
 
             if (off == 0) {
                 d.column = 1;
@@ -621,14 +621,14 @@ public:
 
             buffer::iterator it_old(d.buff_it);
 
-            u64 maximum_codepoint_size = 4; // TODO: u32 codec->maximum_codepoint_size();
-            u64 diff = off;
+            uint64_t maximum_codepoint_size = 4; // TODO: uint32_t codec->maximum_codepoint_size();
+            uint64_t diff = off;
             diff = ew::maths::min(diff, maximum_codepoint_size);
             buffer::iterator cp_limit(it_old);
             while (diff--)
                 --cp_limit;
 
-            s32 cp = d.owner->d.codec->rget_cp(cp_limit, it_old, &d.buff_it);
+            int32_t cp = d.owner->d.codec->rget_cp(cp_limit, it_old, &d.buff_it);
             if (cp == '\n') {
                 if (d.line)
                     d.line--;
@@ -698,45 +698,45 @@ public:
             return (this->d.buff_it <= it2.d.buff_it);
         }
 
-        u64 offset() const
+        uint64_t offset() const
         {
             return d.buff_it.offset();
         }
 
 
-        u64 line() const
+        uint64_t line() const
         {
             if (d.line == 0) {
-                d.owner->d.find_line_by_offset(offset(), const_cast<u64 *>(&d.line));
+                d.owner->d.find_line_by_offset(offset(), const_cast<uint64_t *>(&d.line));
             }
 
             return d.line;
         }
 
 
-        u64 column() const
+        uint64_t column() const
         {
             return d.column;
         }
 
         // returns an iterator relative to mark position
-        iterator move(s64 line_inc, s64 column_inc)
+        iterator move(int64_t line_inc, int64_t column_inc)
         {
-            u64 l = line();
-            u64 c = column();
+            uint64_t l = line();
+            uint64_t c = column();
 
             // if l == 0 or c == 0
             //
 
             if (line_inc < 0) {
-                u64 l2 = l + line_inc;
+                uint64_t l2 = l + line_inc;
                 if (l > l2) {
                     line_inc = 0;
                 }
             }
 
             if (column_inc < 0) {
-                u64 c2 = c + line_inc;
+                uint64_t c2 = c + line_inc;
                 if (c > c2) {
                     column_inc = 0;
                 }
@@ -750,7 +750,7 @@ public:
             return *this;
         }
 
-        bool move_to_offset(u64 offset)   // will compute (line, column) only if indexed
+        bool move_to_offset(uint64_t offset)   // will compute (line, column) only if indexed
         {
             d.line = 0;
             d.column = 0;
@@ -758,7 +758,7 @@ public:
             // set new data
             this->d.owner->buffer()->get_iterator_by_offset(offset, &d.buff_it);
 
-            u64 line;
+            uint64_t line;
 
             // BROKEN: move to index mode
             if (0) {
@@ -774,7 +774,7 @@ public:
         }
 
         // end of line
-        inline bool isEol(const s32 cp) const
+        inline bool isEol(const int32_t cp) const
         {
             if (cp == '\r') // other function must skip \n
                 return true;
@@ -787,15 +787,15 @@ public:
 
         inline bool isEol()
         {
-            s32 c = this->operator * ();
+            int32_t c = this->operator * ();
             return this->isEol(c);
         }
 
         // end of file
         inline bool isEof()
         {
-            //  u64 buff_sz = d.owner->buffer()->size();
-            u64 buff_sz = d.owner->d.buffer->size();
+            //  uint64_t buff_sz = d.owner->buffer()->size();
+            uint64_t buff_sz = d.owner->d.buffer->size();
             if (offset() == buff_sz) {
                 return true;
             }
@@ -841,7 +841,7 @@ public:
                     return true;
                 }
 
-                s32 c = *itb0;
+                int32_t c = *itb0;
                 if (c == '\r') {
                     // skip end of previous line
                     ++itb0;
@@ -873,12 +873,12 @@ public:
         bool toEndOfLine()
         {
 #if 1
-            u64 nr_ok;
-            u64 nr_err;
+            uint64_t nr_ok;
+            uint64_t nr_err;
 
             buffer::iterator out;
 
-            s32 c = this->operator * ();
+            int32_t c = this->operator * ();
             if ((c == '\n') || (c == '\r')) {
                 return true;
             }
@@ -891,9 +891,9 @@ public:
 #endif
             text_codec  * codec = d.owner->codec();
 
-//            u32 t0 = ew::core::time::get_ticks();
-            bool bret = search_n<buffer::iterator>(codec, (u64)1, d.buff_it, itb_end, '\n', nr_ok, nr_err, out);
-//           u32 t1 = ew::core::time::get_ticks();
+//            uint32_t t0 = ew::core::time::get_ticks();
+            bool bret = search_n<buffer::iterator>(codec, (uint64_t)1, d.buff_it, itb_end, '\n', nr_ok, nr_err, out);
+//           uint32_t t1 = ew::core::time::get_ticks();
 
 
 #if 0
@@ -929,7 +929,7 @@ public:
 #else
             auto it_end = d.owner->end();
             while (*this != it_end) {
-                s32 c = this->operator * ();
+                int32_t c = this->operator * ();
                 if (c == '\n')
                     break;
 
@@ -966,9 +966,9 @@ public:
             // data
             text_buffer * owner;
             buffer::iterator buff_it;
-            u64 line;
-            u64 column;
-            s32 cache_c;
+            uint64_t line;
+            uint64_t column;
+            int32_t cache_c;
         };
         private_data d;
     };
@@ -1019,11 +1019,11 @@ private:
         bool is_indexed = false;
 
         struct find_line {
-            u64 line;
+            uint64_t line;
 
             buffer::node * find_node;
 
-            find_line(const u64 _line)
+            find_line(const uint64_t _line)
             {
                 line = _line;
                 find_node = nullptr;
@@ -1054,7 +1054,7 @@ private:
             }
         };
 
-        bool find_start_of_line(u64 line, text_buffer::iterator * out)
+        bool find_start_of_line(uint64_t line, text_buffer::iterator * out)
         {
             // line 1 is offset(0)
             if (line == 1) {
@@ -1073,7 +1073,7 @@ private:
             buffer::node * root = buffer->root_node();
             text_page_data * pi = static_cast<text_page_data *>(root->get_meta_data());
 
-            u64 max_lines = pi->m_nr_new_line + 1;
+            uint64_t max_lines = pi->m_nr_new_line + 1;
             if (line > max_lines) {
                 assert(0);
                 return false;
@@ -1084,7 +1084,7 @@ private:
                 return false;
             }
 
-            u64 line_index = line - 1;
+            uint64_t line_index = line - 1;
 
             app_log << " line index = " << line_index << "\n";
 
@@ -1098,7 +1098,7 @@ private:
             line_index = fl.line;
             app_log << " local line index = " << line_index << "\n";
 
-            u64 local_offset = 0;
+            uint64_t local_offset = 0;
             p->map();
             {
                 u8 * b = p->begin();
@@ -1119,7 +1119,7 @@ private:
             }
             p->unmap();
 
-            u64 final_offset = 0;
+            uint64_t final_offset = 0;
             buffer->get_offset_by_node_local_offset(fl.find_node, local_offset, &final_offset);
 
             app_log << " find line " << line << " @ final offset = " << final_offset << "\n";
@@ -1150,7 +1150,7 @@ private:
             return true;
         }
 
-        bool find_line_by_offset(u64 offset, u64 * line)
+        bool find_line_by_offset(uint64_t offset, uint64_t * line)
         {
             // get the real line num from a given offset
             *line = 0;
@@ -1165,7 +1165,7 @@ private:
 
 
         // REMOVE THIS
-        bool find_line_from_buffer_iterator(const  buffer::iterator & it, u64 * line)
+        bool find_line_from_buffer_iterator(const  buffer::iterator & it, uint64_t * line)
         {
             buffer::node * n = it.get_node();
             if (n == nullptr) {
@@ -1175,7 +1175,7 @@ private:
 
             buffer::page_type * p =  n->page();
 
-            u64 line_index = 0;
+            uint64_t line_index = 0;
 
             p->map();
             {

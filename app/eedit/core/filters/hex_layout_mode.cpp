@@ -35,7 +35,7 @@ bool hex_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filt
     size_t index = 0;
     {
         static char hex_table[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-        u64 offset = in[index].offset;
+        uint64_t offset = in[index].offset;
         /// update/remove ed_bufer -> raw_buffer
         if (in[index].end_of_pipe == true) {
             out[index].cp     = ' ';
@@ -44,9 +44,9 @@ bool hex_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filt
             *nr_out = 1;
         } else {
 
-            u8 byte_val = in[index].byte_value;
-            u8 msb = (byte_val >> 4);
-            u8 lsb = (byte_val &  0x0f);
+            uint8_t byte_val = in[index].byte_value;
+            uint8_t msb = (byte_val >> 4);
+            uint8_t lsb = (byte_val &  0x0f);
 
             out[index + 0].cp     = hex_table[msb];
             out[index + 0].valid  = true;

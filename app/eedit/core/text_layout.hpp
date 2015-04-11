@@ -6,7 +6,7 @@
 
 #include "ew/graphics/font/font.hpp"
 
-#include "../application/application.hpp"
+//#include "../application/application.hpp"
 
 #include "editor_export.h"
 #include "editor_buffer.h"
@@ -49,7 +49,7 @@ extern "C" {
             struct {
                 int32_t   cp;
                 int32_t   real_cp;
-                uint64_t  cp_index; // be carefull used const u64 invalid_cp_index
+                uint64_t  cp_index; // be carefull used const uint64_t invalid_cp_index
                 uint32_t  split_flag;
                 uint32_t  split_count;
             };
@@ -94,7 +94,7 @@ inline void filter_io_init(editor_layout_filter_io_t * io)
 
     io->cp          = 0xffd;
     io->real_cp     = 0xffd;
-    io->cp_index    = (uint64_t)-1; // be carrefull used const u64 invalid_cp_index
+    io->cp_index    = (uint64_t)-1; // be carrefull used const uint64_t invalid_cp_index
     io->split_flag  = 0;
     io->split_count = 0;
 };
@@ -114,23 +114,23 @@ struct editor_layout_builder_context_s {
     codec_id_t              codec_id = 0;
     codec_io_ctx_s	        io_ctx;
 
-    u64                  start_offset = 0;
+    uint64_t                  start_offset = 0;
 
     ew::graphics::fonts::font * ft = nullptr; // TODO: font family, map<font>
 
-    u32 max_width_px;
-    u32 max_height_px;
+    uint32_t max_width_px;
+    uint32_t max_height_px;
 
     // ctx out
     // TODO : move variables to screen/output device
-    u32 nr_put;
-    u32 screen_max_line;
-    u32 screen_max_column;
+    uint32_t nr_put;
+    uint32_t screen_max_line;
+    uint32_t screen_max_column;
 
     const codepoint_info_s * start_cpi = nullptr; // this cpi is mainly used to compute expansion split count, column count, etc...
 
     // in/out
-    u64 maximum_cp;
+    uint64_t maximum_cp;
     screen_t * out;
 };
 
@@ -147,17 +147,17 @@ void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info);
 
 
 
-bool get_glyph_info_from_cache(const s32 cp,
+bool get_glyph_info_from_cache(const int32_t cp,
                                ew::graphics::fonts::font_glyph_info & out);
 
 
-void add_glyph_info_to_cache(const s32 cp,
+void add_glyph_info_to_cache(const int32_t cp,
                              const ew::graphics::fonts::font_glyph_info & glyph_info);
 
 
 bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft,
-                              const s32 cp,
-                              s32 * cp_filtered, /* filled on error with 0xfffd */
+                              const int32_t cp,
+                              int32_t * cp_filtered, /* filled on error with 0xfffd */
                               ew::graphics::fonts::font_glyph_info & glyph_info);
 
 /*

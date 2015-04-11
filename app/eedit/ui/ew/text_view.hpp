@@ -66,7 +66,7 @@ public:
     {
         m_parent = parent;
         set_name("text_view");
-        m_screen_id = (u64)this;
+        m_screen_id = (uint64_t)this;
         app_log << __PRETTY_FUNCTION__ << " m_screen_id = " << m_screen_id << "\n";
     }
 
@@ -105,7 +105,7 @@ public:
 
     bool on_create(const ew::graphics::gui::widget_event * ev)
     {
-        assert(m_screen_id == (u64)this);
+        assert(m_screen_id == (uint64_t)this);
 
         m_screen_dim.w = width();
         m_screen_dim.h = height();
@@ -126,7 +126,7 @@ public:
 
     std::vector<ew::graphics::gui::fonts::font_grid> ft_grid_array;
 
-    u32 max_line_index()
+    uint32_t max_line_index()
     {
 
         if (screen() == nullptr) {
@@ -136,7 +136,7 @@ public:
         return screen_get_number_of_used_lines(screen()) + 1;
     }
 
-    u64 line_num_by_index(u64 idx)
+    uint64_t line_num_by_index(uint64_t idx)
     {
         return 0;
 
@@ -147,10 +147,10 @@ public:
         return 0;
     }
 
-    bool line_first_cp_index(u32 line_idx, u64 * cp_index)
+    bool line_first_cp_index(uint32_t line_idx, uint64_t * cp_index)
     {
         //        app_log << __PRETTY_FUNCTION__ << " : line_idx = " << line_idx << "\n";
-        *cp_index = u64(-1);
+        *cp_index = uint64_t(-1);
         if (screen() == nullptr) {
             return false;
         }
@@ -168,7 +168,7 @@ public:
     }
 
 
-    bool line_start_offset_by_index(u32 line_idx, u64 * offset)
+    bool line_start_offset_by_index(uint32_t line_idx, uint64_t * offset)
     {
         //        app_log << __PRETTY_FUNCTION__ << " : line_idx = " << line_idx << "\n";
         *offset = 0;
@@ -189,7 +189,7 @@ public:
         return true;
     }
 
-    bool line_last_offset_by_index(u32 line_idx, u64 * offset)
+    bool line_last_offset_by_index(uint32_t line_idx, uint64_t * offset)
     {
         //   app_log << __PRETTY_FUNCTION__ << " : line_idx = " << line_idx << "\n";
         *offset = 0;
@@ -210,7 +210,7 @@ public:
     }
 
 
-    s32 line_top_y_pos_by_index(u64 line_idx)
+    int32_t line_top_y_pos_by_index(uint64_t line_idx)
     {
         // app_log << __PRETTY_FUNCTION__ << " : line_idx = " << line_idx << "\n";
 
@@ -236,14 +236,14 @@ public:
             return true;
         }
 
-        u64 sz   = screen_get_buffer_size(screen());
+        uint64_t sz   = screen_get_buffer_size(screen());
 
         const codepoint_info_t * first_cpinfo;
         const codepoint_info_t * last_cpinfo;
         screen_get_first_and_last_cpinfo(screen(), &first_cpinfo, &last_cpinfo);
 
-        u64 boff = first_cpinfo->offset;
-        u64 eoff = last_cpinfo->offset;
+        uint64_t boff = first_cpinfo->offset;
+        uint64_t eoff = last_cpinfo->offset;
 
         if (0) {
             app_log << " text_size = " << sz << "\n";
@@ -301,8 +301,8 @@ public:
         update_scroll_bar();
 
 
-        u32 max_l;
-        u32 max_c;
+        uint32_t max_l;
+        uint32_t max_c;
         screen_get_max_line_and_column(screen(), &max_l, &max_c);
 
         if (!max_l) {
@@ -318,7 +318,7 @@ public:
         // TODO: cache this later :-) std::vector<ew::graphics::gui::fonts::font_grid> ?
         auto & ft_grid = ft_grid_array; // new ew::graphics::gui::fonts::font_grid[max_l * max_c];
         ft_grid.resize(max_l * max_c);
-        u32 ft_index = 0;
+        uint32_t ft_index = 0;
 
         auto ft = get_font();
         assert(ft);
@@ -335,10 +335,10 @@ public:
 
 
         struct selection_info {
-            s32 x = 0;
-            s32 y = 0;
-            s32 w = 0;
-            s32 h = 0;
+            int32_t x = 0;
+            int32_t y = 0;
+            int32_t w = 0;
+            int32_t h = 0;
 
             float r = 100.0f / 255.0f;
             float g = 180.0f / 255.0f;
@@ -361,7 +361,7 @@ public:
         // 1st pass render glyph
         // app_log << __PRETTY_FUNCTION__ << " screen_get_number_of_used_lines(screen()) = " << screen_get_number_of_used_lines(screen()) << "\n";
 
-        for (u32 l = 0; l < screen_get_number_of_used_lines(screen()); l++) {
+        for (uint32_t l = 0; l < screen_get_number_of_used_lines(screen()); l++) {
 
             // app_log << __PRETTY_FUNCTION__ << " l = " << l << "\n";
 
@@ -372,7 +372,7 @@ public:
                 // break;
             }
 
-            for (u32 c = 0; c < screen_line_get_number_of_used_columns(lptr); c++) {
+            for (uint32_t c = 0; c < screen_line_get_number_of_used_columns(lptr); c++) {
 
                 // app_log << __PRETTY_FUNCTION__ << " c = " << c << "\n";
                 const codepoint_info_t * cpi = nullptr;
@@ -504,10 +504,10 @@ public:
 
         for (auto & sel : selections) {
 
-            s32 & cX = sel.x;
-            s32 & cY = sel.y;
-            s32 & cW = sel.w;
-            s32 & cH = sel.h;
+            int32_t & cX = sel.x;
+            int32_t & cY = sel.y;
+            int32_t & cW = sel.w;
+            int32_t & cH = sel.h;
 
             // ew_glColor4f(1.0f, 0.0, 0, 0.50f);
             ew_glEnable(GL_BLEND);
@@ -536,7 +536,7 @@ public:
         return true;
     }
 
-    bool send_build_layout_event(u32 w, u32 h) const
+    bool send_build_layout_event(uint32_t w, uint32_t h) const
     {
         app_log << __PRETTY_FUNCTION__ << " ui -> core @" << ew::core::time::get_ticks() << "\n";
 
@@ -569,7 +569,7 @@ public:
         return true;
     }
 
-    bool resize(u32 w, u32 h)
+    bool resize(uint32_t w, uint32_t h)
     {
         app_log << __PRETTY_FUNCTION__ << "\n";
         app_log << __PRETTY_FUNCTION__ << " width() = " << width() << "\n";
@@ -754,7 +754,7 @@ public:
             return false;
         }
 
-        assert(m_screen_id == (u64)this);
+        assert(m_screen_id == (uint64_t)this);
         m_screen_dim.w = width();
         m_screen_dim.h = height();
         m_screen_dim.c = width();
@@ -783,7 +783,7 @@ public:
         ++i;
 
         // offset
-        u64 offset = screen_get_buffer_size(screen()) * ratio;
+        uint64_t offset = screen_get_buffer_size(screen()) * ratio;
 
         snprintf(buffer[i],  sizeof (buffer[i]),  "%lu", offset);
         query_av[i] = &buffer[i][0];
@@ -847,7 +847,7 @@ private:
     ew::graphics::gui::widget * m_parent      = nullptr;
     scroll_area     *     m_scrool_bar        = nullptr;
 
-    u32                                  m_last_msg_id    = 0;
+    uint32_t                                  m_last_msg_id    = 0;
     editor_buffer_id_t                   m_ebuffer_id     = 0;
     byte_buffer_id_t                     m_buffer_id      = 0;
     bool                                 m_have_buffer_id = 0;

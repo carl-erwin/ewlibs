@@ -17,11 +17,11 @@ public:
 
     virtual ~status_bar();
 
-    bool set_content(const s32 * str, size_t nr_char = 0);
+    bool set_content(const int32_t * str, size_t nr_char = 0);
 
     virtual bool render();
 private:
-    s32 * m_content = nullptr;
+    int32_t * m_content = nullptr;
     size_t m_content_sz = 0;
 };
 

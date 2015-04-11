@@ -21,7 +21,7 @@
 
 
 // simple enough, no size checks
-bool utf8_put_cp(const s32 codepoint, u8 * utf8)
+bool utf8_put_cp(const int32_t codepoint, u8 * utf8)
 {
     if (codepoint < 0x80) {
         utf8[0] = codepoint & 0x7F;
@@ -93,8 +93,8 @@ struct ncurses_ui_interface : public user_interface {
     bool process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg);
     bool quit();
 
-    bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim);
-    bool send_build_layout_event(u32 w, u32 h) const;
+    bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, uint64_t screen_id, const screen_dimension_t & screen_dim);
+    bool send_build_layout_event(uint32_t w, uint32_t h) const;
     struct editor_input_event_s ncurses_keycode_to_eedit_event(int keycode);
 
     byte_buffer_id_t m_cur_ebid = 0; // current buffer;
@@ -123,7 +123,7 @@ bool ncurses_ui_interface::setup(application * app)
 
 
 
-bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim)
+bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, uint64_t screen_id, const screen_dimension_t & screen_dim)
 {
     struct editor_message_s * msg = editor_rpc_call_new(ac, av);
     msg->src.kind  =  EDITOR_ACTOR_UI;
@@ -217,7 +217,7 @@ bool ncurses_ui_interface::main_loop()
     };
 
     ui_state = request_buffer_id_list;
-    send_rpc_event(1,  &func, 0, 0, (u64)stdscr, scr_dim);
+    send_rpc_event(1,  &func, 0, 0, (uint64_t)stdscr, scr_dim);
 
     auto q = m_event_queue;
 
@@ -337,8 +337,8 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
 
     iev.key = NO_KEY;
 
-    u32 mod_mask = 0;
-    u32 unicode  = 0;
+    uint32_t mod_mask = 0;
+    uint32_t unicode  = 0;
 
     switch (keycode) {
     case KEY_DOWN:
@@ -567,12 +567,12 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
 
 
     const auto scr = msg->layout.screen;
-    u32 limax = std::min((u32)row, screen_get_number_of_used_lines(scr));
-    for (u32 li = 0; li < limax; li++) {
+    uint32_t limax = std::min((uint32_t)row, screen_get_number_of_used_lines(scr));
+    for (uint32_t li = 0; li < limax; li++) {
 
         const screen_line_t * l = nullptr;
         screen_get_line(scr, li, &l);
-        for (u32 c = 0; c < screen_line_get_number_of_used_columns(l); c++) {
+        for (uint32_t c = 0; c < screen_line_get_number_of_used_columns(l); c++) {
             const codepoint_info_s * cpi;
             screen_line_get_cpinfo(l, c, &cpi, screen_line_hint_fix_column_overflow);
 
@@ -600,7 +600,7 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
 }
 
 // FIXME: pass col,row
-bool ncurses_ui_interface::send_build_layout_event(u32 w, u32 h) const
+bool ncurses_ui_interface::send_build_layout_event(uint32_t w, uint32_t h) const
 {
     app_log << __PRETTY_FUNCTION__ << " ui -> core @" << ew::core::time::get_ticks() << "\n";
 

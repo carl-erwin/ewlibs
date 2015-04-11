@@ -52,21 +52,21 @@ public:
         int buffer_len = 0;
         ew::graphics::colors::color3ub col(24, 24, 24); // TODO
 
-        u64 current_line = 0;
-        u64 prev_line = 0;
+        uint64_t current_line = 0;
+        uint64_t prev_line = 0;
 
-        u32 nr_lines = 1000;
+        uint32_t nr_lines = 1000;
 
-        //u64 prev_offset = 0;
-        u64 line_idx = 0;
+        //uint64_t prev_offset = 0;
+        uint64_t line_idx = 0;
 
-        u32 max_line_index = m_txt_view->max_line_index();
+        uint32_t max_line_index = m_txt_view->max_line_index();
 
         bool have_real_line = false;
 
         auto m_ft = get_font();
-        for (s32 y = 0;
-             y + (s32)m_ft->pixel_height() < (s32)height() && (line_idx < max_line_index);
+        for (int32_t y = 0;
+             y + (int32_t)m_ft->pixel_height() < (int32_t)height() && (line_idx < max_line_index);
              y += m_ft->pixel_height(), ++line_idx) {
 
             if (line_idx == nr_lines)
@@ -74,14 +74,14 @@ public:
 
             current_line = m_txt_view->line_num_by_index(line_idx);
 
-            u64 current_offset;
+            uint64_t current_offset;
 //            bool have_offset = m_txt_view->line_start_offset_by_index(line_idx, &current_offset);
             bool have_offset = m_txt_view->line_first_cp_index(line_idx, &current_offset); // cp_count -1
 
             if (!have_offset)
                 continue;
 
-            u64 last_offset;
+            uint64_t last_offset;
             bool have_last_offset = m_txt_view->line_last_offset_by_index(line_idx, &last_offset);
             if (!have_last_offset)
                 continue;
@@ -114,12 +114,12 @@ public:
 
             y = m_txt_view->line_top_y_pos_by_index(line_idx);
 
-            s32 x = 0;
+            int32_t x = 0;
             // align text to right
-            u32 text_width = 0;
+            uint32_t text_width = 0;
             text_width = ft_compute_ascii_text_width(*m_ft, buffer, buffer_len);
 
-            s32 last_char_size = 0;
+            int32_t last_char_size = 0;
             if (buffer_len) {
                 auto last_char = buffer[buffer_len - 1];
                 last_char_size = m_ft->character_glyph_hori_advance(last_char);

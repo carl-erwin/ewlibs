@@ -40,9 +40,9 @@ namespace  eedit
  *  TODO:
  *
  *  for better layout: add
- *  std::vector<s32> unicode_string;
- *  u32 font_string_width(ft, s32 *, size_t n); --> sum of cp widths
- *  u32 font_string_height(ft, s32 *, size_t n);  --> max height in string
+ *  std::vector<int32_t> unicode_string;
+ *  uint32_t font_string_width(ft, int32_t *, size_t n); --> sum of cp widths
+ *  uint32_t font_string_height(ft, int32_t *, size_t n);  --> max height in string
  *
  *  (later) will depend on layout direction
  *
@@ -54,7 +54,7 @@ namespace  eedit
 
 #if 0
 
-void ignore_event_type_befor_tick(event_type type , u32 tick)
+void ignore_event_type_befor_tick(event_type type , uint32_t tick)
 {
     get_application()->display()->get_event_dispatcher()->drop_events_before_tick(type , tick);
 }
@@ -63,7 +63,7 @@ void push_draw_event(ew::graphics::gui::widget * widget)
 {
     push_draw_event(widget);
 
-    u32 tick = ew::core::time::get_ticks() + 20;
+    uint32_t tick = ew::core::time::get_ticks() + 20;
     ignore_event_type_befor_tick(PointerMotion_event, tick);
     ignore_event_type_befor_tick(WidgetDrawEvent, tick);
 }
@@ -101,7 +101,7 @@ public:
 
     ////////////////////////////////////////////////
     // helpers
-    bool do_resize(main_window * owner, u32 w, u32 h);
+    bool do_resize(main_window * owner, uint32_t w, uint32_t h);
 
     bool loop = true;
 
@@ -372,7 +372,7 @@ bool main_window::main_window_private::create_buffer_view()
 
     // line number /////////////////////////////////////////////////////////////////////
 #if 1
-    u32 line_number_w = 1 + (9 * ft->pixel_width()) + 1; // TODO: max 16 digits + @
+    uint32_t line_number_w = 1 + (9 * ft->pixel_width()) + 1; // TODO: max 16 digits + @
     line_number_w = 12;
     app_log << "line_number_w = " << line_number_w << "\n";
     m_buffer_view->m_line_number->set_width(line_number_w);
@@ -395,7 +395,7 @@ bool main_window::main_window_private::create_buffer_view()
 
     // scroll bar /////////////////////////////////////////////////////////////////////
 #if 1
-    u32 scrool_bar_w = 12; // TODO: put this in header
+    uint32_t scrool_bar_w = 12; // TODO: put this in header
     m_buffer_view->m_scrool_bar->set_height(m_owner->height());
     m_buffer_view->m_scrool_bar->set_width(scrool_bar_w);
     m_buffer_view->m_scrool_bar->horizontal_policy().type() = alignment::fixed;

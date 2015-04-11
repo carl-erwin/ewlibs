@@ -44,7 +44,7 @@ int buffer_undo(struct editor_message_s * msg)
     case buffer_log_remove_op: {
         // app_log << "undo remove @ " << offset << "\n";
         // FIXME: // buff->cursor_it() = offset;
-        // FIXME: // u64 nrWritten = 0;
+        // FIXME: // uint64_t nrWritten = 0;
         // FIXME: // buff->txt_buffer()->buffer()->insert(offset, data, (size_t)size, &nrWritten);
     }
     break;
@@ -107,7 +107,7 @@ int buffer_redo(struct editor_message_s * msg)
 
         assert(0);
         //FIXME// buff->cursor_it()->move_to_offset(offset);
-        //FIXME// u64 nrWritten = 0;
+        //FIXME// uint64_t nrWritten = 0;
         //FIXME// buff->txt_buffer()->buffer()->insert(offset, data, (size_t)size, &nrWritten);
         //FIXME// cursor_off = offset + size;
     }

@@ -22,7 +22,7 @@ extern "C" {
  * { codec_id, text_codec_contex_id_t } that represent the active codec
  *
  * in future version it will be possible to switch text_codec on the fly:
- * special stream_info_t { stream_entity_type(u32) = CODEC_CHANGE, editor_codec_type_t(u32), codec_id_t id, codec_ctx_t } ?
+ * special stream_info_t { stream_entity_type(uint32_t) = CODEC_CHANGE, editor_codec_type_t(uint32_t), codec_id_t id, codec_ctx_t } ?
  *
  */
 

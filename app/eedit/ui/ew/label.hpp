@@ -13,7 +13,7 @@ using namespace ew::implementation::graphics::rendering::opengl;
 
 class label : public ew::graphics::gui::widget
 {
-    std::vector<s32> text; // unicode
+    std::vector<int32_t> text; // unicode
 public:
 
     label()
@@ -41,7 +41,7 @@ public:
         return true;
     }
 
-    virtual const std::vector<s32> & get_text() const
+    virtual const std::vector<int32_t> & get_text() const
     {
         return text;
     }

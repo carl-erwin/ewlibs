@@ -42,9 +42,9 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
         // tab expansion
         case '\t': {
 
-            u64 col = in[index].cp_index;
+            uint64_t col = in[index].cp_index;
 
-            u64 filled;
+            uint64_t filled;
             if (in[index].split_count) {
                 col = expansion - in[index].split_count;
                 filled = in[index].split_count;

@@ -63,7 +63,7 @@
 
     codec : (from offset consume bytes -> new_offset)
 
-    with {buffer_id screen_id} : buffer |  codec_id | s32 cp/pictures/bytes | fold
+    with {buffer_id screen_id} : buffer |  codec_id | int32_t cp/pictures/bytes | fold
 
 
 */
@@ -169,11 +169,11 @@ int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t
 
 int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
                              editor_view_id_t ed_view,
-                             const u32 screen_max_cp, const u32 hints, u64 near_offset, u64 * resynced_offset);
+                             const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset);
 
 
 
-int to_next_screen_line_by_offset(struct editor_message_s * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi);
+int to_next_screen_line_by_offset(struct editor_message_s * _msg, const uint64_t screen_offset, uint64_t & new_screen_offset, codepoint_info_s & next_start_cpi);
 
 int to_next_screen_line_internal(struct editor_message_s * _msg, codepoint_info_s & next_start_cpi);
 
@@ -209,8 +209,8 @@ int  resync_screen_layout(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t 
 
 
     // save offset
-    u64 start_offset = screen_get_start_offset(screen); // SCREEN API ??!!?
-    u64 new_start_offset = start_offset;
+    uint64_t start_offset = screen_get_start_offset(screen); // SCREEN API ??!!?
+    uint64_t new_start_offset = start_offset;
 
     // go to beginning of line
     // get_beginning_of_line(bid, cid, off_in||mark, &off_out); wrapper -> codec_ctl
@@ -246,9 +246,9 @@ int  resync_screen_layout(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t 
 // TODO: pass view(sid) as parameter
 int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
                              editor_view_id_t ed_view,
-                             const u32 screen_max_cp, const u32 hints, u64 near_offset, u64 * resynced_offset)
+                             const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset)
 {
-    u64 rewind_off = near_offset;
+    uint64_t rewind_off = near_offset;
 
 
     *resynced_offset = editor_view_get_start_offset(ed_view);
@@ -306,7 +306,7 @@ int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
 
 /* TODO: use dichotomic search */
 int screen_list_find_offset(const std::list<screen_t *> & scr_list,
-                            const u64 target_offset,
+                            const uint64_t target_offset,
                             size_t & screen_index,
                             size_t & abs_line_index,
                             size_t & line_index,
@@ -339,7 +339,7 @@ int screen_list_find_offset(const std::list<screen_t *> & scr_list,
 // TODO: move to common, view.h ?
 int view_clip_offset(
     editor_buffer_id_t ed_buffer,
-    editor_view_id_t ed_view, u64 & offset)
+    editor_view_id_t ed_view, uint64_t & offset)
 {
     size_t buffer_sz;
     byte_buffer_size( editor_buffer_get_byte_buffer_id(ed_buffer), &buffer_sz);
@@ -353,16 +353,16 @@ int view_clip_offset(
 
 int build_screen_line_list(editor_buffer_id_t ed_buffer,
                            editor_view_id_t ed_view,
-                           const u64 start_offset_, const u64 until_offset_on_screen,
-                           const u32 hints,
+                           const uint64_t start_offset_, const uint64_t until_offset_on_screen,
+                           const uint32_t hints,
                            const screen_dimension_t & scr_dim,
                            std::vector<std::pair<uint64_t,uint64_t>> & screen_line_list)
 {
     assert(start_offset_ <= until_offset_on_screen);
 
     // check buffer limits
-    u64 start_offset = start_offset_;
-    u64 until_offset   = until_offset_on_screen;
+    uint64_t start_offset = start_offset_;
+    uint64_t until_offset   = until_offset_on_screen;
     view_clip_offset(ed_buffer, ed_view, until_offset);
 
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : start_offset = " << start_offset << "\n";
@@ -373,8 +373,8 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
     editor_view_set_start_offset(ed_view, start_offset);
 
     // rewind / sync
-    const u32 screen_max_cp = (scr_dim.l * scr_dim.c) * 1; // 4 is codec->max_codepoint_size(); in utf8
-    u64 rewind_off = start_offset;
+    const uint32_t screen_max_cp = (scr_dim.l * scr_dim.c) * 1; // 4 is codec->max_codepoint_size(); in utf8
+    uint64_t rewind_off = start_offset;
     if (build_screen_no_hints != 0) {
         rewind_and_resync_screen(ed_buffer, ed_view, screen_max_cp, hints, start_offset, &rewind_off);
     }
@@ -391,7 +391,7 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
     int count = 0;
     int found = 0;
-    // u64 restart_offset = 0;
+    // uint64_t restart_offset = 0;
 
     codepoint_info_s start_cpi;
     start_cpi.offset = rewind_off;
@@ -416,12 +416,12 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
         screen_get_first_cpinfo(tmp_scr, &first_cpinfo);
 #ifndef NDEBUG
-        u64 first_off = first_cpinfo->offset;
+        uint64_t first_off = first_cpinfo->offset;
 #endif
         const codepoint_info_s * last_cpinfo  = nullptr;
         screen_get_last_cpinfo(tmp_scr, &last_cpinfo);
 
-        // u64 last_off  = last_cpinfo->offset;
+        // uint64_t last_off  = last_cpinfo->offset;
         // // FIXME:   define editor_log() like printf // app_log <<  " screen.start off = " <<  first_off << "\n";
         // // FIXME:   define editor_log() like printf // app_log <<  " target offset    = " <<  until_offset << "\n";
         // // FIXME:   define editor_log() like printf // app_log <<  " screen.end_off   = " <<  last_off <<  "\n";
@@ -548,8 +548,8 @@ int page_up_internal(struct editor_message_s * msg, codepoint_info_s  & start_cp
     // get dimension
     screen_dimension_t scr_dim = screen_get_dimension(screen);
 
-    u32 max_cp = (scr_dim.l * scr_dim.c) * 2; // 4 is codec->max_codepoint_size(); in utf8
-    u64 save_start_off = editor_view_get_start_offset( view );
+    uint32_t max_cp = (scr_dim.l * scr_dim.c) * 2; // 4 is codec->max_codepoint_size(); in utf8
+    uint64_t save_start_off = editor_view_get_start_offset( view );
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : save_start_off to " << save_start_off << "\n";
 
     if (save_start_off == 0) {
@@ -560,7 +560,7 @@ int page_up_internal(struct editor_message_s * msg, codepoint_info_s  & start_cp
 
     // (1)
     // compute max rewind offset
-    u64 rewind_off;
+    uint64_t rewind_off;
     eedit::core::rewind_and_resync_screen(buffer, view, max_cp, rewind_screen, save_start_off, &rewind_off);
 
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
@@ -697,7 +697,7 @@ int it_to_previous_line(text_buffer::iterator & ref)
     text_buffer::iterator old_point = ref;
     text_buffer::iterator & it = ref;
 
-    u64 it_off    = it.offset();
+    uint64_t it_off    = it.offset();
     if (it_off == 0)
         return EDITOR_STATUS_OK;
 
@@ -746,7 +746,7 @@ int it_to_previous_line(text_buffer::iterator & ref)
   -
 
   //
-  u32 nr is the number of repetition ... (to-previous-line N &args) a la emacs --> lisp ?
+  uint32_t nr is the number of repetition ... (to-previous-line N &args) a la emacs --> lisp ?
 
 */
 
@@ -763,9 +763,9 @@ int to_previous_line(struct editor_message_s * _msg)
     text_buffer::iterator old_point = view->cursor_it();
     it_to_previous_line(old_point);
 
-    u64 rdr_begin_off  = buffer->rdr_begin()->offset();
-    // u64 rdr_end_off   = d->rdr_end()->offset();
-    u64 cursor_off    = buffer->cursor_it()->offset();
+    uint64_t rdr_begin_off  = buffer->rdr_begin()->offset();
+    // uint64_t rdr_end_off   = d->rdr_end()->offset();
+    uint64_t cursor_off    = buffer->cursor_it()->offset();
 
     if (cursor_off < rdr_begin_off) {
         it_to_previous_line(*buffer->rdr_begin());
@@ -820,8 +820,8 @@ int to_next_line(struct editor_message_s * _msg)
 
     it_to_next_physical_line(*d->cursor_it());
 
-    u64 rdr_end_off   = d->rdr_end()->offset();
-    u64 cursor_off    = d->cursor_it()->offset();
+    uint64_t rdr_end_off   = d->rdr_end()->offset();
+    uint64_t cursor_off    = d->cursor_it()->offset();
 
     if (cursor_off > rdr_end_off) {
         it_to_next_physical_line(*d->rdr_begin());
@@ -836,7 +836,7 @@ int to_next_line(struct editor_message_s * _msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int scroll_down(editor_buffer_id_t ed_buffer, u32 n, screen_t * screen)
+int scroll_down(editor_buffer_id_t ed_buffer, uint32_t n, screen_t * screen)
 {
     return EDITOR_STATUS_ERROR;
 }
@@ -854,7 +854,7 @@ int scroll_down(editor_buffer_id_t ed_buffer, u32 n, screen_t * screen)
  * avoid layout recomputations by updating the last screen directly ? and send a clone ?
  *
 */
-int to_next_screen_line_by_offset(struct editor_message_s * _msg, const u64 screen_offset, u64 & new_screen_offset, codepoint_info_s & next_start_cpi)
+int to_next_screen_line_by_offset(struct editor_message_s * _msg, const uint64_t screen_offset, uint64_t & new_screen_offset, codepoint_info_s & next_start_cpi)
 {
     new_screen_offset = screen_offset;
 
@@ -929,7 +929,7 @@ int to_next_screen_line_by_offset(struct editor_message_s * _msg, const u64 scre
             return EDITOR_STATUS_ERROR;
         }
 
-        u64 saved_rdr_begin = ed_buffer->rdr_begin()->offset();
+        uint64_t saved_rdr_begin = ed_buffer->rdr_begin()->offset();
 
         cpi->check_invariant();
         next_start_cpi = *cpi;
@@ -980,8 +980,8 @@ int to_next_screen_line_by_offset(struct editor_message_s * _msg, const u64 scre
         return EDITOR_STATUS_OK;
     }
 
-    column = std::min<u32>(line->number_of_used_columns() - 1, saved_column);
-    b = line->get_cpinfo((u32)column, &cpi, screen_line_t::fix_column_overflow);
+    column = std::min<uint32_t>(line->number_of_used_columns() - 1, saved_column);
+    b = line->get_cpinfo((uint32_t)column, &cpi, screen_line_t::fix_column_overflow);
     if (!b) {
         delete last_screen;
         return EDITOR_STATUS_OK;
@@ -990,7 +990,7 @@ int to_next_screen_line_by_offset(struct editor_message_s * _msg, const u64 scre
     // FIXME: apply to to_previous_screen_line
     while ((prev_line->last_offset()) == cpi->offset && (column < line->number_of_used_columns() - 1)) {
         ++column;
-        b = line->get_cpinfo((u32)column, &cpi, screen_line_t::fix_column_overflow);
+        b = line->get_cpinfo((uint32_t)column, &cpi, screen_line_t::fix_column_overflow);
         if (!b) {
             break;
         }
@@ -1022,7 +1022,7 @@ int to_next_screen_line_internal(struct editor_message_s * _msg, codepoint_info_
 {
     auto buffer = get_buffer_info_by_ll_bid(_msg->byte_buffer_id);
 
-    u64 new_offset = buffer->cursor_it()->offset();
+    uint64_t new_offset = buffer->cursor_it()->offset();
     auto b = to_next_screen_line_by_offset(_msg, new_offset, new_offset, next_start_cpi);
     if (b) {
         next_start_cpi.check_invariant();
@@ -1056,7 +1056,7 @@ int to_next_screen_line(struct editor_message_s * _msg)
  *  FIXME: memory leaks screen list
  *  must update start cp info for next build layout call
  *  pass mark offset as parameter
- *  and add : cons u64 in_offset, u64 & out_offset
+ *  and add : cons uint64_t in_offset, uint64_t & out_offset
 */
 int to_previous_screen_line_internal(struct editor_message_s * msg, codepoint_info_s ** next_start_cpi)
 {
@@ -1065,7 +1065,7 @@ int to_previous_screen_line_internal(struct editor_message_s * msg, codepoint_in
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
     auto screen = get_previous_screen_by_id(msg->view_id);
 
-    u64 offset = buffer->cursor_it()->offset();
+    uint64_t offset = buffer->cursor_it()->offset();
     screen_line_t * l = nullptr;
     size_t scr_line_index = 0;
     size_t scr_col_index  = 0;
@@ -1089,8 +1089,8 @@ int to_previous_screen_line_internal(struct editor_message_s * msg, codepoint_in
         }
 
         codepoint_info_s * cpi = nullptr;
-        scr_col_index = std::min<u32>(l->number_of_used_columns() - 1, scr_col_index);
-        found = l->get_cpinfo((u32)scr_col_index, &cpi);
+        scr_col_index = std::min<uint32_t>(l->number_of_used_columns() - 1, scr_col_index);
+        found = l->get_cpinfo((uint32_t)scr_col_index, &cpi);
         buffer->cursor_it()->move_to_offset(cpi->offset);
 
         // FIXME: copy screen first cpi, in ctx
@@ -1165,11 +1165,11 @@ int to_previous_screen_line_internal(struct editor_message_s * msg, codepoint_in
         }
 
         codepoint_info_s * cpi = nullptr;
-        scr_col_index = std::min<u32>(l->number_of_used_columns() - 1, scr_col_index);
-        found = l->get_cpinfo((u32)scr_col_index, &cpi);
+        scr_col_index = std::min<uint32_t>(l->number_of_used_columns() - 1, scr_col_index);
+        found = l->get_cpinfo((uint32_t)scr_col_index, &cpi);
         buffer->cursor_it()->move_to_offset(cpi->offset);
 
-        found = l->get_cpinfo((u32)0, &cpi);
+        found = l->get_cpinfo((uint32_t)0, &cpi);
         buffer->rdr_begin()->move_to_offset(cpi->offset);
 
         set_ui_change_flag(process_ev_ctx);
@@ -1205,7 +1205,7 @@ int goto_beginning_of_line(struct editor_message_s * msg)
     size_t scr_col_index;
 
     text_buffer::iterator & rdr_it = *buffer->rdr_begin();
-    //  u64 old_rdr_begin = rdr_it.offset();
+    //  uint64_t old_rdr_begin = rdr_it.offset();
 
     text_buffer::iterator & it = *buffer->cursor_it();
 
@@ -1214,7 +1214,7 @@ int goto_beginning_of_line(struct editor_message_s * msg)
     assert(it.column() == 0);
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << "\n";
 
-    u64 cur_off = it.offset();
+    uint64_t cur_off = it.offset();
 
     codepoint_info_s start_cpi;
 
@@ -1243,7 +1243,7 @@ int goto_beginning_of_line(struct editor_message_s * msg)
     // need centering ?
     // while !found offset page_up();
 
-    assert(start_cpi.cp_index != u64(-1));
+    assert(start_cpi.cp_index != uint64_t(-1));
 
     set_mark_changed_flag(process_ev_ctx);
     set_ui_next_screen_start_cpi(process_ev_ctx, &start_cpi);
@@ -1264,7 +1264,7 @@ int goto_end_of_line(struct editor_message_s * msg)
 
     auto t0 = ew::core::time::get_ticks();
     it.toEndOfLine();
-    u64 cur_off = it.offset();
+    uint64_t cur_off = it.offset();
     auto t1 = ew::core::time::get_ticks();
     // FIXME:   define editor_log() like printf // app_log << "tb = " << (t1 - t0) << " ms\n";
 
@@ -1329,16 +1329,16 @@ int goto_end_of_screen_line(struct editor_message_s * _msg)
 
 // move to buffer ?
 struct {
-    u64 bid;
+    uint64_t bid;
 
     int b_x;
     int b_y;
-    u64 b_offset;
+    uint64_t b_offset;
     bool use = false;
 
     int e_x;
     int e_y;
-    u64 e_offset;
+    uint64_t e_offset;
 
     codepoint_info_s start_cpi;
 
@@ -1437,15 +1437,15 @@ int insert_codepoint(struct editor_message_s * _msg)
 
     auto buffer = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
 
-    s32 codepoint = msg->ev->start_value;
+    int32_t codepoint = msg->ev->start_value;
 
     text_buffer::iterator & it = *buffer->cursor_it();
 
     // save the view "important" marks cursor
     // should provide an atomatic refresh for registered iterators...
-    u64 rdr_begin_off =  buffer->rdr_begin()->offset();
-    u64 rdr_end_off   =  buffer->rdr_end()->offset();
-    u64 cursor_off    =  buffer->cursor_it()->offset();
+    uint64_t rdr_begin_off =  buffer->rdr_begin()->offset();
+    uint64_t rdr_end_off   =  buffer->rdr_end()->offset();
+    uint64_t cursor_off    =  buffer->cursor_it()->offset();
 
     // not needed ?
     //    std::lock_guard < decltype(*buffer->txt_buffer()) > lock(*buffer->txt_buffer());
@@ -1511,9 +1511,9 @@ int  remove_current_char(struct editor_message_s * msg)
     buffer->rdr_end()->check_invariants();
 
     // save cursors
-    u64 rdr_begin_off = buffer->rdr_begin()->offset();
-    u64 rdr_end_off   = buffer->rdr_end()->offset();
-    u64 cursor_off    = buffer->cursor_it()->offset();
+    uint64_t rdr_begin_off = buffer->rdr_begin()->offset();
+    uint64_t rdr_end_off   = buffer->rdr_end()->offset();
+    uint64_t cursor_off    = buffer->cursor_it()->offset();
 
     // the actual remove
     buffer->txt_buffer()->remove_current_char(msg->byte_buffer_id, *buffer->cursor_it());
@@ -1575,9 +1575,9 @@ int to_end_of_line(struct editor_message_s * msg)
     std::lock_guard < decltype(*buffer->txt_buffer()) > lock(*buffer->txt_buffer());
 
     // linear move
-    u64 off = buffer->cursor_it()->offset();
+    uint64_t off = buffer->cursor_it()->offset();
     buffer->cursor_it()->toEndOfLine();
-    u64 off2 = buffer->cursor_it()->offset();
+    uint64_t off2 = buffer->cursor_it()->offset();
     assert(off <= off2);
     if (off == off2) {
         // FIXME:   define editor_log() like printf // app_log << __FUNCTION__  << "(off == off2)\n";
@@ -1593,7 +1593,7 @@ int to_end_of_line(struct editor_message_s * msg)
 
 // dump version : what behavior in fold ?
 
-int belong_to_word(const s32 c)
+int belong_to_word(const int32_t c)
 {
     // need char class
     if ((c >= '0' && c <= '9') ||
@@ -1611,7 +1611,7 @@ int belong_to_word(const s32 c)
 int right_word(struct editor_message_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
-    u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
+    uint64_t save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
 
     auto end_off = buff->raw_buffer()->size();
     if (save_off == end_off) {
@@ -1643,7 +1643,7 @@ int right_word(struct editor_message_s * msg)
 int left_word(struct editor_message_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
-    u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
+    uint64_t save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
     if (save_off == 0)
         return EDITOR_STATUS_OK;
 
@@ -1689,7 +1689,7 @@ int left_word(struct editor_message_s * msg)
 int mouse_wheel_up(struct editor_message_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
-    u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
+    uint64_t save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
 
     for (int i = 0; i < 3; ++i) {
         buff->cursor_it()->move_to_offset( buff->rdr_begin()->offset() );
@@ -1714,7 +1714,7 @@ int mouse_wheel_up(struct editor_message_s * msg)
 int mouse_wheel_down(struct editor_message_s * msg)
 {
     auto buff = get_buffer_info_by_ll_bid(msg->byte_buffer_id);
-    u64 save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
+    uint64_t save_off = buff->cursor_it()->offset(); // push_mark // pop_mark -> mark_stack
 
     for (int i = 0; i < 3; ++i) {
         buff->cursor_it()->move_to_offset( buff->rdr_end()->offset() );

@@ -104,8 +104,8 @@ extern "C" {
 
         // TODO: cache last offset + read size, for this bid
 
-        u64 nb_read_ = 0;
-        file->fd->read((u64)offset, (u8 *)out, to_read, &nb_read_);
+        uint64_t nb_read_ = 0;
+        file->fd->read((uint64_t)offset, (u8 *)out, to_read, &nb_read_);
 
 
         *nb_read = nb_read_;
@@ -127,8 +127,8 @@ extern "C" {
 
         // TODO: cache last offset + read size, for this bid
 
-        u64 nb_written_ = 0;
-        file->fd->write((u64)offset, (u8 *)in, to_ins, &nb_written_);
+        uint64_t nb_written_ = 0;
+        file->fd->write((uint64_t)offset, (u8 *)in, to_ins, &nb_written_);
 
         *nb_ins = nb_written_;
 

@@ -67,10 +67,10 @@ public:
         btn_label->set_font(ft);
         btn_label->set_text(text);
 
-        u32 text_width = ::ft_compute_text_width(*ft, &btn_label->get_text()[0], btn_label->get_text().size());
+        uint32_t text_width = ::ft_compute_text_width(*ft, &btn_label->get_text()[0], btn_label->get_text().size());
         assert(text_width);
 
-        u32 border_width  = 4;
+        uint32_t border_width  = 4;
         btn_label->set_width(text_width   + 2 * border_width);
         btn_label->set_height(this->height());
 
@@ -188,13 +188,13 @@ public:
     }
 
 
-    virtual bool set_width(u32 w)
+    virtual bool set_width(uint32_t w)
     {
         app_log << __PRETTY_FUNCTION__ << " : w " << w << "\n";
         return widget::set_width(w);
     }
 
-    virtual bool set_height(u32 h)
+    virtual bool set_height(uint32_t h)
     {
         app_log << __PRETTY_FUNCTION__ << " : h " << h << "\n";
         return widget::set_height(h);

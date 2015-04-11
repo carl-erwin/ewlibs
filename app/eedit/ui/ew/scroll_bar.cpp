@@ -147,18 +147,18 @@ bool vertical_scroll_bar::on_mouse_wheel_down(const button_event * ev)
 
 bool vertical_scroll_bar::render()
 {
-    s32 X     = 0;
-    u32 W     = width();
-    u32 minH  = 10;
+    int32_t X     = 0;
+    uint32_t W     = width();
+    uint32_t minH  = 10;
 
-    u32 maxH  = height() - minH + 1;
-    s32 Y     = m_begin_ratio * (maxH);
+    uint32_t maxH  = height() - minH + 1;
+    int32_t Y     = m_begin_ratio * (maxH);
 
     assert(m_end_ratio >= m_begin_ratio);
 
-    u32 H    = (m_end_ratio - m_begin_ratio) * (maxH);
+    uint32_t H    = (m_end_ratio - m_begin_ratio) * (maxH);
 
-    H = ew::maths::max<u32>(H, minH);
+    H = ew::maths::max<uint32_t>(H, minH);
 
     // save scrool bar pos
     m_scroll_X = X;
@@ -193,7 +193,7 @@ bool vertical_scroll_bar::render()
     ew_glColor4ub(bg.r, bg.g, bg.b, bg.a);
     glBegin(GL_QUADS);
     {
-        s32 wid_Y = 0;
+        int32_t wid_Y = 0;
         glVertex2i(X    , wid_Y);           // up left
         glVertex2i(X    , wid_Y + height());    // down left
         glVertex2i(X + W, wid_Y + height());    // down right

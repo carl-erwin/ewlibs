@@ -9,9 +9,9 @@ namespace core
 struct unicode_context_t : public editor_layout_filter_context_t {
     editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
-    u32 split_count;
-    u32 split_flag;
-    u64 cur_cp_index; // used for correct codepoint expansion, and column count :-)
+    uint32_t split_count;
+    uint32_t split_flag;
+    uint64_t cur_cp_index; // used for correct codepoint expansion, and column count :-)
 };
 
 bool unicode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
@@ -29,7 +29,7 @@ bool unicode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_l
     if (blayout_ctx->start_cpi && blayout_ctx->start_cpi) {
 
         mode_ctx->cur_cp_index = blayout_ctx->start_cpi->cp_index;
-        assert(mode_ctx->cur_cp_index != u64(-1));
+        assert(mode_ctx->cur_cp_index != uint64_t(-1));
 
         if (blayout_ctx->start_cpi->split_count) {
             mode_ctx->split_count   = blayout_ctx->start_cpi->split_count;
@@ -56,7 +56,7 @@ bool unicode_buffer_filter(editor_layout_builder_context_t * blctx,
         out[index].valid  = true;
 
         out[index].cp_index = unicode_ctx->cur_cp_index;
-        assert(out[index].cp_index != u64(-1));
+        assert(out[index].cp_index != uint64_t(-1));
         out[index].is_selected = false;
         out[index].split_flag  = unicode_ctx->split_flag;
         out[index].split_count = unicode_ctx->split_count;

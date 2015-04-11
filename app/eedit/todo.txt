@@ -173,15 +173,15 @@ undo system :-) : lowest possible level , record mark moves ?
 
 buffer_log {
 
-lastRev     u64
+lastRev     uint64_t
 
 buffer_tags : list of rev + name ?
 
 buffer_commit
 {
- parentRev   u64; // branch
- previousRev u64; // time
- revN        u64;
+ parentRev   uint64_t; // branch
+ previousRev uint64_t; // time
+ revN        uint64_t;
 
  write  offset  : len  : payload
  remove offset : len  : payload
@@ -256,7 +256,7 @@ class Line; { a line is composed primarily of codepoints }
 class CodepointInfo {
   Line * parent;
   source : buffer : offset
-  u32 cp
+  uint32_t cp
   Font * , fg color, bg color
   Attributes { bold, italic, underline, blink, deleted }
 };
@@ -354,7 +354,7 @@ the ideal case: the editor does not know about the active regions/ marks/fold et
 the cursor(s) is a "core" plugin... + hooks
 when building the layout we must provide a way to setup the start offset in mode_init:
 new api
-  set_layout_start_offset(u64 offset) -> set the pipeline starting offset
+  set_layout_start_offset(uint64_t offset) -> set the pipeline starting offset
 
   screen_cache_mode_init :
    *) check the screen/buffer dimension/revision -> clear screen line cache
@@ -440,8 +440,8 @@ given:
 
       compute line_layout_info {
          iterators{ line_start, line_end }
-         u64 nr_cp,
-         u32 cp_max_height
+         uint64_t nr_cp,
+         uint32_t cp_max_height
       }
 
 3) the array<line_layout_info>> will be used as a cache for the screen
@@ -719,7 +719,7 @@ to compute column :
 
   update/create
   template <class ByteIterator>
-  bool codec::count(const ByteIterator first, const ByteIterator last, u64 & nr_ok, u64 & nr_err, u64 & total)
+  bool codec::count(const ByteIterator first, const ByteIterator last, uint64_t & nr_ok, uint64_t & nr_err, uint64_t & total)
   {
      nr_ok  = 0;
      nr_err = 0;
@@ -866,7 +866,7 @@ the first node contains the first dispatch table
 
 config says
 
-key_type unicode => self-insert(current_buffer(), s32 codepoint)
+key_type unicode => self-insert(current_buffer(), int32_t codepoint)
 
 C Api : global_set_key("...", "function_name")
 
@@ -995,7 +995,7 @@ The diffrent task can be merged in on process + threads
 
 -------------------------------------
 
-bool TextBuffer::get_offset_coords(offset, u64 & line, u64 & column);
+bool TextBuffer::get_offset_coords(offset, uint64_t & line, uint64_t & column);
 this function will compute the line and column
 only if the TextBuffer is indexed
 

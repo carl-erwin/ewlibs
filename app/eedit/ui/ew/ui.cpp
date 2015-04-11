@@ -93,10 +93,10 @@ public:
     void process_events()
     {
         bool block   = !true;
-        u32  timeout = 10;
+        uint32_t  timeout = 10;
 
         gui_dpy->poll_events(block, timeout);
-        u32 nr = gui_dpy->get_event_dispatcher()->get_queue_size();
+        uint32_t nr = gui_dpy->get_event_dispatcher()->get_queue_size();
         if (nr == 0)
             return;
 
@@ -135,8 +135,8 @@ private:
     class main_window * m_main_window;
 
     // move to user configuration: init file
-    u32 app_width  = 800;
-    u32 app_height = 600;
+    uint32_t app_width  = 800;
+    uint32_t app_height = 600;
 };
 
 eedit::user_interface * new_ew_ui()

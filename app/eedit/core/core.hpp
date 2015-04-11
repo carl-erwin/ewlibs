@@ -27,16 +27,16 @@ enum build_screen_list_hints {
 
 
 struct selection_record_s {
-    u64 bid;
+    uint64_t bid;
 
     int b_x;
     int b_y;
-    u64 b_offset;
+    uint64_t b_offset;
     bool use = false;
 
     int e_x;
     int e_y;
-    u64 e_offset;
+    uint64_t e_offset;
 
     codepoint_info_s start_cpi;
 };
@@ -63,7 +63,7 @@ struct screen_cache {
         screen_release(last_screen);
     }
 
-    u64 start_offset = 0;
+    uint64_t start_offset = 0;
     screen_dimension_t dim;
     screen_t * last_screen = nullptr;
 };
@@ -76,17 +76,17 @@ bool push_event(struct editor_message_s * msg);
 
 bool process_rpc_call_event(struct editor_message_s * msg);
 
-screen_cache * get_screen_cache(u64 id);
+screen_cache * get_screen_cache(uint64_t id);
 
-void set_last_screen(u64 id, screen_t * scr);
+void set_last_screen(uint64_t id, screen_t * scr);
 
-screen_t * get_last_screen(u64 id);
+screen_t * get_last_screen(uint64_t id);
 
 bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * start_cpi, bool send_screen = false);
 
-screen_t * get_previous_screen_by_id(u64 id);
+screen_t * get_previous_screen_by_id(uint64_t id);
 
-screen_t * get_new_screen_by_id(u64 screen_id);
+screen_t * get_new_screen_by_id(uint64_t screen_id);
 
 
 

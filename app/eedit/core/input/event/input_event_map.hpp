@@ -88,9 +88,9 @@ struct input_map_entry {
     input_map_entry(editor_input_event_type_e type,
                     editor_key_e kt = (editor_key_e)0,
                     editor_input_key_range_e rt = no_range,
-                    u32 mod_mask = 0,
-                    u32 start_val = 0,
-                    u32 end_val = 0)
+                    uint32_t mod_mask = 0,
+                    uint32_t start_val = 0,
+                    uint32_t end_val = 0)
     {
         ev.type        = type;
         ev.key         = kt;
@@ -216,7 +216,7 @@ struct parse_context {
     const u8 * pend = nullptr;
 
     editor_key_e tmp_kval;
-    u32  button_mask_val;
+    uint32_t  button_mask_val;
 
     editor_input_event_map * current_input_map = nullptr;
     input_map_entry  * current_input_map_entry = nullptr;
@@ -576,10 +576,10 @@ inline bool parse_control(parse_context * ctx)
     return true;
 }
 
-inline bool possible_tokens(parse_context * ctx, std::set<s32> & set)
+inline bool possible_tokens(parse_context * ctx, std::set<int32_t> & set)
 {
     u8 c = *ctx->p;
-    auto it = set.find((s32)c);
+    auto it = set.find((int32_t)c);
     if (it != set.end()) {
         // app_log << "*it = '" << (char)(*it) << "'\n";
         return true;
@@ -589,7 +589,7 @@ inline bool possible_tokens(parse_context * ctx, std::set<s32> & set)
 }
 
 
-inline bool decode_utf8_codepoint(parse_context * ctx, u32 * out_value)
+inline bool decode_utf8_codepoint(parse_context * ctx, uint32_t * out_value)
 {
     auto codec = ew::codecs::text::unicode::utf8::codec();
 
@@ -603,9 +603,9 @@ inline bool decode_utf8_codepoint(parse_context * ctx, u32 * out_value)
     return true;
 }
 
-inline bool parse_unicode_value(parse_context * ctx, u32 * out_value)
+inline bool parse_unicode_value(parse_context * ctx, uint32_t * out_value)
 {
-    std::set<s32> set1( { '\'', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' } );
+    std::set<int32_t> set1( { '\'', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' } );
 
     bool bret = possible_tokens(ctx, set1);
     if (bret == false) {
@@ -632,7 +632,7 @@ inline bool parse_unicode_value(parse_context * ctx, u32 * out_value)
             base = 16;
         }
 
-        *out_value = (u32)strtoll(nptr, &endptr, base);
+        *out_value = (uint32_t)strtoll(nptr, &endptr, base);
         ctx->p = (u8 *)endptr;
 
     }

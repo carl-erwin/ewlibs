@@ -48,8 +48,8 @@ public:
 //
     void set_font_file_name(char * font_file_name);
     const std::string & font_file_name() const;
-    u32 font_width();
-    u32 font_height();
+    uint32_t font_width();
+    uint32_t font_height();
 
 // move to mode
     bool & build_index_flag();
@@ -64,7 +64,7 @@ public:
     std::pair<bool, editor_buffer_id_t>   get_editor_buffer_by_byte_buffer_id(byte_buffer_id_t id);
     std::pair<bool, editor_buffer_id_t>   get_editor_buffer_by_editor_view_id(byte_buffer_id_t id);
 
-    void set_default_font_size(u32 sz);
+    void set_default_font_size(uint32_t sz);
     bool run(int ac, char ** av);
     bool quit() const;
 

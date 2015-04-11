@@ -29,9 +29,9 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
 
     int iocnt = 16*1024;
 
-    u32 split_count;
-    u32 split_flag;
-    u64 cur_cp_index; // used for correct codepoint expansion, and column count :-)
+    uint32_t split_count;
+    uint32_t split_flag;
+    uint64_t cur_cp_index; // used for correct codepoint expansion, and column count :-)
 };
 
 
@@ -69,7 +69,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
         mode_ctx->cur_cp_index = blayout_ctx->start_cpi->cp_index;
 
 //	must add the resync
-//	assert(mode_ctx->cur_cp_index != u64(-1));
+//	assert(mode_ctx->cur_cp_index != uint64_t(-1));
 
         if (blayout_ctx->start_cpi->split_count) {
             mode_ctx->split_count   = blayout_ctx->start_cpi->split_count;

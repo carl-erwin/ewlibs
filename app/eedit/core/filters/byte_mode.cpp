@@ -13,9 +13,9 @@ struct byte_mode_context_t : public editor_layout_filter_context_t {
 
     editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer, will be removed ?
 
-    u64       cur_offset = 0;
+    uint64_t       cur_offset = 0;
     byte_buffer_id_t bid        = 0;
-    u64       total_read = 0;
+    uint64_t       total_read = 0;
     size_t    buf_size   = 0;
 };
 

@@ -29,16 +29,16 @@ public:
 
     bool m_show = true;
 
-    s32 m_scroll_X = 0;
-    s32 m_scroll_W = 0;
-    s32 m_scroll_Y = 0;
-    s32 m_scroll_H = 0;
-    u64 m_last_rdr_begin   = 0;
-    u64 m_last_rdr_end     = 0;
-    u64 m_last_buffer_size = 0;
+    int32_t m_scroll_X = 0;
+    int32_t m_scroll_W = 0;
+    int32_t m_scroll_Y = 0;
+    int32_t m_scroll_H = 0;
+    uint64_t m_last_rdr_begin   = 0;
+    uint64_t m_last_rdr_end     = 0;
+    uint64_t m_last_buffer_size = 0;
 
-    s32 m_click_y_pos  = 0;
-    s32 m_click_offset = 0;
+    int32_t m_click_y_pos  = 0;
+    int32_t m_click_offset = 0;
 
     text_view * m_txt_view = nullptr;
 public:
@@ -90,7 +90,7 @@ public:
         return true;
     }
 
-    virtual bool resize(u32 width, u32 height)
+    virtual bool resize(uint32_t width, uint32_t height)
     {
         return set_width(width) && set_height(height);
     }
@@ -169,7 +169,7 @@ public:
 
     }
 
-    virtual bool resize(u32 w, u32 h)
+    virtual bool resize(uint32_t w, uint32_t h)
     {
 
         app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
@@ -181,10 +181,10 @@ public:
     virtual bool render()
     {
 
-        s32 X = 0;
-        s32 Y = 0;
-        s32 W = width();
-        s32 H = height();
+        int32_t X = 0;
+        int32_t Y = 0;
+        int32_t W = width();
+        int32_t H = height();
 
 //        app_log << __PRETTY_FUNCTION__ << " : X("<<X<<") Y("<<Y<<") W("<<W<<") H("<<H<<")\n";
 
@@ -230,14 +230,14 @@ public:
 
             case 1: {
                 margin++;
-                if (W / 2 + margin + 2 >= (s32)width())
+                if (W / 2 + margin + 2 >= (int32_t)width())
                     anim_dir = -1;
             }
             break;
 
             case -1: {
                 margin--;
-                if (margin <= (s32)2)
+                if (margin <= (int32_t)2)
                     anim_dir = 1;
             }
             break;
@@ -291,8 +291,8 @@ private:
     ew::graphics::gui::widget * m_parent = nullptr;
     ew::graphics::color4ub border_color;
     ew::graphics::color4ub bg;
-    s32  margin = 3;
-    s32  anim_dir = 1;
+    int32_t  margin = 3;
+    int32_t  anim_dir = 1;
     bool anim_on = false;
 };
 
@@ -314,7 +314,7 @@ public:
     }
 
 
-    virtual bool resize(u32 w, u32 h)
+    virtual bool resize(uint32_t w, uint32_t h)
     {
 
         app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
@@ -330,10 +330,10 @@ public:
         ew::graphics::color4ub bg(0x77, 0x77, 0x77, 0xff);
         ew_glColor4ub(bg.r, bg.g, bg.b, bg.a);
 
-        s32 X = 0;
-        s32 Y = 0;
-        s32 W = width();
-        s32 H = height();
+        int32_t X = 0;
+        int32_t Y = 0;
+        int32_t W = width();
+        int32_t H = height();
 
         // app_log << __PRETTY_FUNCTION__ << " : X("<<X<<") Y("<<Y<<") W("<<W<<") H("<<H<<")\n";
 
@@ -355,7 +355,7 @@ public:
         }
         glEnd();
 
-        s32 margin = 5;
+        int32_t margin = 5;
         glBegin(GL_TRIANGLES);
         {
             glVertex2i(W - margin, margin);     // up right
@@ -521,7 +521,7 @@ public:
     }
 
 ///////
-    virtual bool resize(u32 w, u32 h)
+    virtual bool resize(uint32_t w, uint32_t h)
     {
 
         app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
@@ -603,10 +603,10 @@ public:
         ew::graphics::color4ub bg(0x77, 0x77, 0x77, 0xff);
         ew_glColor4ub(bg.r, bg.g, bg.b, bg.a);
 
-        s32 X = 0;
-        s32 Y = 0;
-        s32 W = width();
-        s32 H = height();
+        int32_t X = 0;
+        int32_t Y = 0;
+        int32_t W = width();
+        int32_t H = height();
 
         // borders
         glBegin(GL_LINES);
@@ -628,7 +628,7 @@ private:
     vscroll_bar_button1     *    m_button1    = nullptr;
     vscroll_bar_button2     *    m_button2    = nullptr;
     vertical_scroll_bar     *    m_scroll_bar = nullptr;
-// u32 anim_sleep = 0;
+// uint32_t anim_sleep = 0;
 };
 
 inline bool vscroll_bar_button1::on_mouse_button_press(const ew::graphics::gui::events::button_event * ev)
