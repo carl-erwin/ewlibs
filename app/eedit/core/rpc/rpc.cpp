@@ -2,7 +2,7 @@
 
 #include "../../core/core.hpp"
 
-#include "editor_event.h"
+#include "editor_message.h"
 
 #include "editor_buffer.h"
 #include "editor_view.h"
@@ -21,7 +21,7 @@ namespace eedit
 namespace core
 {
 
-void send_rpc_answer(const struct editor_event_s * ev_in, struct editor_event_s * ev_out)
+void send_rpc_answer(const struct editor_message_s * ev_in, struct editor_message_s * ev_out)
 {
     assert (ev_in->src.queue);
     if (ev_in->src.queue == nullptr) {
@@ -37,7 +37,7 @@ void send_rpc_answer(const struct editor_event_s * ev_in, struct editor_event_s 
 
 // FIXME: move the application class to core
 //
-void get_buffer_id_list(struct editor_event_s * request, int ac,  char * av[])
+void get_buffer_id_list(struct editor_message_s * request, int ac,  char * av[])
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -54,11 +54,11 @@ void get_buffer_id_list(struct editor_event_s * request, int ac,  char * av[])
         ans_av[i] = ew::utils::c_string_dup(buffer);
         ++i;
     }
-    struct editor_event_s *  rpc_ans = editor_rpc_answer_new(request, i, (const char **)ans_av);
+    struct editor_message_s *  rpc_ans = editor_rpc_answer_new(request, i, (const char **)ans_av);
     send_rpc_answer(request, rpc_ans);
 }
 
-void set_screen_id_start_offset(struct editor_event_s * request, int ac,  char * av[])
+void set_screen_id_start_offset(struct editor_message_s * request, int ac,  char * av[])
 {
     // orig -> core -> rpc -> core -> orig
     auto msg             = editor_layout_event_new(EDITOR_BUILD_LAYOUT_EVENT);
@@ -115,7 +115,7 @@ void set_screen_id_start_offset(struct editor_event_s * request, int ac,  char *
 
 
 
-bool process_rpc_call_event(struct editor_event_s * msg)
+bool process_rpc_call_event(struct editor_message_s * msg)
 {
     assert(msg->rpc.ac);
     assert(msg->rpc.av);

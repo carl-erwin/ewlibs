@@ -608,7 +608,7 @@ public:
     }
 
     //
-    void setup_event_common_part(struct editor_event_s * msg)
+    void setup_event_common_part(struct editor_message_s * msg)
     {
 
         msg->id            = m_last_msg_id++;
@@ -632,7 +632,7 @@ public:
     bool on_key_press(const  ew::graphics::gui::events::keyboard_event * ev)
     {
         app_log << __PRETTY_FUNCTION__ <<  "\n";
-        // TODO: translate keyboard_event to struct editor_event_s ?
+        // TODO: translate keyboard_event to struct editor_message_s ?
         // send translated event to core thread
 
         if (this->m_have_buffer_id == false) {
@@ -640,7 +640,7 @@ public:
             return true;
         }
 
-        struct editor_event_s  * msg = editor_event_alloc();
+        struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_KEYBOARD_EVENT; // FIXME : input event
         setup_event_common_part(msg);
 
@@ -669,7 +669,7 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        struct editor_event_s  * msg = editor_event_alloc();
+        struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_PRESS_EVENT;
         setup_event_common_part(msg);
 
@@ -690,7 +690,7 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        struct editor_event_s  * msg = editor_event_alloc();
+        struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_RELEASE_EVENT; // FIXME: EDITOR_INPUT_EVENT
         setup_event_common_part(msg);
 
@@ -711,7 +711,7 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        struct editor_event_s  * msg = editor_event_alloc();
+        struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_UP;
         setup_event_common_part(msg);
 
@@ -732,7 +732,7 @@ public:
         app_log << "ev->y " << ev->y << "\n";
         app_log << "ev->button " << ev->button << "\n";
 
-        struct editor_event_s  * msg = editor_event_alloc();
+        struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_DOWN;
         setup_event_common_part(msg);
 
@@ -795,7 +795,7 @@ public:
         return true;
     }
 
-    bool process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg)
+    bool process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg)
     {
         app_log << __PRETTY_FUNCTION__ << " core -> ui @" << ew::core::time::get_ticks() << "\n";
 

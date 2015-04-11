@@ -9,9 +9,9 @@ namespace eedit
 namespace core
 {
 
-struct byte_mode_context_t : public filter_context_t {
+struct byte_mode_context_t : public editor_layout_filter_context_t {
 
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer, will be removed ?
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer, will be removed ?
 
     u64       cur_offset = 0;
     byte_buffer_id_t bid        = 0;
@@ -19,7 +19,7 @@ struct byte_mode_context_t : public filter_context_t {
     size_t    buf_size   = 0;
 };
 
-bool byte_mode_buffer_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool byte_mode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     byte_mode_context_t * ctx = new byte_mode_context_t;
     *out = ctx;
@@ -43,7 +43,7 @@ bool byte_mode_buffer_init(build_layout_context_t * blayout_ctx, filter_context_
     return true;
 }
 
-bool byte_mode_buffer_filter(build_layout_context_t * blctx, filter_context_t * ctx_, const filter_io_t * const in, const size_t nr_in, filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_, const editor_layout_filter_io_t * const in, const size_t nr_in, editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
     byte_mode_context_t * ctx = static_cast<byte_mode_context_t *>(ctx_);
 
@@ -85,7 +85,7 @@ bool byte_mode_buffer_filter(build_layout_context_t * blctx, filter_context_t * 
     return true;
 }
 
-bool byte_mode_buffer_finish(build_layout_context_t * blctx, filter_context_t * ctx_)
+bool byte_mode_buffer_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_)
 {
     byte_mode_context_t * ctx = static_cast<byte_mode_context_t *>(ctx_);
 
@@ -95,7 +95,7 @@ bool byte_mode_buffer_finish(build_layout_context_t * blctx, filter_context_t * 
     return true;
 }
 
-filter_t byte_mode = {
+editor_layout_filter_t byte_mode = {
     "byte_mode",
     byte_mode_buffer_init,
     byte_mode_buffer_filter,

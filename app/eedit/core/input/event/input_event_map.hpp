@@ -13,7 +13,7 @@
 #include "core/log/log.hpp"
 
 #include "editor_input_event.h"
-#include "editor_event.h"
+#include "editor_message.h"
 
 
 //string_tools.h:

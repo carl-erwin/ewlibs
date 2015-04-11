@@ -1,9 +1,9 @@
-#include "../../core/core.hpp"
 
-#include "../../core/module/event_function.h"
-
+#include "editor_message_handler.h"
 #include "editor_view.h"
+
 #include "../../api/src/editor_view_internal.h"
+#include "../../core/core.hpp"
 
 
 namespace eedit
@@ -13,7 +13,7 @@ namespace core
 {
 
 
-bool process_event(core_context_t * core_ctx, struct editor_event_s * msg)
+bool process_event(core_context_t * core_ctx, struct editor_message_s * msg)
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -109,7 +109,7 @@ bool process_event(core_context_t * core_ctx, struct editor_event_s * msg)
 	the first input event is match against the tree's root
 	if a match is found, the node is selected as the next root
  */
-bool eval_input_event(struct editor_event_s * msg)
+bool eval_input_event(struct editor_message_s * msg)
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -177,7 +177,7 @@ bool eval_input_event(struct editor_event_s * msg)
     assert(cur_seq->size() == 0);
 
     // TODO: cache fn in action
-    editor_module_function_t fn = editor_get_module_function(match_found->action->fn_name);
+    editor_message_handler_t fn = editor_get_message_handler(match_found->action->fn_name);
     if (fn) {
         app_log << "'" << match_found->action->fn_name << "' is defined\n";
         app_log << "BEGIN '" << match_found->action->fn_name << "'\n";
@@ -197,7 +197,7 @@ bool eval_input_event(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_input_event(struct editor_event_s * msg)
+bool process_input_event(struct editor_message_s * msg)
 {
     eval_input_event(msg);
     return true;
@@ -205,13 +205,13 @@ bool process_input_event(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_application_event(core_context_t * core_ctx, struct editor_event_s * msg)
+bool process_application_event(core_context_t * core_ctx, struct editor_message_s * msg)
 {
     switch (msg->type) {
     case EDITOR_QUIT_APPLICATION_DEFAULT:
     case EDITOR_QUIT_APPLICATION_FORCED: {
         // here ?
-        struct editor_event_s * quit_ans = editor_event_alloc();
+        struct editor_message_s * quit_ans = editor_event_alloc();
         quit_ans->type = EDITOR_QUIT_APPLICATION_DEFAULT;
         send_event_to_ui(msg, quit_ans);
         core_ctx->core_running = false;

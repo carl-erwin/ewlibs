@@ -1,13 +1,13 @@
 // public api
-#include "editor_event.h"
+#include "editor_message.h"
 #include "buffer_log.h"
+#include "editor_message_handler.h"
 
 // internal
 #include "../../core/core.hpp"
 #include "../../core/log/log.hpp"
 
 #include "undo.h"
-#include "../../core/module/event_function.h"
 
 namespace eedit
 {
@@ -15,7 +15,7 @@ namespace eedit
 namespace core
 {
 
-int buffer_undo(struct editor_event_s * msg)
+int buffer_undo(struct editor_message_s * msg)
 {
     buffer_log_id_t        log = -1;
     buffer_commit_rev_t    rev = -1;
@@ -67,7 +67,7 @@ int buffer_undo(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int buffer_redo(struct editor_event_s * msg)
+int buffer_redo(struct editor_message_s * msg)
 {
     buffer_log_id_t log = -1;
     buffer_commit_rev_t rev = -1;

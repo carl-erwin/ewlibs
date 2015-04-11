@@ -10,18 +10,15 @@
 #include <ew/core/time/time.hpp>
 
 ///
+#include "editor_event_queue.h"
+#include "screen.h"
+#include "codec.h"
+#include "editor_message_handler.h"
+
 #include "../application/application.hpp"
 #include "../core/core.hpp"
-#include "editor_event_queue.h"
-
-#include "../api/include/screen.h"
-#include "../api/include/codec.h"
-
 #include "../core/log/log.hpp"
-
-
 #include "../core/text_layout.hpp"
-#include "../core/module/event_function.h"
 #include "../core/rpc/rpc.hpp"
 
 #include "text_layout.hpp"
@@ -230,7 +227,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool push_event(struct editor_event_s * msg)
+bool push_event(struct editor_message_s * msg)
 {
     if (core_ctx.core_running == false) {
         // do not allow event push while quitting
@@ -273,7 +270,7 @@ bool push_event(struct editor_event_s * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: move to proper file event.h
-void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s * ev_out)
+void send_event_to_ui(const struct editor_message_s * ev_in, struct editor_message_s * ev_out)
 {
     static u32 id = 1;
 
@@ -293,7 +290,7 @@ void send_event_to_ui(const struct editor_event_s * ev_in, struct editor_event_s
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: move to proper file
-void send_new_layout_event_to_ui(const struct editor_event_s * ev_in,
+void send_new_layout_event_to_ui(const struct editor_message_s * ev_in,
                                  screen_t * screen)
 {
     auto msg           = editor_layout_event_new(EDITOR_LAYOUT_NOTIFICATION_EVENT);
@@ -333,7 +330,7 @@ struct selection_record_s selection_record;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool save_buffer(struct editor_event_s * msg)
+bool save_buffer(struct editor_message_s * msg)
 {
     //auto buffer = get_buffer_by_id(msg->byte_buffer_id);
 
@@ -354,7 +351,7 @@ bool save_buffer(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int dump_buffer_log(struct editor_event_s * msg)
+int dump_buffer_log(struct editor_message_s * msg)
 {
     buffer_log_dump(msg->byte_buffer_id);
     return EDITOR_STATUS_OK;
@@ -362,7 +359,7 @@ int dump_buffer_log(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool release_event(struct editor_event_s * msg)
+bool release_event(struct editor_message_s * msg)
 {
     delete msg;
     return true;
@@ -372,7 +369,7 @@ bool release_event(struct editor_event_s * msg)
 ////////////////////////////////////////////////////////////////////////////////
 
 // remove/rename this
-bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint_info_s * start_cpi, screen_t * scr)
+bool build_screen_layout_from_event(struct editor_message_s * msg, const codepoint_info_s * start_cpi, screen_t * scr)
 {
     // now the screen is opaque we must not use it
     auto buffer = editor_buffer_check_id(msg->editor_buffer_id);
@@ -403,7 +400,7 @@ bool build_screen_layout_from_event(struct editor_event_s * msg, const codepoint
 ////////////////////////////////////////////////////////////////////////////////
 
 // FIXME: replace bool by enum : SEND_SCREEN_TO_UI
-bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start_cpi, bool send_screen)
+bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * start_cpi, bool send_screen)
 {
     bool notify = false;
 
@@ -440,7 +437,7 @@ bool notify_buffer_changes(struct editor_event_s * msg, codepoint_info_s * start
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_build_layout_event(struct editor_event_s * msg)
+bool process_build_layout_event(struct editor_message_s * msg)
 {
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     return true;
@@ -448,7 +445,7 @@ bool process_build_layout_event(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool check_input_msg(struct editor_event_s * msg)
+bool check_input_msg(struct editor_message_s * msg)
 {
     assert(msg->editor_buffer_id);
     assert(msg->view_id);
@@ -461,9 +458,9 @@ bool check_input_msg(struct editor_event_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int quit_editor(struct editor_event_s * msg)
+int quit_editor(struct editor_message_s * msg)
 {
-    editor_event_s * quit_msg = editor_event_alloc();
+    editor_message_s * quit_msg = editor_event_alloc();
 
     quit_msg->type = EDITOR_QUIT_APPLICATION_DEFAULT;
     quit_msg->src = msg->src;
@@ -480,12 +477,12 @@ int quit_editor(struct editor_event_s * msg)
 void register_core_modules_function()
 {
     //
-    editor_register_module_function("quit-editor",               quit_editor);
+    editor_register_message_handler("quit-editor",               quit_editor);
 
     // undo mode
-    editor_register_module_function("undo",                      buffer_undo);
-    editor_register_module_function("redo",                      buffer_redo);
-    editor_register_module_function("dump-buffer-log",           dump_buffer_log);
+    editor_register_message_handler("undo",                      buffer_undo);
+    editor_register_message_handler("redo",                      buffer_redo);
+    editor_register_message_handler("dump-buffer-log",           dump_buffer_log);
 
 }
 
@@ -525,7 +522,7 @@ void main(std::shared_ptr<application> app)
 
         auto nr = editor_event_queue_size(core_ctx.m_msg_queue);
         while (nr) {
-            struct editor_event_s * msg = nullptr;
+            struct editor_message_s * msg = nullptr;
             auto t0 = ew::core::time::get_ticks();
 
             if (0) {
@@ -548,7 +545,7 @@ void main(std::shared_ptr<application> app)
 
     // clear message queue -> use stl container interface to allow for each ...
     while (editor_event_queue_size(core_ctx.m_msg_queue)) {
-        struct editor_event_s * msg = editor_event_queue_get(core_ctx.m_msg_queue);
+        struct editor_message_s * msg = editor_event_queue_get(core_ctx.m_msg_queue);
         editor_event_free(msg);
     }
 

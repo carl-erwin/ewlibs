@@ -94,7 +94,7 @@ size_t editor_event_queue_size(struct editor_event_queue_s * q_)
     return q->size();
 }
 
-bool editor_event_queue_push(struct editor_event_queue_s * q_, struct editor_event_s *ev)
+bool editor_event_queue_push(struct editor_event_queue_s * q_, struct editor_message_s *ev)
 {
     if (!q_)
         return false;
@@ -110,10 +110,10 @@ size_t editor_event_queue_wait(struct editor_event_queue_s * q_, size_t wait_tim
     return q->wait(wait_time);
 }
 
-struct editor_event_s * editor_event_queue_get(struct editor_event_queue_s * q_)
+struct editor_message_s * editor_event_queue_get(struct editor_event_queue_s * q_)
 {
     eedit::event_queue<void *> * q = (eedit::event_queue<void *> *)q_;
-    return (struct editor_event_s *)q->get();
+    return (struct editor_message_s *)q->get();
 }
 
 

@@ -32,7 +32,7 @@ ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_view.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_event_queue.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_event.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_input_event.cpp
-
+${EW_PROJECT_ROOT}/app/eedit/api/src/editor_message_handler.cpp
 
 # application
 ${EW_PROJECT_ROOT}/app/eedit/main/main.cpp
@@ -44,8 +44,6 @@ ${EW_PROJECT_ROOT}/app/eedit/application/application.cpp
 # TODO: core/CMakeLists.txt
 ${EW_PROJECT_ROOT}/app/eedit/core/core.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/log/log.cpp
-${EW_PROJECT_ROOT}/app/eedit/core/input/event/input_event_map.cpp
-${EW_PROJECT_ROOT}/app/eedit/core/module/module.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/rpc/rpc.cpp
 
 ${EW_PROJECT_ROOT}/app/eedit/core/core.cpp

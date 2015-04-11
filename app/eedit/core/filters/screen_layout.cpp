@@ -152,7 +152,7 @@ void filter_codepoint(const s32 previous_cp, const s32 cur_cp, s32 * fcp, enum b
 /////////////////////////////////////////////////////
 
 struct screen_mode_context_t {
-    eedit::core::build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+    eedit::core::editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
     u32 max_width_px;
     u32 max_height_px;
@@ -171,10 +171,10 @@ struct screen_mode_context_t {
     ew::graphics::fonts::font_glyph_info space_glyph_info;
 };
 
-bool screen_mode_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool screen_mode_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     screen_mode_context_t * mode_ctx = new screen_mode_context_t;
-    *out = reinterpret_cast<filter_context_t *>(mode_ctx);
+    *out = reinterpret_cast<editor_layout_filter_context_t *>(mode_ctx);
 
     mode_ctx->blayout_ctx = blayout_ctx;
 
@@ -201,9 +201,9 @@ bool screen_mode_init(build_layout_context_t * blayout_ctx, filter_context_t ** 
     return true;
 }
 
-bool screen_mode_filter(build_layout_context_t * blctx, filter_context_t * ctx,
-                        const filter_io_t * const in, size_t nr_in,
-                        filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx,
+                        const editor_layout_filter_io_t * const in, size_t nr_in,
+                        editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
     screen_mode_context_t * screen_mode_ctx = reinterpret_cast<screen_mode_context_t *>(ctx);
 
@@ -402,14 +402,14 @@ bool screen_mode_filter(build_layout_context_t * blctx, filter_context_t * ctx,
     return true;
 }
 
-bool screen_mode_finish(build_layout_context_t * blctx, filter_context_t * mode_ctx)
+bool screen_mode_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * mode_ctx)
 {
     screen_mode_context_t * ctx = reinterpret_cast<screen_mode_context_t *>(mode_ctx);
     delete ctx;
     return true;
 }
 
-filter_t screen_mode = {
+editor_layout_filter_t screen_mode = {
     "screen_mode",
     screen_mode_init,
     screen_mode_filter,

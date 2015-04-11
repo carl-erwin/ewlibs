@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 
-typedef enum editor_event_type_e {
+typedef enum editor_message_type_e {
 
     EDITOR_EVENT_TYPE_FAMILY_MASK       = 0xFF00,
 
@@ -48,7 +48,7 @@ typedef enum editor_event_type_e {
 
     // system -> core
     EDITOR_SYSTEM_EVENT                 = 0x0F00,  // halt, reboot, suspend, resume ?
-} editor_event_type_e;
+} editor_message_type_e;
 
 
 typedef enum editor_actor_kind_e {
@@ -69,8 +69,8 @@ struct editor_event_address_s {
     editor_event_queue_s * queue; // = nullptr;
 };
 
-struct editor_event_s {
-    editor_event_type_e type; // INVALID_EDITOR_EVENT;
+struct editor_message_s {
+    editor_message_type_e type; // INVALID_EDITOR_EVENT;
 
     uint32_t            id;   // used in eventual answer
 
@@ -100,19 +100,19 @@ struct editor_event_s {
 };
 
 EDITOR_EXPORT
-struct editor_event_s * editor_event_alloc(); // REMOVE THIS be more specific ?
+struct editor_message_s * editor_event_alloc(); // REMOVE THIS be more specific ?
 
 EDITOR_EXPORT
-struct editor_event_s * editor_layout_event_new(editor_event_type_e type);
+struct editor_message_s * editor_layout_event_new(editor_message_type_e type);
 
 EDITOR_EXPORT
-struct editor_event_s * editor_rpc_call_new(int call_ac, const char ** call_av);
+struct editor_message_s * editor_rpc_call_new(int call_ac, const char ** call_av);
 
 EDITOR_EXPORT
-struct editor_event_s * editor_rpc_answer_new(struct editor_event_s * request, int answer_ac, const char ** anwser_av);
+struct editor_message_s * editor_rpc_answer_new(struct editor_message_s * request, int answer_ac, const char ** anwser_av);
 
 EDITOR_EXPORT
-void editor_event_free(struct editor_event_s * ev); // CHECK PTR
+void editor_event_free(struct editor_message_s * ev); // CHECK PTR
 
 
 #ifdef __cplusplus

@@ -10,16 +10,16 @@ namespace eedit
 namespace core
 {
 
-struct mark_filter_context_t : public filter_context_t {
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer
+struct mark_editor_layout_filter_context_t : public editor_layout_filter_context_t {
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer
     std::vector<uint64_t> offset;
     size_t off_index = 0;
     bool skip_pass = true;
 };
 
-bool mark_filter_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool mark_filter_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
-    mark_filter_context_t * ctx = new mark_filter_context_t;
+    mark_editor_layout_filter_context_t * ctx = new mark_editor_layout_filter_context_t;
     *out = ctx;
 
     ctx->blayout_ctx = blayout_ctx;
@@ -75,11 +75,11 @@ bool mark_filter_init(build_layout_context_t * blayout_ctx, filter_context_t ** 
     return true;
 }
 
-bool mark_filter_filter(build_layout_context_t * blctx, filter_context_t * ctx_,
-                        const filter_io_t * const in, const size_t nr_in,
-                        filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool mark_filter_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_,
+                        const editor_layout_filter_io_t * const in, const size_t nr_in,
+                        editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
-    mark_filter_context_t * ctx = static_cast<mark_filter_context_t *>(ctx_);
+    mark_editor_layout_filter_context_t * ctx = static_cast<mark_editor_layout_filter_context_t *>(ctx_);
     // if in[...] is "marked" set mark flag
 
     if (ctx->skip_pass) {
@@ -107,13 +107,13 @@ bool mark_filter_filter(build_layout_context_t * blctx, filter_context_t * ctx_,
     return true;
 }
 
-bool mark_filter_finish(build_layout_context_t * blctx, filter_context_t * ctx)
+bool mark_filter_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx)
 {
-    delete static_cast<mark_filter_context_t *>(ctx);
+    delete static_cast<mark_editor_layout_filter_context_t *>(ctx);
     return true;
 }
 
-filter_t mark_filter = {
+editor_layout_filter_t mark_filter = {
     "mark_filter",
     mark_filter_init,
     mark_filter_filter,

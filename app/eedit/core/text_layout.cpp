@@ -13,7 +13,7 @@ namespace core
 {
 
 
-build_layout_context_s::build_layout_context_s(
+editor_layout_builder_context_s::editor_layout_builder_context_s(
     editor_buffer_id_t editor_buffer_id_,
     byte_buffer_id_t bid_,
     editor_view_id_t view_,
@@ -135,24 +135,27 @@ bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const s32 cp, s32 
 // PIPELINE
 /////////////////////////////
 
+// TODO: user config
+// set filter list = byte | text |
+// the screen is implicit
+// MUST add filter position/king
+// - before:raw
 
-extern filter_t byte_mode;          // take  buffer id   -> emit byte
-extern filter_t text_decoder;       // takes bytes       -> emit code points
-extern filter_t unicode_mode;       // takes code points -> count them -> emit codepoints
-extern filter_t tab_expansion_mode; // takes codepoints  -> emit codepoints
-extern filter_t hex_mode;           // takes bytes       -> emit codepoints
+// the screen filter is implicit specila flag final filter ?
 
+extern editor_layout_filter_t byte_mode;          // take  buffer id   -> emit byte
+extern editor_layout_filter_t text_decoder;       // takes bytes       -> emit code points
+extern editor_layout_filter_t unicode_mode;       // takes code points -> count them -> emit codepoints
+extern editor_layout_filter_t tab_expansion_mode; // takes codepoints  -> emit codepoints
+extern editor_layout_filter_t hex_mode;           // takes bytes       -> emit codepoints
+extern editor_layout_filter_t mark_filter;        // codepoint         -> set codepoint's mark flag
+extern editor_layout_filter_t screen_mode;        // takes codepoints  -> emit screen
 
-extern filter_t mark_filter;        // codepoint         -> set codepoint's mark flag
-
-extern filter_t screen_mode;        // takes codepoints  -> emit screen
-
-
-bool build_layout(build_layout_context_t & ctx)
+bool build_layout(editor_layout_builder_context_t & ctx)
 {
     // move this per view ...
-    std::vector<filter_t *> mode_list;
-    std::vector<filter_context_t *> mode_ctx;
+    std::vector<editor_layout_filter_t *> filter_list;
+    std::vector<editor_layout_filter_context_t *> filter_ctx;
 
     /* TODO:
        prepare per virtual screen module list
@@ -177,40 +180,42 @@ bool build_layout(build_layout_context_t & ctx)
     */
     // mode_list.push_back(&real_start_of_line_cache); /* NEW TODO: */
 
+
+    // FIXME: the filter list must be per view ???
 #if 0
 // MERGE
     mode_list.push_back(&byte_mode); // TODO: use buffer api to get bytes
     mode_list.push_back(&hex_mode);  // TODO: use buffer api to get bytes
 #else
-    mode_list.push_back(&text_decoder);
-    mode_list.push_back(&tab_expansion_mode);
+    filter_list.push_back(&text_decoder);
+    filter_list.push_back(&tab_expansion_mode);
 #endif
 
-    mode_list.push_back(&mark_filter); // LAST LAYOUT FILTER  is the screen
+    filter_list.push_back(&mark_filter); // LAST LAYOUT FILTER  is the screen
 
-    mode_list.push_back(&screen_mode); // LAST LAYOUT FILTER  is the screen
+    filter_list.push_back(&screen_mode); // LAST LAYOUT FILTER  is the screen
 
     // setup pipeline
-    for (auto it = mode_list.begin(); it != mode_list.end(); ++it) {
+    for (auto it = filter_list.begin(); it != filter_list.end(); ++it) {
         // for each mode call mod->init(ctx, mod->ctx);
-        filter_context_t * tmp_ctx = nullptr;
+        editor_layout_filter_context_t * tmp_ctx = nullptr;
         (*it)->init(&ctx, &tmp_ctx); // rename in reset_filter();
-        mode_ctx.push_back(tmp_ctx);
+        filter_ctx.push_back(tmp_ctx);
     }
 
     // run pipeline
     const size_t MAX_OUT = 1024;
-    filter_io_t cp_info_1[MAX_OUT * 8];
+    editor_layout_filter_io_t cp_info_1[MAX_OUT * 8];
     size_t nr_in  = 0;
-    filter_io_t cp_info_2[MAX_OUT * 8];
+    editor_layout_filter_io_t cp_info_2[MAX_OUT * 8];
     size_t nr_out = 0;
 
-    // TODO: rename filter_io_t -> editor_layout_io_t
-    filter_io_t * pin  = cp_info_1;
-    filter_io_t * pout = cp_info_2;
+    // TODO: rename editor_layout_filter_io_t -> editor_layout_io_t
+    editor_layout_filter_io_t * pin  = cp_info_1;
+    editor_layout_filter_io_t * pout = cp_info_2;
 
-    size_t filter_io_sz = filter_io_size(); // @NOTE@ can be cached
-    filter_io_t * default_cp = (filter_io_t *)alloca(filter_io_sz);
+    size_t editor_layout_filter_io_sz = editor_layout_filter_io_size(); // @NOTE@ can be cached
+    editor_layout_filter_io_t * default_cp = (editor_layout_filter_io_t *)alloca(editor_layout_filter_io_sz);
     filter_io_init(default_cp);
 
     for (size_t i = 0; i < MAX_OUT; i++) {
@@ -237,11 +242,11 @@ bool build_layout(build_layout_context_t & ctx)
             app_log << " end_of_pipe("<<end_of_pipe<<") \n";
 
         nr_in  = 0;
-        for (size_t i = 0; i < mode_list.size(); i++) {
+        for (size_t i = 0; i < filter_list.size(); i++) {
 
-            filter_context_t * tmp_ctx = mode_ctx[i];
+            editor_layout_filter_context_t * tmp_ctx = filter_ctx[i];
             nr_out = 0;
-            if (mode_list[i]->filter != nullptr) {
+            if (filter_list[i]->filter != nullptr) {
 
                 assert(nr_out <= MAX_OUT);
                 /*
@@ -255,10 +260,10 @@ bool build_layout(build_layout_context_t & ctx)
                 this will enable potential threading
                 */
 
-                bool ret = mode_list[i]->filter(&ctx, tmp_ctx, pin, nr_in, pout, MAX_OUT, &nr_out);
+                bool ret = filter_list[i]->filter(&ctx, tmp_ctx, pin, nr_in, pout, MAX_OUT, &nr_out);
 
                 if (DEBUG_PIPELINE)
-                    app_log << "\n" << "mode_list(" << mode_list[i]->name <<")[" << i << "] , nr_in(" << nr_in << ") nr_out(" << nr_out << ")\n";
+                    app_log << "\n" << "mode_list(" << filter_list[i]->name <<")[" << i << "] , nr_in(" << nr_in << ") nr_out(" << nr_out << ")\n";
 
                 assert(nr_out <= 8 * MAX_OUT);
                 if (nr_out == 0) {
@@ -305,10 +310,10 @@ bool build_layout(build_layout_context_t & ctx)
     // slow :-) , on purpose
     // close pipeline
     // for each mode call mod->finish(ctx, mod->ctx);
-    for (size_t i = 0; i < mode_list.size(); i++) {
-        filter_context_t * tmp_ctx = mode_ctx[i];
-        if (mode_list[i]->finish != nullptr) {
-            mode_list[i]->finish(&ctx, tmp_ctx);
+    for (size_t i = 0; i < filter_list.size(); i++) {
+        editor_layout_filter_context_t * tmp_ctx = filter_ctx[i];
+        if (filter_list[i]->finish != nullptr) {
+            filter_list[i]->finish(&ctx, tmp_ctx);
         }
     }
 
@@ -330,7 +335,7 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
 
     assert(view);
 
-    eedit::core::build_layout_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
+    eedit::core::editor_layout_builder_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
 
     u32 t0 = ew::core::time::get_ticks();
 

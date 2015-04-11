@@ -158,7 +158,7 @@ struct editor_event_queue_s * main_window::event_queue(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_editor_new_layout_ui_event(main_window * win, struct editor_event_s * msg)
+bool process_editor_new_layout_ui_event(main_window * win, struct editor_message_s * msg)
 {
     // move notification screen to ui_widget
     auto view = win->get_text_view();     // the message must contain a private ref to the "view" widget instead of  win->get_text_view2();
@@ -186,7 +186,7 @@ bool process_editor_new_layout_ui_event(main_window * win, struct editor_event_s
     return true;
 }
 
-bool process_editor_new_rpc_answer_ui_event(main_window * win, struct editor_event_s * msg)
+bool process_editor_new_rpc_answer_ui_event(main_window * win, struct editor_message_s * msg)
 {
     app_log <<  __PRETTY_FUNCTION__ << "***************\n";
 
@@ -212,7 +212,7 @@ bool process_editor_new_rpc_answer_ui_event(main_window * win, struct editor_eve
 }
 
 
-bool release_editor_ui_event(struct editor_event_s * msg)
+bool release_editor_ui_event(struct editor_message_s * msg)
 {
     editor_event_free(msg);
     return true;
@@ -223,7 +223,7 @@ bool release_editor_ui_event(struct editor_event_s * msg)
  * TODO: from msg get targeted child (view,  status_bar,  menu_bar,  line_number,  ...)
  *
  */
-bool process_editor_ui_event(main_window * win, struct editor_event_s * msg)
+bool process_editor_ui_event(main_window * win, struct editor_message_s * msg)
 {
     bool ret = false;
 
@@ -270,7 +270,7 @@ void main_window::process_event_queue(void)
     static size_t default_wait_time = 20;
     size_t wait_time = default_wait_time;
 
-    struct editor_event_s * msg = nullptr;
+    struct editor_message_s * msg = nullptr;
     editor_event_queue_wait(q, wait_time);
     auto nr = editor_event_queue_size(q);
     while (nr) {

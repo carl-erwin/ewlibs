@@ -4,13 +4,13 @@
 #include <ew/Utils.hpp>
 #include "../../core/input/event/input_event_map.hpp"
 
-#include "editor_event.h"
+#include "editor_message.h"
 
 extern "C"
-struct editor_event_s * editor_event_alloc()
+struct editor_message_s * editor_event_alloc()
 {
-    struct editor_event_s * ev = static_cast<struct editor_event_s *>(::operator new (sizeof (struct editor_event_s)));
-    memset(ev, 0, sizeof (struct editor_event_s));
+    struct editor_message_s * ev = static_cast<struct editor_message_s *>(::operator new (sizeof (struct editor_message_s)));
+    memset(ev, 0, sizeof (struct editor_message_s));
     return ev;
 }
 
@@ -43,14 +43,14 @@ inline void print_args(const int ac, char ** & av)
 
 
 
-struct editor_event_s * editor_layout_event_new(editor_event_type_e type)
+struct editor_message_s * editor_layout_event_new(editor_message_type_e type)
 {
     auto ev = editor_event_alloc();
     ev->type = type;
     return ev;
 }
 
-struct editor_event_s * editor_rpc_call_new(int call_ac, const char ** call_av)
+struct editor_message_s * editor_rpc_call_new(int call_ac, const char ** call_av)
 {
     auto ev = editor_event_alloc();
     ev->type = EDITOR_RPC_CALL_EVENT;
@@ -58,7 +58,7 @@ struct editor_event_s * editor_rpc_call_new(int call_ac, const char ** call_av)
     return ev;
 }
 
-struct editor_event_s * editor_rpc_answer_new(struct editor_event_s * request, int answer_ac, const char ** anwser_av)
+struct editor_message_s * editor_rpc_answer_new(struct editor_message_s * request, int answer_ac, const char ** anwser_av)
 {
     auto ev = editor_event_alloc();
     ev->type = EDITOR_RPC_ANSWER_EVENT;
@@ -68,7 +68,7 @@ struct editor_event_s * editor_rpc_answer_new(struct editor_event_s * request, i
 
 
 extern "C"
-void editor_event_free(struct editor_event_s * ev)
+void editor_event_free(struct editor_message_s * ev)
 {
     if (!ev)
         return;

@@ -4,7 +4,7 @@
 #include <condition_variable>
 
 // api
-#include "editor_event.h"
+#include "editor_message.h"
 #include "editor_event_queue.h"
 #include "editor_buffer.h"
 

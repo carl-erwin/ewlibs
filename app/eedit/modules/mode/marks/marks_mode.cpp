@@ -9,7 +9,7 @@
 
 #include "../../../core/text_layout.hpp"   // FIXME: C apis
 
-#include "../../../core/module/event_function.h"
+#include "editor_message_handler.h"
 
 #include "../../../core/process_event_ctx.h"
 
@@ -59,7 +59,7 @@ enum operation_mask_e {
   delete is last because delete-left-char is implemented like this : move the marks to the left and then delete the codepoint(s)
 
  */
-int mark_operation(struct editor_event_s * msg, int op_mask, int32_t codepoint, int move_direction)
+int mark_operation(struct editor_message_s * msg, int op_mask, int32_t codepoint, int move_direction)
 {
     // TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
 
@@ -170,35 +170,35 @@ int mark_operation(struct editor_event_s * msg, int op_mask, int32_t codepoint, 
 }
 
 
-int mark_move_backward(struct editor_event_s * msg)
+int mark_move_backward(struct editor_message_s * msg)
 {
     return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_BACKWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int mark_move_forward(struct editor_event_s * msg)
+int mark_move_forward(struct editor_message_s * msg)
 {
     return mark_operation(msg, EDITOR_OP_MARK_MOVE, INVALID_CP, MOVE_FORWARD);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int insert_codepoint_val(struct editor_event_s * msg, int32_t codepoint)
+int insert_codepoint_val(struct editor_message_s * msg, int32_t codepoint)
 {
     mark_operation(msg, EDITOR_OP_INSERT_AT_MARK|EDITOR_OP_MARK_MOVE, codepoint, MOVE_FORWARD);
     return EDITOR_STATUS_OK;
 }
 
 
-int insert_codepoint(struct editor_event_s * msg)
+int insert_codepoint(struct editor_message_s * msg)
 {
     insert_codepoint_val(msg, msg->input.ev.start_value);
     return EDITOR_STATUS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int insert_newline(struct editor_event_s * _msg)
+int insert_newline(struct editor_message_s * _msg)
 {
     insert_codepoint_val(_msg, (s32)'\n');
     return EDITOR_STATUS_OK;
@@ -206,7 +206,7 @@ int insert_newline(struct editor_event_s * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int delete_left_char(struct editor_event_s * _msg)
+int delete_left_char(struct editor_message_s * _msg)
 {
     mark_operation(_msg, EDITOR_OP_MARK_MOVE|EDITOR_OP_DELETE_AT_MARK, INVALID_CP, MOVE_BACKWARD);
     return EDITOR_STATUS_OK;
@@ -214,7 +214,7 @@ int delete_left_char(struct editor_event_s * _msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int delete_right_char(struct editor_event_s * _msg)
+int delete_right_char(struct editor_message_s * _msg)
 {
     mark_operation(_msg, EDITOR_OP_DELETE_AT_MARK, INVALID_CP, NO_MOVE);
     return EDITOR_STATUS_OK;
@@ -228,38 +228,38 @@ int delete_right_char(struct editor_event_s * _msg)
  * all clone operation depends on main mark
  *
  */
-int mark_clone_and_move_left(struct editor_event_s * _msg)
+int mark_clone_and_move_left(struct editor_message_s * _msg)
 {
 
     return EDITOR_STATUS_OK;
 }
 
-int mark_clone_and_move_right(struct editor_event_s * _msg)
+int mark_clone_and_move_right(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
 
-int mark_clone_and_move_up(struct editor_event_s * _msg)
+int mark_clone_and_move_up(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
 
-int mark_clone_and_move_down(struct editor_event_s * _msg)
+int mark_clone_and_move_down(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
 
-int mark_delete(struct editor_event_s * _msg)
+int mark_delete(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
 
-int mark_select_next(struct editor_event_s * _msg)
+int mark_select_next(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
 
-int mark_select_previous(struct editor_event_s * _msg)
+int mark_select_previous(struct editor_message_s * _msg)
 {
     return EDITOR_STATUS_OK;
 }
@@ -270,21 +270,21 @@ int mark_select_previous(struct editor_event_s * _msg)
 void mark_mode_register_modules_function()
 {
     /* basic moves */
-    editor_register_module_function("left-char",                  mark_move_backward);
-    editor_register_module_function("right-char",                 mark_move_forward);
+    editor_register_message_handler("left-char",                  mark_move_backward);
+    editor_register_message_handler("right-char",                 mark_move_forward);
     /* insert/delete */
-    editor_register_module_function("self-insert",                insert_codepoint);
-    editor_register_module_function("insert-newline",             insert_newline);
-    editor_register_module_function("delete-left-char",           delete_left_char);
-    editor_register_module_function("delete-right-char",          delete_right_char);
+    editor_register_message_handler("self-insert",                insert_codepoint);
+    editor_register_message_handler("insert-newline",             insert_newline);
+    editor_register_message_handler("delete-left-char",           delete_left_char);
+    editor_register_message_handler("delete-right-char",          delete_right_char);
     /* clone operation */
-    editor_register_module_function("mark-clone-and-move-left",   mark_clone_and_move_left);
-    editor_register_module_function("mark-clone-and-move-right",  mark_clone_and_move_right);
-    editor_register_module_function("mark-clone-and-move-up",     mark_clone_and_move_up);
-    editor_register_module_function("mark-clone-and-move-down",   mark_clone_and_move_down);
-    editor_register_module_function("mark-delete",                mark_delete);
-    editor_register_module_function("mark-select-next",           mark_select_next);
-    editor_register_module_function("mark-select-previous",       mark_select_previous);
+    editor_register_message_handler("mark-clone-and-move-left",   mark_clone_and_move_left);
+    editor_register_message_handler("mark-clone-and-move-right",  mark_clone_and_move_right);
+    editor_register_message_handler("mark-clone-and-move-up",     mark_clone_and_move_up);
+    editor_register_message_handler("mark-clone-and-move-down",   mark_clone_and_move_down);
+    editor_register_message_handler("mark-delete",                mark_delete);
+    editor_register_message_handler("mark-select-next",           mark_select_next);
+    editor_register_message_handler("mark-select-previous",       mark_select_previous);
 }
 
 
@@ -293,20 +293,20 @@ void mark_mode_unregister_modules_function()
 #if 0
     /* basic moves */
     editor_unregister_module_function("left-char",                  mark_move_backward);
-    editor_register_module_function("right-char",                 mark_move_forward);
+    editor_register_message_handler("right-char",                 mark_move_forward);
     /* insert/delete */
-    editor_register_module_function("self-insert",                insert_codepoint);
-    editor_register_module_function("insert-newline",             insert_newline);
-    editor_register_module_function("delete-left-char",           delete_left_char);
-    editor_register_module_function("delete-right-char",          delete_right_char);
+    editor_register_message_handler("self-insert",                insert_codepoint);
+    editor_register_message_handler("insert-newline",             insert_newline);
+    editor_register_message_handler("delete-left-char",           delete_left_char);
+    editor_register_message_handler("delete-right-char",          delete_right_char);
     /* clone operation */
-    editor_register_module_function("mark-clone-and-move-left",   mark_clone_and_move_left);
-    editor_register_module_function("mark-clone-and-move-right",  mark_clone_and_move_right);
-    editor_register_module_function("mark-clone-and-move-up",     mark_clone_and_move_up);
-    editor_register_module_function("mark-clone-and-move-down",   mark_clone_and_move_down);
-    editor_register_module_function("mark-delete",                mark_delete);
-    editor_register_module_function("mark-select-next",           mark_select_next);
-    editor_register_module_function("mark-select-previous",       mark_select_previous);
+    editor_register_message_handler("mark-clone-and-move-left",   mark_clone_and_move_left);
+    editor_register_message_handler("mark-clone-and-move-right",  mark_clone_and_move_right);
+    editor_register_message_handler("mark-clone-and-move-up",     mark_clone_and_move_up);
+    editor_register_message_handler("mark-clone-and-move-down",   mark_clone_and_move_down);
+    editor_register_message_handler("mark-delete",                mark_delete);
+    editor_register_message_handler("mark-select-next",           mark_select_next);
+    editor_register_message_handler("mark-select-previous",       mark_select_previous);
 #endif
 }
 

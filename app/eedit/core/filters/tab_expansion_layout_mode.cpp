@@ -6,12 +6,12 @@ namespace eedit
 namespace core
 {
 
-struct tab_expansion_context_t : public filter_context_t {
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+struct tab_expansion_context_t : public editor_layout_filter_context_t {
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
     size_t expansion;
 };
 
-bool tab_expansion_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool tab_expansion_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     tab_expansion_context_t * mode_ctx = new tab_expansion_context_t;
     *out = mode_ctx;
@@ -26,9 +26,9 @@ bool tab_expansion_init(build_layout_context_t * blayout_ctx, filter_context_t *
 //static int32_t tab_first_cp = 0x2192;
 static int32_t tab_first_cp = ' '; // 0x2192;
 
-bool tab_expansion_filter(build_layout_context_t * blctx, filter_context_t * ctx_,
-                          const filter_io_t * const in, const size_t nr_in,
-                          filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_,
+                          const editor_layout_filter_io_t * const in, const size_t nr_in,
+                          editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
     tab_expansion_context_t * ctx = static_cast<tab_expansion_context_t *>(ctx_);
 
@@ -109,14 +109,14 @@ bool tab_expansion_filter(build_layout_context_t * blctx, filter_context_t * ctx
     return true;
 }
 
-bool tab_expansion_finish(build_layout_context_t * blctx, filter_context_t * ctx)
+bool tab_expansion_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx)
 {
     tab_expansion_context_t * tabctx = static_cast<tab_expansion_context_t *>(ctx);
     delete tabctx;
     return true;
 }
 
-filter_t tab_expansion_mode = {
+editor_layout_filter_t tab_expansion_mode = {
     "tab_expansion",
     tab_expansion_init,
     tab_expansion_filter,

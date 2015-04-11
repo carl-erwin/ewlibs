@@ -6,5 +6,5 @@
  */
 #include <locale>
 
-bool process_rpc_call_event(struct editor_event_s * msg);
+bool process_rpc_call_event(struct editor_message_s * msg);
 

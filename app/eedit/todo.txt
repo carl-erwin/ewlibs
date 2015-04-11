@@ -1,3 +1,9 @@
+rename editor_message_s -> editor_message_s
+-------------------------------------------------------------------
+
+fix screen resize
+-------------------------------------------------------------------
+
 fix ncurses screen size : bad interline/font
 -------------------------------------------------------------------
 split the todo in it's own directory
@@ -125,8 +131,8 @@ buffer_log_id_t -> undo/redo
 editor_buffer_id_t -> { bid, log_id, marks[] }
 
 ----------------------------
-prefix all module function with namespace ? 
-ex 
+prefix all module function with namespace ?
+ex
  "save_buffer" -> "core::save_buffer"
  "buffer_undo" -> "core::buffer_undo"
 
@@ -151,7 +157,7 @@ like scroll_up/down of screen
 ------------------------------------------------------
 add flag : resync on move
 -------------------------------------------------------
-do not push event in rpc .., prefer an internal api 
+do not push event in rpc .., prefer an internal api
 -------------------------------------------------------
 add mutilple fonts
 

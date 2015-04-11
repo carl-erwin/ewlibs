@@ -27,7 +27,7 @@ enum editor_stream_type_e {
 
 extern "C" {
 
-    struct filter_io_s {
+    struct editor_layout_filter_io_s {
 
         uint32_t content_type;
 
@@ -64,7 +64,7 @@ extern "C" {
         // TODO: add style infos ?
     };
 
-    typedef struct filter_io_s filter_io_t;
+    typedef struct editor_layout_filter_io_s editor_layout_filter_io_t;
 
 
     EDITOR_EXPORT
@@ -73,12 +73,12 @@ extern "C" {
 }
 
 
-inline size_t filter_io_size()
+inline size_t editor_layout_filter_io_size()
 {
-    return sizeof (struct filter_io_s);
+    return sizeof (struct editor_layout_filter_io_s);
 }
 
-inline void filter_io_init(filter_io_t * io)
+inline void filter_io_init(editor_layout_filter_io_t * io)
 {
 
     io->content_type = 0;
@@ -107,10 +107,10 @@ namespace eedit
 namespace core
 {
 
-// TODO :  build_layout_context_t -> build_layout_context_s
-struct build_layout_context_s {
+// TODO :  editor_layout_builder_context_t -> editor_layout_builder_context_s
+struct editor_layout_builder_context_s {
 
-    build_layout_context_s(editor_buffer_id_t editor_buffer_id_, byte_buffer_id_t bid_, uint64_t sid_, const codepoint_info_s * start_cpi_, screen_t * out_);
+    editor_layout_builder_context_s(editor_buffer_id_t editor_buffer_id_, byte_buffer_id_t bid_, uint64_t sid_, const codepoint_info_s * start_cpi_, screen_t * out_);
 
     // ctx in
     editor_buffer_id_t	editor_buffer_id = 0;
@@ -139,7 +139,7 @@ struct build_layout_context_s {
     screen_t * out;
 };
 
-typedef struct build_layout_context_s build_layout_context_t;
+typedef struct editor_layout_builder_context_s editor_layout_builder_context_t;
 
 void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info);
 
@@ -190,26 +190,26 @@ enum layout_status_e {
 
 // build_layout_mode.hpp
 
-typedef struct build_layout_context_s layout_context_t; // -> build_layout_context_t
-struct filter_t;           // -> build_layout_mode_t
-struct filter_context_t;   // -> build_layout_mode_context_t
+typedef struct editor_layout_builder_context_s layout_context_t; // -> editor_layout_builder_context_t
+struct editor_layout_filter_t;           // -> build_layout_mode_t
+struct editor_layout_filter_context_t;   // -> build_layout_mode_context_t
 
 // replace bool with enum
-typedef bool (*mode_init_fn)(build_layout_context_t * ctx, filter_context_t ** to_allocate);
+typedef bool (*editor_layout_filter_init_function_t)(editor_layout_builder_context_t * ctx, editor_layout_filter_context_t ** to_allocate);
 
-typedef bool (*mode_filter_fn)(build_layout_context_t * ctx,
-                               filter_context_t * filter_ctx,
-                               const filter_io_t * const in, const size_t nr_in,
-                               filter_io_t * out, const size_t  max_out, size_t * nr_out);
+typedef bool (*editor_layout_filter_function_t)(editor_layout_builder_context_t * ctx,
+                               editor_layout_filter_context_t * filter_ctx,
+                               const editor_layout_filter_io_t * const in, const size_t nr_in,
+                               editor_layout_filter_io_t * out, const size_t  max_out, size_t * nr_out);
 
-typedef bool (*mode_finish_fn)(build_layout_context_t * ctx, filter_context_t *);
+typedef bool (*editor_layout_filter_finish_function_t)(editor_layout_builder_context_t * ctx, editor_layout_filter_context_t *);
 
-struct filter_context_t {};
-struct filter_t {
-    const char *   name;
-    mode_init_fn   init;
-    mode_filter_fn filter;
-    mode_finish_fn finish;
+struct editor_layout_filter_context_t {};
+struct editor_layout_filter_t {
+    const char *                           name;
+    editor_layout_filter_init_function_t   init;
+    editor_layout_filter_function_t        filter;
+    editor_layout_filter_finish_function_t finish;
 };
 
 
@@ -217,12 +217,12 @@ struct filter_t {
 
 // TODO:
 // to be used by filters
-int get_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
-int unget_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
+int get_filter_io(layout_context_t * ctx, editor_layout_filter_io_t * iov, int iov_count);
+int unget_filter_io(layout_context_t * ctx, editor_layout_filter_io_t * iov, int iov_count);
 
 
-int put_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
-int unput_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
+int put_filter_io(layout_context_t * ctx, editor_layout_filter_io_t * iov, int iov_count);
+int unput_filter_io(layout_context_t * ctx, editor_layout_filter_io_t * iov, int iov_count);
 
 
 
@@ -231,7 +231,7 @@ int unput_filter_io(layout_context_t * ctx, filter_io_t * iov, int iov_count);
   raw_bytes(rdr_start) -> unicode -> expansion -> (???) -> filtered cp info accum ? | screen(final)
 */
 
-bool build_layout(build_layout_context_t & ctx);
+bool build_layout(editor_layout_builder_context_t & ctx);
 
 } // ! namespace core
 

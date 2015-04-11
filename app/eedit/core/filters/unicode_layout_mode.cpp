@@ -6,15 +6,15 @@ namespace eedit
 namespace core
 {
 
-struct unicode_context_t : public filter_context_t {
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+struct unicode_context_t : public editor_layout_filter_context_t {
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
     u32 split_count;
     u32 split_flag;
     u64 cur_cp_index; // used for correct codepoint expansion, and column count :-)
 };
 
-bool unicode_buffer_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool unicode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     unicode_context_t * mode_ctx = new unicode_context_t;
     *out = mode_ctx;
@@ -40,10 +40,10 @@ bool unicode_buffer_init(build_layout_context_t * blayout_ctx, filter_context_t 
     return true;
 }
 
-bool unicode_buffer_filter(build_layout_context_t * blctx,
-                           filter_context_t * ctx,
-                           const filter_io_t * const in, const size_t nr_in,
-                           filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool unicode_buffer_filter(editor_layout_builder_context_t * blctx,
+                           editor_layout_filter_context_t * ctx,
+                           const editor_layout_filter_io_t * const in, const size_t nr_in,
+                           editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
     unicode_context_t * unicode_ctx = static_cast<unicode_context_t *>(ctx);
 
@@ -73,7 +73,7 @@ bool unicode_buffer_filter(build_layout_context_t * blctx,
     return true;
 }
 
-bool unicode_buffer_finish(build_layout_context_t * blctx, filter_context_t * ctx)
+bool unicode_buffer_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx)
 {
     unicode_context_t * unictx = static_cast<unicode_context_t *>(ctx);
 
@@ -81,7 +81,7 @@ bool unicode_buffer_finish(build_layout_context_t * blctx, filter_context_t * ct
     return true;
 }
 
-filter_t unicode_mode = {
+editor_layout_filter_t unicode_mode = {
     "unicode_mode",
     unicode_buffer_init,
     unicode_buffer_filter,

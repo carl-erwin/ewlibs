@@ -10,7 +10,7 @@
 #include "ew/core/time/time.hpp"
 
 #include "ui.h"
-#include "editor_event.h"
+#include "editor_message.h"
 #include "byte_buffer.h"
 #include "editor_buffer.h"
 #include "editor_view.h"
@@ -88,9 +88,9 @@ struct ncurses_ui_interface : public user_interface {
 
     struct editor_event_queue_s * m_event_queue = nullptr;
 
-    bool process_editor_ui_event(struct editor_event_s * msg);
-    bool process_editor_new_layout_ui_event(struct editor_event_s * msg);
-    bool process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg);
+    bool process_editor_ui_event(struct editor_message_s * msg);
+    bool process_editor_new_layout_ui_event(struct editor_message_s * msg);
+    bool process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg);
     bool quit();
 
     bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim);
@@ -125,7 +125,7 @@ bool ncurses_ui_interface::setup(application * app)
 
 bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, u64 screen_id, const screen_dimension_t & screen_dim)
 {
-    struct editor_event_s * msg = editor_rpc_call_new(ac, av);
+    struct editor_message_s * msg = editor_rpc_call_new(ac, av);
     msg->src.kind  =  EDITOR_ACTOR_UI;
     msg->src.queue =  m_event_queue;  //  TODO: ctx ?
     msg->dst.kind  =  EDITOR_ACTOR_CORE;
@@ -151,7 +151,7 @@ void sigint_handler(int sig)
     int col;
     getmaxyx(stdscr, row, col);
 
-    struct editor_event_s * msg = editor_event_alloc();
+    struct editor_message_s * msg = editor_event_alloc();
     msg->type = EDITOR_KEYBOARD_EVENT;
 
     msg->id               = 0; // FIXME: id++
@@ -225,7 +225,7 @@ bool ncurses_ui_interface::main_loop()
 
         editor_event_queue_wait(q, 1);
         auto nr = editor_event_queue_size(q);
-        struct editor_event_s * core_msg = nullptr;
+        struct editor_message_s * core_msg = nullptr;
         while (nr) {
             core_msg = editor_event_queue_get(q);
             process_editor_ui_event(core_msg);
@@ -558,7 +558,7 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
 
 
 ////////
-bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_event_s * msg)
+bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_message_s * msg)
 {
     int row;
     int col;
@@ -638,7 +638,7 @@ bool ncurses_ui_interface::send_build_layout_event(u32 w, u32 h) const
 }
 
 
-bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_event_s * msg)
+bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg)
 {
     app_log << __FUNCTION__ << "  recv " << msg->rpc.av[0] << "\n";
 
@@ -682,7 +682,7 @@ bool ncurses_ui_interface::quit()
 }
 
 
-bool ncurses_ui_interface::process_editor_ui_event(struct editor_event_s * msg)
+bool ncurses_ui_interface::process_editor_ui_event(struct editor_message_s * msg)
 {
     bool ret = false;
 

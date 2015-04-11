@@ -15,15 +15,15 @@ namespace core
 {
 
 
-struct text_decoder_context_t : public filter_context_t {
+struct text_decoder_context_t : public editor_layout_filter_context_t {
     // replace by bid ?
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 
     uint64_t next_offset = 0;
     size_t   buffer_size = 0;
 
 
-    filter_io_t end_of_buffer;
+    editor_layout_filter_io_t end_of_buffer;
 
     struct text_codec_io_s * iovc = nullptr;
 
@@ -37,7 +37,7 @@ struct text_decoder_context_t : public filter_context_t {
 
 
 
-bool text_decoder_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     text_decoder_context_t * mode_ctx = new text_decoder_context_t;
     *out = mode_ctx;
@@ -84,7 +84,7 @@ bool text_decoder_init(build_layout_context_t * blayout_ctx, filter_context_t **
 }
 
 
-bool text_decoder_finish(build_layout_context_t * blctx, filter_context_t * ctx_)
+bool text_decoder_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_)
 {
     text_decoder_context_t * ctx = static_cast<text_decoder_context_t *>(ctx_);
 
@@ -95,15 +95,15 @@ bool text_decoder_finish(build_layout_context_t * blctx, filter_context_t * ctx_
 }
 
 
-bool text_decoder_filter(build_layout_context_t * blctx,
-                         filter_context_t * ctx_,
-                         const filter_io_t * const in, const size_t nr_in,
-                         filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool text_decoder_filter(editor_layout_builder_context_t * blctx,
+                         editor_layout_filter_context_t * ctx_,
+                         const editor_layout_filter_io_t * const in, const size_t nr_in,
+                         editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
 
 
-//	int get_filter_io(filter_io_t * in, size_t max_in);
-//	int put_filter_io(const filter_io_t * const out, const size_t nr_out);
+//	int get_filter_io(editor_layout_filter_io_t * in, size_t max_in);
+//	int put_filter_io(const editor_layout_filter_io_t * const out, const size_t nr_out);
 
     text_decoder_context_t * ctx = static_cast<text_decoder_context_t *>(ctx_);
 
@@ -206,7 +206,7 @@ bool text_decoder_filter(build_layout_context_t * blctx,
     return true;
 }
 
-filter_t text_decoder = {
+editor_layout_filter_t text_decoder = {
     "text_decoder",
     text_decoder_init,
     text_decoder_filter,

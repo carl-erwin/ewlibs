@@ -10,11 +10,11 @@ namespace eedit
 namespace core
 {
 
-struct hex_mode_context_t : public filter_context_t {
-    build_layout_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
+struct hex_mode_context_t : public editor_layout_filter_context_t {
+    editor_layout_builder_context_t * blayout_ctx = nullptr; // to access the text buffer buffer
 };
 
-bool hex_mode_init(build_layout_context_t * blayout_ctx, filter_context_t ** out)
+bool hex_mode_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
 {
     hex_mode_context_t * mode_ctx = new hex_mode_context_t;
     *out = mode_ctx;
@@ -25,9 +25,9 @@ bool hex_mode_init(build_layout_context_t * blayout_ctx, filter_context_t ** out
     return true;
 }
 
-bool hex_mode_filter(build_layout_context_t * blctx, filter_context_t * ctx,
-                     const filter_io_t * const in, const size_t nr_in,
-                     filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool hex_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx,
+                     const editor_layout_filter_io_t * const in, const size_t nr_in,
+                     editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
 {
 //    hex_mode_context_t * hex_mode_ctx = static_cast<hex_mode_context_t *>(ctx);
 
@@ -68,7 +68,7 @@ bool hex_mode_filter(build_layout_context_t * blctx, filter_context_t * ctx,
     return true;
 }
 
-bool hex_mode_finish(build_layout_context_t * blctx, filter_context_t * ctx)
+bool hex_mode_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx)
 {
     hex_mode_context_t * modectx = static_cast<hex_mode_context_t *>(ctx);
 
@@ -77,7 +77,7 @@ bool hex_mode_finish(build_layout_context_t * blctx, filter_context_t * ctx)
     return true;
 }
 
-filter_t hex_mode = {
+editor_layout_filter_t hex_mode = {
     "hex_mode",
     hex_mode_init,
     hex_mode_filter,

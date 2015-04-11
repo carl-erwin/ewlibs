@@ -25,6 +25,7 @@ int main(int ac, char *av[])
   for (size_t l = start; l < start+num_line; ++l) {
     fprintf(stdout, "%lu %.*s\n", l, width, s);
   }
+  free(s);
 
   return 0;
 }

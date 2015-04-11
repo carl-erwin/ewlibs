@@ -19,5 +19,5 @@ main = do
     then genLines startLineNum lastLine numChar
     else putStrLn $ "usage : " ++ (show progName) ++ " startLineNum numLine numChar"
 
-rInt :: String -> Int 
+rInt :: String -> Int
 rInt a = read a
