@@ -4,8 +4,8 @@
 #include <cstring>
 
 #include "ew/ew_config.hpp"
-#include "./api/include/module.h"
-#include "./api/include/codec.h"
+#include "editor_module.h"
+#include "editor_codec.h"
 
 #include <cstdio>
 

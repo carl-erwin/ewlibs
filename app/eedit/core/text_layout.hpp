@@ -11,9 +11,9 @@
 #include "editor_export.h"
 #include "editor_buffer.h"
 #include "editor_view.h"
-#include "codec.h"
+#include "editor_codec.h"
 
-#include "screen.h"
+#include "editor_screen.h"
 
 // TODO : export as "C" apis
 

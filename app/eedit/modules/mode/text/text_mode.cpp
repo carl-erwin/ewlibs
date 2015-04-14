@@ -1,8 +1,10 @@
 #include <vector>
 #include <map>
 
+#include "editor_module.h"
 #include "editor_event_queue.h"
 #include "editor_message_handler.h"
+
 
 #include "../../../application/application.hpp"
 #include "../../../core/core.hpp"
@@ -15,7 +17,7 @@
 
 #include "../../../api/include/buffer_log.h"
 
-#include "../../../api/include/screen.h"
+#include "editor_screen.h"
 
 #include "../../../api/include/text_codec.h"
 
@@ -157,11 +159,6 @@ etc..
 */
 
 
-namespace eedit
-{
-
-namespace core
-{
 
 //
 int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t * screen, const codepoint_info_s ** start_cpi);
@@ -253,7 +250,7 @@ int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
 
     *resynced_offset = editor_view_get_start_offset(ed_view);
 
-    if (hints & rewind_screen) {
+    if (0 /* && hints & rewind_screen*/) {
 
         // FIXME:   define editor_log() like printf // app_log << "hints & rewind_screen\n";
 
@@ -561,7 +558,7 @@ int page_up_internal(struct editor_message_s * msg, codepoint_info_s  & start_cp
     // (1)
     // compute max rewind offset
     uint64_t rewind_off;
-    eedit::core::rewind_and_resync_screen(buffer, view, max_cp, rewind_screen, save_start_off, &rewind_off);
+    rewind_and_resync_screen(buffer, view, max_cp, rewind_screen, save_start_off, &rewind_off);
 
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
 
@@ -1775,6 +1772,49 @@ void text_mode_register_modules_function()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-} // ! namespace core
 
-} // ! namespace eedit
+
+
+// Module interface
+
+extern "C"
+SHOW_SYMBOL const char * module_name()
+{
+    return "mode/text";
+}
+
+
+extern "C"
+SHOW_SYMBOL const char * module_version()
+{
+    return "1.0.0";
+}
+
+extern "C"
+SHOW_SYMBOL eedit_module_type_e  module_type()
+{
+    return MODULE_TYPE_EDITOR_MODE;
+}
+
+extern "C"
+SHOW_SYMBOL const char * module_depends()
+{
+    return "";
+}
+
+
+extern "C"
+SHOW_SYMBOL eedit_module_init_status_e  module_init()
+{
+    text_mode_register_modules_function();
+    return MODULE_INIT_OK;
+}
+
+extern "C"
+SHOW_SYMBOL int  module_quit()
+{
+    //text_mode_unregister_modules_function();
+    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////

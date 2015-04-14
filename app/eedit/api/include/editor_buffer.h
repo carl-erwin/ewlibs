@@ -10,7 +10,7 @@
 #include "byte_buffer.h"
 #include "buffer_log.h"
 #include "mark.h"
-#include "screen.h"
+#include "editor_screen.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -11,11 +11,29 @@
 #include "codepoint_info.h"
 #include "mark.h"
 
-#include "codec.h"
+#include "editor_codec.h"
 
 #include "ew/graphics/font/font.hpp"
 
 #include "../../core/input/event/input_event_map.hpp" // FIXME: typedef uint64_t editor_input_event_map_id_t;
+
+
+typedef struct screen_cache {
+    screen_cache()
+    {
+        assert(last_screen == nullptr);
+    }
+
+    ~screen_cache()
+    {
+        screen_release(last_screen);
+    }
+
+    uint64_t start_offset = 0;
+    screen_dimension_t dim;
+    screen_t * last_screen = nullptr;
+} screen_cache_t;
+
 
 struct editor_view {
     editor_view(editor_view_id_t view_, editor_buffer_id_t editor_buffer_id_);
@@ -35,6 +53,8 @@ struct editor_view {
     uint64_t end_offset   = 0;
 
     codepoint_info_t start_cpi;
+
+    screen_cache_t  screen_cache;
 
     struct {
         std::map<std::string, eedit::editor_input_event_map *> event_map;

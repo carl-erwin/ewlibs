@@ -35,7 +35,7 @@ ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_input_event.cpp
 ${EW_PROJECT_ROOT}/app/eedit/api/src/editor_message_handler.cpp
 
 # application
-${EW_PROJECT_ROOT}/app/eedit/main/main.cpp
+${EW_PROJECT_ROOT}/app/eedit/application/main.cpp
 ${EW_PROJECT_ROOT}/app/eedit/application/application.cpp
 
 

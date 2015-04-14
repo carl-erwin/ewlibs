@@ -3,7 +3,7 @@
 #include "editor_export.h"
 #include "editor_types.h"
 #include "mark.h"
-#include "screen.h"
+#include "editor_screen.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +39,9 @@ codec_context_id_t editor_view_get_codec_ctx(editor_view_id_t view);
 // view -> font
 editor_font_t editor_view_get_font(editor_view_id_t view);
 
+
+// view -> screen
+screen_t *         get_previous_screen_by_id(editor_view_id_t screen_id);
 
 //
 void editor_view_set_region_changed_flag(editor_view_id_t view, bool);

@@ -5,7 +5,7 @@
 
 #include "editor_export.h"
 #include "byte_buffer.h"
-#include "codec.h"
+#include "editor_codec.h"
 
 #ifdef __cplusplus
 extern "C" {

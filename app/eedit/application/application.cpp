@@ -39,7 +39,7 @@ using namespace ew::filesystem;
 #include "editor_buffer.h"
 
 //
-#include "../api/include/module.h"
+#include "editor_module.h"
 
 // default
 #include "../ui/ew/ui.h"

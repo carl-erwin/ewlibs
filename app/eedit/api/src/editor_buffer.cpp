@@ -14,7 +14,7 @@
 
 #include "codepoint_info.h"
 #include "mark.h"
-#include "codec.h"
+#include "editor_codec.h"
 
 #include "byte_buffer.h"
 #include "editor_buffer.h"

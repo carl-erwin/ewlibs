@@ -14,7 +14,7 @@
 #include "byte_buffer.h"
 #include "editor_buffer.h"
 #include "editor_view.h"
-#include "screen.h"
+#include "editor_screen.h"
 
 #include "../../core/core.hpp"
 #include "../../core/input/event/input_event_map.hpp"
@@ -93,14 +93,19 @@ struct ncurses_ui_interface : public user_interface {
     bool process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg);
     bool quit();
 
+
+    screen_dimension_t get_screen_dimention();
+
     bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, uint64_t screen_id, const screen_dimension_t & screen_dim);
     bool send_build_layout_event(uint32_t w, uint32_t h) const;
-    struct editor_input_event_s ncurses_keycode_to_eedit_event(int keycode);
+    struct editor_message_s * ncurses_event_to_editor_message(int keycode);
 
     byte_buffer_id_t m_cur_ebid = 0; // current buffer;
     editor_view_id_t m_cur_view_id = 0;
 
     ui_state_e ui_state = request_buffer_id_list;
+
+    screen_dimension_t last_screen_dimention;
 
     bool m_quit = false;
     // TODO: get_number_of_openned_buffers() -> size_t;
@@ -146,35 +151,47 @@ bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, edito
 
 void sigint_handler(int sig)
 {
-    // TODO: build state machine
-    int row;
-    int col;
-    getmaxyx(stdscr, row, col);
-
-    struct editor_message_s * msg = editor_event_alloc();
-    msg->type = EDITOR_KEYBOARD_EVENT;
+    struct editor_message_s * msg = ncurses_ui->ncurses_event_to_editor_message(3);
 
     msg->id               = 0; // FIXME: id++
     msg->editor_buffer_id = ncurses_ui->m_cur_ebid;
     msg->byte_buffer_id   = 0;
     msg->view_id          = ncurses_ui->m_cur_view_id;
 
-    msg->screen_dim.w = col * get_application()->font_width();
-    msg->screen_dim.h = row * get_application()->font_height();
-    msg->screen_dim.c = col;
-    msg->screen_dim.l = row;
-
     msg->src.kind  = EDITOR_ACTOR_UI;
     msg->src.queue = ncurses_ui->m_event_queue;
     msg->dst.kind  = EDITOR_ACTOR_CORE;
 
-    msg->input.ev = ncurses_ui->ncurses_keycode_to_eedit_event(3);
+    msg->screen_dim = ncurses_ui->last_screen_dimention;
+
 
     // display current key on console
     editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
 
     app_log << __PRETTY_FUNCTION__ << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
     eedit::core::push_event(msg);
+}
+
+screen_dimension_t ncurses_ui_interface::get_screen_dimention()
+{
+    // TODO: build state machine
+    int row;
+    int col;
+    getmaxyx(stdscr, row, col);
+
+    app_log << " screen row = " << row << "\n";
+    app_log << " screen col = " << col << "\n";
+    app_log << " vscreen w = " << col * get_application()->font_width()  << "\n";
+    app_log << " vscreen h = " << row * get_application()->font_height() << "\n";
+
+    screen_dimension_t scr_dim {
+        uint32_t(row),
+        uint32_t(col),
+        uint32_t(col * get_application()->font_width()),
+        uint32_t(row * get_application()->font_height())
+    };
+
+    return scr_dim;
 }
 
 bool ncurses_ui_interface::main_loop()
@@ -195,29 +212,11 @@ bool ncurses_ui_interface::main_loop()
     raw();
     halfdelay(1); // 20ms
 
-    // TODO: build state machine
-    int row;
-    int col;
-    getmaxyx(stdscr, row, col);
-
-    app_log << " screen row = " << row << "\n";
-    app_log << " screen col = " << col << "\n";
-    app_log << " vscreen w = " << col * get_application()->font_width()  << "\n";
-    app_log << " vscreen h = " << row * get_application()->font_height() << "\n";
-
-    // FIXME: depending on ui the font must be monospace...
-
-    const char * func = "get_buffer_id_list";
-
-    screen_dimension_t scr_dim {
-        uint32_t(row),
-        uint32_t(col),
-        uint32_t(col * get_application()->font_width()),
-        uint32_t(row * get_application()->font_height())
-    };
+    last_screen_dimention = get_screen_dimention();
 
     ui_state = request_buffer_id_list;
-    send_rpc_event(1,  &func, 0, 0, (uint64_t)stdscr, scr_dim);
+    const char * func = "get_buffer_id_list";
+    send_rpc_event(1,  &func, 0, 0, (uint64_t)stdscr, last_screen_dimention);
 
     auto q = m_event_queue;
 
@@ -245,19 +244,13 @@ bool ncurses_ui_interface::main_loop()
         const char *name = keyname( keycode );
         app_log << "ncurses : you entered: code(" << keycode << ") -> '" << name <<"'\n";
 
-        auto msg              = editor_event_alloc();
-        msg->type             = EDITOR_KEYBOARD_EVENT;
+        auto msg              = ncurses_event_to_editor_message(keycode);
         msg->id               = 0; // FIXME: id++
         msg->editor_buffer_id = m_cur_ebid;
         assert(msg->editor_buffer_id);
         msg->byte_buffer_id   = 0;
         msg->view_id          = m_cur_view_id;             //
         assert(msg->view_id);
-
-        msg->screen_dim.w = col * get_application()->font_width();
-        msg->screen_dim.h = row * get_application()->font_height();
-        msg->screen_dim.c = col;
-        msg->screen_dim.l = row;
 
         msg->src.kind  = EDITOR_ACTOR_UI;
         msg->src.queue = m_event_queue;
@@ -269,7 +262,6 @@ bool ncurses_ui_interface::main_loop()
         if (ev->altR != false) mod_mask |= input_event_s::mod_altR;
         // if (ev->ctrl != false) mod_mask |= keymap_key::mod_oskey;
 #endif
-        msg->input.ev = ncurses_keycode_to_eedit_event(keycode);
 
         // display current key on console
         editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
@@ -328,12 +320,18 @@ eedit::user_interface * new_ncurses_ui()
  */
 
 
-struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event(int keycode)
+struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(int keycode)
 {
+    struct editor_message_s * ev = editor_event_alloc();
+    memset(ev, 0, sizeof (*ev));
 
-    editor_input_event_s iev;
 
-    memset(&iev, 0, sizeof (iev));
+    ev->screen_dim = last_screen_dimention;
+
+    editor_input_event_s & iev = ev->input.ev;
+
+
+    ev->type = EDITOR_KEYBOARD_EVENT;
 
     iev.key = NO_KEY;
 
@@ -416,6 +414,14 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
     case KEY_DC: {
         /* delete-character key */
         iev.key =  Delete;
+    }
+    break;
+
+
+    case KEY_RESIZE: {
+        ev->type = EDITOR_BUILD_LAYOUT_EVENT;
+        ev->screen_dim = last_screen_dimention = get_screen_dimention();
+        return ev;
     }
     break;
 
@@ -535,7 +541,7 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
         iev.button_press_mask = 0;
         iev.start_value = unicode;
         iev.end_value = unicode;
-        return iev;
+        return ev;
 
     }
     break;
@@ -552,7 +558,7 @@ struct editor_input_event_s ncurses_ui_interface::ncurses_keycode_to_eedit_event
     iev.ctrl = mod_mask & mod_ctrl;
     iev.shift = mod_mask & mod_shift;
 
-    return iev;
+    return ev;
 }
 
 

@@ -7,10 +7,12 @@
 
 #include "core/log/log.hpp"
 
-#include "../../api/include/codepoint_info.h"
-// #include "../../api/include/screen_line.h"  // TODO
-#include "../../api/include/screen.h"
 
+#include "codepoint_info.h"
+#include "editor_screen.h"
+#include "editor_export.h"
+
+// #include "../../api/include/screen_line.h"  // TODO
 
 int screen_dimension_reset(screen_dimension_t * sd)
 {
@@ -112,6 +114,7 @@ int screen_line_get_cpinfo(const screen_line_t * l, uint32_t column, const codep
     return 1;
 }
 
+EDITOR_EXPORT
 int screen_line_get_first_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index)
 {
     *column_index = 0;
@@ -120,6 +123,7 @@ int screen_line_get_first_cpinfo(const screen_line_t * l, const codepoint_info_s
     return 1;
 }
 
+EDITOR_EXPORT
 int  screen_line_get_last_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index)
 {
     *column_index = screen_line_get_number_of_used_columns(l);
@@ -213,6 +217,7 @@ int screen_alloc(screen_t ** scr, const char * called_by, uint32_t l, uint32_t c
     return 0;
 }
 
+EDITOR_EXPORT
 int screen_release(screen_t * scr)
 {
     if (scr) {
@@ -228,6 +233,7 @@ int screen_alloc_with_dimension(screen_t ** scr, const char * called_by, const s
 }
 
 
+EDITOR_EXPORT
 screen_dimension_t screen_get_dimension(const screen_t * scr)
 {
     screen_dimension_t d = {
@@ -366,12 +372,14 @@ void  screen_set_number_of_used_lines(screen_t * scr, uint32_t max)
     scr->m_used_l = max;
 }
 
+EDITOR_EXPORT
 uint32_t  screen_get_number_of_used_lines(const screen_t * scr)
 {
     return scr->m_used_l;
 }
 //
 
+EDITOR_EXPORT
 int screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line_t ** l)
 {
     auto sz = scr->m_line_array.size();
@@ -384,6 +392,7 @@ int screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line
     return 1;
 }
 
+EDITOR_EXPORT
 int screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t * index)
 {
     *index = screen_get_number_of_used_lines(scr);
@@ -394,13 +403,14 @@ int screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t 
     return 1;
 }
 
-
+EDITOR_EXPORT
 int screen_get_first_cpinfo(screen_t * scr, const codepoint_info_s ** cpi)
 {
     *cpi = &scr->first_cpinfo;
     return 0;
 }
 
+EDITOR_EXPORT
 int screen_get_last_cpinfo(screen_t * scr, const codepoint_info_s ** cpi)
 {
     *cpi = &scr->last_cpinfo;
@@ -459,6 +469,7 @@ int screen_get_codepoint_by_coords(screen_t * scr, int32_t x, int32_t y, const s
 }
 
 
+EDITOR_EXPORT
 int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 {
     static int debug = 0;
@@ -502,7 +513,7 @@ int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 }
 
 
-
+EDITOR_EXPORT
 int screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const screen_line_t ** l, size_t * scr_line_index, size_t * scr_col_index)
 {
     static int debug = 0;

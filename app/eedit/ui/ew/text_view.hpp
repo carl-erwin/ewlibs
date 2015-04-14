@@ -15,7 +15,7 @@
 #include "scroll_bar.hpp"
 
 
-#include "../../api/include/screen.h"
+#include "editor_screen.h"
 
 /*
 TODO: scroll bar handling

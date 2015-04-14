@@ -19,11 +19,6 @@ class application;
 namespace core
 {
 
-enum build_screen_list_hints {
-    build_screen_no_hints = 0,
-    rewind_screen         = 1,
-    resync_screen         = 2,
-};
 
 
 struct selection_record_s {
@@ -51,23 +46,6 @@ struct core_context_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// FIXME: move to view
-struct screen_cache {
-    screen_cache()
-    {
-        assert(last_screen == nullptr);
-    }
-
-    ~screen_cache()
-    {
-        screen_release(last_screen);
-    }
-
-    uint64_t start_offset = 0;
-    screen_dimension_t dim;
-    screen_t * last_screen = nullptr;
-};
-
 
 // FIXME: cleanup/remove all this ????
 void main(std::shared_ptr<application> app);
@@ -76,17 +54,10 @@ bool push_event(struct editor_message_s * msg);
 
 bool process_rpc_call_event(struct editor_message_s * msg);
 
-screen_cache * get_screen_cache(uint64_t id);
 
-void set_last_screen(uint64_t id, screen_t * scr);
 
-screen_t * get_last_screen(uint64_t id);
 
 bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * start_cpi, bool send_screen = false);
-
-screen_t * get_previous_screen_by_id(uint64_t id);
-
-screen_t * get_new_screen_by_id(uint64_t screen_id);
 
 
 

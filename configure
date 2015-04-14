@@ -85,7 +85,7 @@ case $1 in
 
 
     *)
-	echo "warning unknow option $1" >&2
+	echo "warning unknown option $1" >&2
 	;;
 
 esac

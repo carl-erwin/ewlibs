@@ -1,3 +1,4 @@
+#include <cstring> // memcmp
 #include <thread>
 #include <mutex>
 #include <map>
@@ -11,9 +12,13 @@
 
 ///
 #include "editor_event_queue.h"
-#include "screen.h"
-#include "codec.h"
+#include "editor_screen.h"
+#include "editor_codec.h"
 #include "editor_message_handler.h"
+#include "editor_types.h"
+#include "editor_buffer.h"
+
+#include "../api/src/editor_view_internal.h"
 
 #include "../application/application.hpp"
 #include "../core/core.hpp"
@@ -23,9 +28,6 @@
 
 #include "text_layout.hpp"
 
-#include "editor_types.h"
-#include "editor_buffer.h"
-#include "codec.h"
 
 
 #include "../core/undo/undo.h"
@@ -47,75 +49,18 @@ namespace core
 static core_context_t core_ctx; // here ?
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
-std::map<editor_view_id_t, screen_cache *> screen_id_map;
 
-////////////////////////////////////////////////////////////////////////////////
-
-
-screen_cache * get_screen_cache(uint64_t id)
+screen_t * get_new_screen(editor_view * view)
 {
-    auto ret = screen_id_map.find(id);
-    if (ret->first != id) {
-        assert(0);
-        return nullptr;
-    }
-
-    screen_cache * cache = ret->second;
-    return cache;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-void set_last_screen(uint64_t id, screen_t * scr)
-{
-    screen_cache * cache = get_screen_cache(id);
-
-    assert((scr == nullptr) || (cache->last_screen != scr));
-    cache->last_screen       = scr;
-    if (scr) {
-        const codepoint_info_s * first_cpinfo;
-        screen_get_first_cpinfo(scr, &first_cpinfo);
-        cache->start_offset  = first_cpinfo->offset;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-screen_t * get_last_screen(uint64_t id)
-{
-    screen_cache * cache = get_screen_cache(id);
-    assert(cache);
-    return cache->last_screen;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-screen_t * get_previous_screen_by_id(uint64_t id)
-{
-    return get_last_screen(id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-screen_t * get_new_screen_by_id(uint64_t screen_id)
-{
-    auto cache = get_screen_cache(screen_id);
-    if (!cache) {
-        assert(0);
-        return nullptr;
-    }
-
     screen_t * scr = nullptr;
 
-    screen_alloc_with_dimension(&scr, __PRETTY_FUNCTION__, &cache->dim);
-
+    screen_alloc_with_dimension(&scr, __PRETTY_FUNCTION__, &view->screen_cache.dim);
     assert(scr);
-
-    screen_set_start_offset(scr, cache->start_offset);
-
+    screen_set_start_offset(scr, view->screen_cache.start_offset);
     return scr;
 }
 
@@ -144,7 +89,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         app_log <<  __PRETTY_FUNCTION__ <<  "\n";
         app_log <<  " editor_buffer_id  = " <<  editor_buffer_id <<  "\n";
         app_log <<  " bid   = " <<  bid <<  "\n";
-        app_log <<  " view   = " <<  view <<  "\n";
+        app_log <<  " view   = " << view <<  "\n";
         app_log <<  " dim.w = " <<  dim.w <<  ", ";
         app_log <<  " dim.h = " <<  dim.h <<  ", ";
         app_log <<  " dim.c = " <<  dim.c <<  ", ";
@@ -160,11 +105,21 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     auto view2 = editor_buffer_check_view_id(editor_buffer_id, view);
     if (view2 != 0) {
         app_log <<  " view already added to editor buffer\n";
+
+        app_log <<  " TODO : compare dimension -> flush cache\n";
+
+
+        editor_view * real_view = editor_view_get_internal_pointer(view);
+        assert(real_view);
+        real_view->screen_cache.dim = dim;
+
         return true;
     }
 
     app_log <<  " allocating view\n";
     editor_buffer_add_view(editor_buffer_id, view, &dim);
+
+    editor_view * real_view = editor_view_get_internal_pointer(view);
 
     // FIXME: use font space horizontal/vertical advance + inter-line to compute the maximum col/line to resize to
     // get_font[' ']->width()
@@ -203,24 +158,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         app_log <<  " check cache\n";
     }
 
-    screen_cache * cache;
-    if (!screen_id_map[ view ]) {
-        app_log <<  " allocating screen cache for view(" << view << ")\n";
-
-
-        cache = new screen_cache;
-        screen_id_map[ view ] = cache;
-        assert(cache->last_screen == nullptr);
-
-    } else {
-        app_log <<  " reusing screen cache for view(" << view << ")\n";
-
-        cache = screen_id_map[ view ];
-    }
-
-    // FIXME: compare dimension
-
-    cache->dim = dim;
+    real_view->screen_cache.dim = dim;
 
     return true;
 }
@@ -415,16 +353,17 @@ bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * sta
 
     if (notify == true) {
 
-        auto old_scr = get_last_screen(msg->view_id);
-        screen_release(old_scr);
-        set_last_screen(msg->view_id, nullptr);
+        editor_view * view = editor_view_get_internal_pointer(msg->view_id);
+        screen_release(view->screen_cache.last_screen);
+        view->screen_cache.last_screen = nullptr;
 
         /* this screen will be used by next events, screen moves,  etc */
-        auto last_screen = get_new_screen_by_id(msg->view_id);
+        // allocate screen here base on view->screen_cache.dimension
+        auto last_screen = get_new_screen(view);
         assert(last_screen);
 
         build_screen_layout_from_event(msg, start_cpi, last_screen);
-        set_last_screen(msg->view_id, last_screen);
+        view->screen_cache.last_screen = last_screen;
 
         if (send_screen == true) {
             auto new_screen = screen_clone(last_screen);
@@ -547,11 +486,6 @@ void main(std::shared_ptr<application> app)
     while (editor_event_queue_size(core_ctx.m_msg_queue)) {
         struct editor_message_s * msg = editor_event_queue_get(core_ctx.m_msg_queue);
         editor_event_free(msg);
-    }
-
-    // release res
-    for (auto it : screen_id_map) {
-        delete it.second;
     }
 
     // TODO: send quit to others process/threads and join them

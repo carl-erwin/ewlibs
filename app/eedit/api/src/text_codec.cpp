@@ -4,8 +4,8 @@
 
 #include "ew/ew_config.hpp"
 
-#include "../include/codec.h"
-#include "../include/text_codec.h"
+#include "editor_codec.h"
+#include "text_codec.h"
 
 
 

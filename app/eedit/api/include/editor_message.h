@@ -7,7 +7,7 @@
 #include "editor_event_queue.h"
 #include "editor_input_event.h"
 
-#include "screen.h"
+#include "editor_screen.h"
 
 #ifdef __cplusplus
 extern "C" {

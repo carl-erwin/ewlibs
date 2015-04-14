@@ -6,11 +6,13 @@
 #include "editor_buffer.h"
 #include "codepoint_info.h"
 
-#include "codec.h"
+#include "editor_codec.h"
 
 #include "editor_view_internal.h"
 
 #include "application/application.hpp"
+
+
 
 // INTERNAL
 editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_buffer_id_)
@@ -50,9 +52,18 @@ editor_view::~editor_view()
     ew::graphics::fonts::quit();
 }
 
-
-
 static std::map<editor_view_id_t, editor_view *> table;
+
+///
+
+editor_view * editor_view_get_internal_pointer(editor_view_id_t view)
+{
+    auto v = table.find(view);
+    if (v == table.end())
+        return nullptr;
+    return v->second;
+}
+
 
 extern "C" {
 
@@ -289,17 +300,17 @@ extern "C" {
         return 0;
     }
 
+    SHOW_SYMBOL
+    screen_t *         get_previous_screen_by_id(editor_view_id_t view_id)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return nullptr;
 
-
+        return view->screen_cache.last_screen;
+    }
 } // ! extern "C"
 
 
 
-editor_view * editor_view_get_internal_pointer(editor_view_id_t view)
-{
-    auto v = table.find(view);
-    if (v == table.end())
-        return nullptr;
-    return v->second;
-}
 

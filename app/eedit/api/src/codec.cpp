@@ -11,7 +11,7 @@
 
 #include "core/log/log.hpp"
 
-#include "../include/codec.h"
+#include "editor_codec.h"
 
 
 codec_id_t          next_id = 1;

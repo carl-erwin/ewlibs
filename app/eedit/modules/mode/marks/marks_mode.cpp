@@ -13,9 +13,9 @@
 
 #include "../../../core/process_event_ctx.h"
 
-#include "module.h"
+#include "editor_module.h"
 #include "buffer_log.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "text_codec.h"
 #include "editor_buffer.h"
 #include "editor_view.h"
