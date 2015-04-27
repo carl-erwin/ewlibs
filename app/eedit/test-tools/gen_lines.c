@@ -23,7 +23,7 @@ int main(int ac, char *av[])
   s[width] = '\0';
 
   for (size_t l = start; l < start+num_line; ++l) {
-    fprintf(stdout, "%lu %.*s\n", l, width, s);
+    fprintf(stdout, "%012lu %.*s\n", l, width, s);
   }
   free(s);
 

@@ -94,7 +94,7 @@ struct ncurses_ui_interface : public user_interface {
     bool quit();
 
 
-    screen_dimension_t get_screen_dimention();
+    screen_dimension_t get_screen_dimension();
 
     bool send_rpc_event(const int ac,  const char ** av, editor_buffer_id_t ebid, byte_buffer_id_t buffer_id, uint64_t screen_id, const screen_dimension_t & screen_dim);
     bool send_build_layout_event(uint32_t w, uint32_t h) const;
@@ -105,7 +105,7 @@ struct ncurses_ui_interface : public user_interface {
 
     ui_state_e ui_state = request_buffer_id_list;
 
-    screen_dimension_t last_screen_dimention;
+    screen_dimension_t last_screen_dimension;
 
     bool m_quit = false;
     // TODO: get_number_of_openned_buffers() -> size_t;
@@ -162,7 +162,7 @@ void sigint_handler(int sig)
     msg->src.queue = ncurses_ui->m_event_queue;
     msg->dst.kind  = EDITOR_ACTOR_CORE;
 
-    msg->screen_dim = ncurses_ui->last_screen_dimention;
+    msg->screen_dim = ncurses_ui->last_screen_dimension;
 
 
     // display current key on console
@@ -172,7 +172,7 @@ void sigint_handler(int sig)
     eedit::core::push_event(msg);
 }
 
-screen_dimension_t ncurses_ui_interface::get_screen_dimention()
+screen_dimension_t ncurses_ui_interface::get_screen_dimension()
 {
     // TODO: build state machine
     int row;
@@ -212,11 +212,11 @@ bool ncurses_ui_interface::main_loop()
     raw();
     halfdelay(1); // 20ms
 
-    last_screen_dimention = get_screen_dimention();
+    last_screen_dimension = get_screen_dimension();
 
     ui_state = request_buffer_id_list;
     const char * func = "get_buffer_id_list";
-    send_rpc_event(1,  &func, 0, 0, (uint64_t)stdscr, last_screen_dimention);
+    send_rpc_event(1,  &func, 0, 0, (uint64_t)stdscr, last_screen_dimension);
 
     auto q = m_event_queue;
 
@@ -326,7 +326,7 @@ struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(
     memset(ev, 0, sizeof (*ev));
 
 
-    ev->screen_dim = last_screen_dimention;
+    ev->screen_dim = last_screen_dimension;
 
     editor_input_event_s & iev = ev->input.ev;
 
@@ -350,6 +350,15 @@ struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(
         break;
     case KEY_RIGHT:
         iev.key =  Right;
+        break;
+
+    case KEY_SLEFT:
+        iev.key =  Left;
+        mod_mask |= mod_shift;
+        break;
+    case KEY_SRIGHT:
+        iev.key =  Right;
+        mod_mask |= mod_shift;
         break;
 
     case 0 ... 26: {
@@ -420,7 +429,7 @@ struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(
 
     case KEY_RESIZE: {
         ev->type = EDITOR_BUILD_LAYOUT_EVENT;
-        ev->screen_dim = last_screen_dimention = get_screen_dimention();
+        ev->screen_dim = last_screen_dimension = get_screen_dimension();
         return ev;
     }
     break;
@@ -569,15 +578,18 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
     int row;
     int col;
     getmaxyx(stdscr, row, col);
-    clear();				/* clear the screen */
 
-
+    //clear();				/* clear the screen */
     const auto scr = msg->layout.screen;
+
+    auto dim = screen_get_dimension(scr);
+    uint32_t colmax = dim.c;
     uint32_t limax = std::min((uint32_t)row, screen_get_number_of_used_lines(scr));
     for (uint32_t li = 0; li < limax; li++) {
 
         const screen_line_t * l = nullptr;
         screen_get_line(scr, li, &l);
+
         for (uint32_t c = 0; c < screen_line_get_number_of_used_columns(l); c++) {
             const codepoint_info_s * cpi;
             screen_line_get_cpinfo(l, c, &cpi, screen_line_hint_fix_column_overflow);
@@ -595,11 +607,13 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
             if (cpi->is_selected) {
                 attroff(A_REVERSE);
             }
-
+        }
+        for (uint32_t c = screen_line_get_number_of_used_columns(l); c < colmax; c++) {
+            mvaddch(li, c, ' ');
         }
     }
 
-    refresh();
+    //refresh();
 
     screen_release(msg->layout.screen);
     return true;

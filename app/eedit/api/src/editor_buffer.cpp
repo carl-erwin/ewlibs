@@ -262,6 +262,10 @@ extern "C" {
 
         case MOVING_MARK:
             return edbuf->moving_marks.size();
+
+        default:
+            return 0;
+
         }
         return 0;
     }
@@ -288,6 +292,9 @@ extern "C" {
             return n_copy;
         }
         break;
+
+        default:
+            return 0;
         }
         return 0;
     }

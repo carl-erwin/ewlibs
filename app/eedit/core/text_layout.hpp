@@ -200,9 +200,9 @@ struct editor_layout_filter_context_t;   // -> build_layout_mode_context_t
 typedef bool (*editor_layout_filter_init_function_t)(editor_layout_builder_context_t * ctx, editor_layout_filter_context_t ** to_allocate);
 
 typedef bool (*editor_layout_filter_function_t)(editor_layout_builder_context_t * ctx,
-                               editor_layout_filter_context_t * filter_ctx,
-                               const editor_layout_filter_io_t * const in, const size_t nr_in,
-                               editor_layout_filter_io_t * out, const size_t  max_out, size_t * nr_out);
+        editor_layout_filter_context_t * filter_ctx,
+        const editor_layout_filter_io_t * const in, const size_t nr_in,
+        editor_layout_filter_io_t * out, const size_t  max_out, size_t * nr_out);
 
 typedef bool (*editor_layout_filter_finish_function_t)(editor_layout_builder_context_t * ctx, editor_layout_filter_context_t *);
 

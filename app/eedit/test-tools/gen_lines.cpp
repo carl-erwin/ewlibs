@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 int main(int ac, char *av[])
@@ -16,12 +17,13 @@ int main(int ac, char *av[])
     std::vector<char> buff;
     buff.reserve(width+1);
     for (auto w = 0; w < width; ++w) {
-            buff.push_back('x');
+        buff.push_back('x');
     }
     buff.push_back('\0');
 
+
     for (size_t l = start; l < start+num_line; ++l) {
-        std::cout << l << " " << &buff[0] << '\n'; // << std::flush;
+        std::cout << std::setfill('0') << std::setw(12) << l << " " << &buff[0] << '\n'; // << std::flush;
     }
 
     return 0;

@@ -11,6 +11,7 @@ extern "C" {
         EDITOR_STATUS_OK     = 0,
         EDITOR_STATUS_ERROR,
         EDITOR_STATUS_FATAL_ERROR,
+        EDITOR_STATUS_NOT_IMPLEMENTED,
     } editor_module_status_t;
 
     typedef int (*editor_message_handler_t)(struct editor_message_s * ev); // int -> editor_module_status_t

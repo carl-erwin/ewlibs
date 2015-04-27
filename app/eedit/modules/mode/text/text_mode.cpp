@@ -84,7 +84,7 @@
       must add drag/mouse/paste event in configuration:
       move keymap -> event_map
 
-      eedit_register_module_function("xxx", xxx) -> eedit_register_editing_function("xxx", xxx)
+      editor_register_message_handler("xxx", xxx) -> eedit_register_editing_function("xxx", xxx)
 
       eedit_register_editing_function("cursor-motions-fn-name", xxx)
       eedit_register_editing_function("cursor-motions-fn-name", xxx)
@@ -159,12 +159,11 @@ etc..
 */
 
 
-
 //
 int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t * screen, const codepoint_info_s ** start_cpi);
 
 
-int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
+int rewind_and_resync_offset(editor_buffer_id_t ed_buffer,
                              editor_view_id_t ed_view,
                              const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset);
 
@@ -200,13 +199,17 @@ int goto_beginning_of_screen_line(struct editor_message_s * _msg);
 ////////////////////////////////////////////////////////////////////////////////
 
 // page down until offset is on screen
+
+// move previous screen ?
+
 int  resync_screen_layout(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t bid, editor_view_id_t view, screen_dimension_t & dim)
 {
     auto screen = get_previous_screen_by_id(view);
 
+    // duplicate previous screen ?
 
     // save offset
-    uint64_t start_offset = screen_get_start_offset(screen); // SCREEN API ??!!?
+    uint64_t start_offset     = screen_get_start_offset(screen);
     uint64_t new_start_offset = start_offset;
 
     // go to beginning of line
@@ -240,8 +243,42 @@ int  resync_screen_layout(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t 
     return EDITOR_STATUS_OK;
 }
 
-// TODO: pass view(sid) as parameter
-int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
+/*
+   RENAME : resync offset
+   -)
+
+
+*/
+int rewind_offset(editor_buffer_id_t ed_buffer,
+                  editor_view_id_t ed_view,
+                  const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset)
+{
+    uint64_t rewind_off = near_offset;
+
+
+    *resynced_offset = editor_view_get_start_offset(ed_view);
+
+
+    // FIXME:   define editor_log() like printf // app_log << "hints & rewind_screen\n";
+
+    if (screen_max_cp >= near_offset) {
+        rewind_off = 0;
+    } else {
+        rewind_off = near_offset - screen_max_cp;
+    }
+
+    // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
+
+    editor_view_set_start_offset(ed_view, rewind_off);
+
+    return 0;
+}
+
+
+/*
+ FIXME: rename in resync_offset_backward
+*/
+int rewind_and_resync_offset(editor_buffer_id_t ed_buffer,
                              editor_view_id_t ed_view,
                              const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset)
 {
@@ -250,48 +287,51 @@ int rewind_and_resync_screen(editor_buffer_id_t ed_buffer,
 
     *resynced_offset = editor_view_get_start_offset(ed_view);
 
-    if (0 /* && hints & rewind_screen*/) {
+    if (hints & rewind_screen) {
 
         // FIXME:   define editor_log() like printf // app_log << "hints & rewind_screen\n";
-
 
         if (screen_max_cp >= near_offset) {
             rewind_off = 0;
         } else {
-            rewind_off = near_offset - screen_max_cp;
+            // rewind_off = near_offset - screen_max_cp
+            rewind_off = near_offset; //  - screen_max_cp;
         }
 
         // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
 
         editor_view_set_start_offset(ed_view, rewind_off);
-
-        if (hints & resync_screen) {
-            // FIXME:   define editor_log() like printf // app_log << "hints & resync_screen\n";
-
-            // TODO: need resync here: but we don't know the used codec
-            codec_io_ctx_s io_ctx {
-                ed_buffer,
-                editor_buffer_get_byte_buffer_id(ed_buffer),
-                editor_view_get_codec_id(ed_view),
-                0 /* codex ctx */
-            };
-            int ret = text_codec_sync_line(&io_ctx, near_offset, -1, resynced_offset);
-            if (ret == -1) {
-
-            } else {
-
-            }
-
-            // must have view_buffer->codec()->resync(offset, direction)
-            // page-up/down must be brought by the text-mode
-
-            // FIXME:   define editor_log() like printf // app_log << "FIXME FIXME FIXME !!!!!!!!!!!!\n";
-
-            //editor_mark_to_beginnig_of_line(bid, ed_buffer->rdr_begin())
-            // ed_view->rdr_begin()->toBeginningOfLine();
-            // mark_set_offset(ed_view->rdr_begin(), resynced_offset);
-        }
     }
+
+    if (hints & resync_screen) {
+        // FIXME:   define editor_log() like printf // app_log << "hints & resync_screen\n";
+
+        // TODO: need resync here: but we don't know the used codec
+        codec_io_ctx_s io_ctx {
+            ed_buffer,
+            editor_buffer_get_byte_buffer_id(ed_buffer),
+            editor_view_get_codec_id(ed_view),
+            0 /* codex ctx */
+        };
+        int ret = text_codec_sync_line(&io_ctx, near_offset, -1, resynced_offset);
+        if (ret == -1) {
+
+        } else {
+
+        }
+
+
+        // must have view_buffer->codec()->resync(offset, direction)
+        // page-up/down must be brought by the text-mode
+
+        // FIXME:   define editor_log() like printf // app_log << "FIXME FIXME FIXME !!!!!!!!!!!!\n";
+
+        //editor_mark_to_beginnig_of_line(bid, ed_buffer->rdr_begin())
+        // ed_view->rdr_begin()->toBeginningOfLine();
+        // mark_set_offset(ed_view->rdr_begin(), resynced_offset);
+    }
+
+
 
     *resynced_offset = editor_view_get_start_offset( ed_view );
     assert(*resynced_offset <= rewind_off);
@@ -348,6 +388,10 @@ int view_clip_offset(
 }
 
 
+
+/*
+ FIXME: the first rewind is to wide
+ */
 int build_screen_line_list(editor_buffer_id_t ed_buffer,
                            editor_view_id_t ed_view,
                            const uint64_t start_offset_, const uint64_t until_offset_on_screen,
@@ -359,7 +403,7 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
     // check buffer limits
     uint64_t start_offset = start_offset_;
-    uint64_t until_offset   = until_offset_on_screen;
+    uint64_t until_offset = until_offset_on_screen;
     view_clip_offset(ed_buffer, ed_view, until_offset);
 
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : start_offset = " << start_offset << "\n";
@@ -373,7 +417,7 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
     const uint32_t screen_max_cp = (scr_dim.l * scr_dim.c) * 1; // 4 is codec->max_codepoint_size(); in utf8
     uint64_t rewind_off = start_offset;
     if (build_screen_no_hints != 0) {
-        rewind_and_resync_screen(ed_buffer, ed_view, screen_max_cp, hints, start_offset, &rewind_off);
+        rewind_and_resync_offset(ed_buffer, ed_view, screen_max_cp, hints, start_offset, &rewind_off);
     }
 
     editor_view_set_start_offset(ed_view, rewind_off);
@@ -517,7 +561,7 @@ int page_down_internal(struct editor_message_s * msg)
 
     // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : cpi->offset " << cpi->offset << "\n";
 
-    set_ui_change_flag(msg->editor_buffer_id,  msg->byte_buffer_id, msg->view_id);
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, cpi);
 
     return EDITOR_STATUS_OK;
@@ -557,22 +601,25 @@ int page_up_internal(struct editor_message_s * msg, codepoint_info_s  & start_cp
 
     // (1)
     // compute max rewind offset
-    uint64_t rewind_off;
-    rewind_and_resync_screen(buffer, view, max_cp, rewind_screen, save_start_off, &rewind_off);
+    uint64_t rewind_off = save_start_off;
+    rewind_and_resync_offset(buffer, view, max_cp, rewind_screen|resync_screen, save_start_off, &rewind_off);
 
     // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : set rewind_off to " << rewind_off << "\n";
 
-    std::vector<std::pair<uint64_t,uint64_t>> screen_line_list;
 
-    // (2)
+    // FIXME: rewrite this ?
+    // (2) : save line start/end offsets
+    std::vector<std::pair<uint64_t,uint64_t>> screen_line_list;
     build_screen_line_list(buffer, view,
                            rewind_off, save_start_off,
                            0,
-                           screen_get_dimension(screen),
+                           scr_dim,
                            screen_line_list);
 
     // FIXME:   define editor_log() like printf // app_log << " screen_line_list.size() = " << screen_line_list.size() << "\n";
 
+
+    // (3) : get page up offset from screen_line_list
     for (size_t index = screen_line_list.size(); index > 0; ) {
         --index;
 
@@ -681,6 +728,81 @@ int goto_end_of_buffer(struct editor_message_s * msg)
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     return EDITOR_STATUS_OK;
 }
+
+void text_mode_register_modules_function()
+{
+    // text-mode
+    editor_register_message_handler("page-down",                 page_down);
+    editor_register_message_handler("page-up",                   page_up);
+    editor_register_message_handler("goto-beginning-of-buffer",  goto_beginning_of_buffer);
+    editor_register_message_handler("goto-end-of-buffer",        goto_end_of_buffer);
+
+#if 0
+    // selection-mode
+    editor_register_message_handler("begin-selection",           begin_selection);
+    editor_register_message_handler("end-selection",             end_selection);
+
+    editor_register_message_handler("mouse-wheel-up",            mouse_wheel_up);
+    editor_register_message_handler("mouse-wheel-down",          mouse_wheel_down);
+#endif
+}
+
+void text_mode_unregister_modules_function()
+{
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+// Module interface
+
+extern "C"
+SHOW_SYMBOL const char * module_name()
+{
+    return "mode/text";
+}
+
+
+extern "C"
+SHOW_SYMBOL const char * module_version()
+{
+    return "1.0.0";
+}
+
+extern "C"
+SHOW_SYMBOL eedit_module_type_e  module_type()
+{
+    return MODULE_TYPE_EDITOR_MODE;
+}
+
+extern "C"
+SHOW_SYMBOL const char * module_depends()
+{
+    return "";
+}
+
+
+extern "C"
+SHOW_SYMBOL eedit_module_init_status_e  module_init()
+{
+    text_mode_register_modules_function();
+    return MODULE_INIT_OK;
+}
+
+extern "C"
+SHOW_SYMBOL int  module_quit()
+{
+    text_mode_unregister_modules_function();
+    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// old implementation
 
 #if 0
 
@@ -1738,83 +1860,3 @@ int mouse_wheel_down(struct editor_message_s * msg)
 */
 
 #endif
-
-void text_mode_register_modules_function()
-{
-    // text-mode
-    editor_register_message_handler("page-down",                 page_down);
-    editor_register_message_handler("page-up",                   page_up);
-    editor_register_message_handler("goto-beginning-of-buffer",  goto_beginning_of_buffer);
-    editor_register_message_handler("goto-end-of-buffer",        goto_end_of_buffer);
-
-
-#if 0
-    eedit_register_module_function("previous-line",             to_previous_screen_line);
-    eedit_register_module_function("next-line",                 to_next_screen_line);
-    eedit_register_module_function("previous-screen-line",      to_previous_screen_line);
-    eedit_register_module_function("next-screen-line",          to_next_screen_line);
-    eedit_register_module_function("insert-newline",            insert_newline);
-    eedit_register_module_function("delete-backward-char",      remove_previous_char);
-    eedit_register_module_function("delete-forward-char",       remove_current_char);
-    eedit_register_module_function("goto-beginning-of-line",    goto_beginning_of_line);
-    eedit_register_module_function("goto-end-of-line",          goto_end_of_line);
-
-    // selection-mode
-    eedit_register_module_function("begin-selection",           begin_selection);
-    eedit_register_module_function("end-selection",             end_selection);
-
-    eedit_register_module_function("left-word",                 left_word);
-    eedit_register_module_function("right-word",                right_word);
-    eedit_register_module_function("mouse-wheel-up",            mouse_wheel_up);
-    eedit_register_module_function("mouse-wheel-down",          mouse_wheel_down);
-#endif
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-// Module interface
-
-extern "C"
-SHOW_SYMBOL const char * module_name()
-{
-    return "mode/text";
-}
-
-
-extern "C"
-SHOW_SYMBOL const char * module_version()
-{
-    return "1.0.0";
-}
-
-extern "C"
-SHOW_SYMBOL eedit_module_type_e  module_type()
-{
-    return MODULE_TYPE_EDITOR_MODE;
-}
-
-extern "C"
-SHOW_SYMBOL const char * module_depends()
-{
-    return "";
-}
-
-
-extern "C"
-SHOW_SYMBOL eedit_module_init_status_e  module_init()
-{
-    text_mode_register_modules_function();
-    return MODULE_INIT_OK;
-}
-
-extern "C"
-SHOW_SYMBOL int  module_quit()
-{
-    //text_mode_unregister_modules_function();
-    return 0;
-}
-
-////////////////////////////////////////////////////////////////////////////////

@@ -48,6 +48,6 @@ func genLine(width uint64) string {
 func genLines(linePattern string, start uint64, end uint64) {
 
      for i := start; i <= end; i++ {
-         fmt.Println(i, linePattern)
+         fmt.Printf("%012d %s\n", i, linePattern)
      }
 }

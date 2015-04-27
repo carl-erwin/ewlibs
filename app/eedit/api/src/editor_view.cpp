@@ -272,6 +272,10 @@ extern "C" {
 
         case MOVING_MARK:
             return view->marks.moving.size();
+
+        default:
+            // FIXME:
+            return 0;
         }
         return 0;
     }
@@ -296,6 +300,11 @@ extern "C" {
             std::copy(view->marks.moving.begin(), view->marks.moving.begin() + n_copy, marks);
         }
         break;
+
+        default:
+            break;
+
+
         }
         return 0;
     }

@@ -20,12 +20,13 @@ extern "C" {
 
 ///
 /// \brief enum mark_type_e pointer type
-///
+///  the OFFSCREEN_MARK/ONSCREEN_MARK masks must be always combined with either FIXED_MARK and/or MOVING_MARK
 typedef enum mark_type_e {
-    FIXED_MARK,
-    MOVING_MARK,
+    FIXED_MARK     = (1 << 0),
+    MOVING_MARK    = (1 << 1),
+    OFFSCREEN_MARK = (1 << 2),
+    ONSCREEN_MARK  = (1 << 3),
 } mark_type_t;
-
 
 ///
 /// \brief mark_t pointer type
