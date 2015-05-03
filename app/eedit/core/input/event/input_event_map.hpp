@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: proper source file
+
 #undef NDEBUG
 #include <assert.h>
 #include <iostream>
@@ -1246,6 +1248,8 @@ inline bool setup_default_input_map(std::map<std::string, editor_input_event_map
                         "down         = next-line\n"                                    \
                         "page-up   = page-up\n"                                         \
                         "page-down = page-down\n"                                       \
+                        "ctrl + up   = scroll-up\n" \
+                        "ctrl + down = scroll-down\n" \
                         "ctrl + right = right-word\n" \
                         "ctrl + left = left-word\n" \
                         "alt  + unicode('<') = goto-beginning-of-buffer\n"              \

@@ -43,9 +43,13 @@ editor_font_t editor_view_get_font(editor_view_id_t view);
 // view -> screen
 screen_t *         get_previous_screen_by_id(editor_view_id_t screen_id);
 
-/* move */
+/* scrool the view
+ the unit depends on the main/codec for text is lines
+   n=line(s)
+        m=frame(s) in future version
+
+ */
 screen_t *         editor_view_scroll_n(editor_view_id_t screen_id, int64_t nb); // will call the configured layout modules for this screen/view_id
-// TODO: n=line(s) or frame(s) in future version
 
 
 //

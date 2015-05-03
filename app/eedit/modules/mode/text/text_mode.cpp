@@ -158,44 +158,6 @@ etc..
 
 */
 
-
-//
-int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t * screen, const codepoint_info_s ** start_cpi);
-
-
-int rewind_and_resync_offset(editor_buffer_id_t ed_buffer,
-                             editor_view_id_t ed_view,
-                             const uint32_t screen_max_cp, const uint32_t hints, uint64_t near_offset, uint64_t * resynced_offset);
-
-
-
-int to_next_screen_line_by_offset(struct editor_message_s * _msg, const uint64_t screen_offset, uint64_t & new_screen_offset, codepoint_info_s & next_start_cpi);
-
-int to_next_screen_line_internal(struct editor_message_s * _msg, codepoint_info_s & next_start_cpi);
-
-int to_next_screen_line(struct editor_message_s * _msg);
-
-int page_up(struct editor_message_s * _msg);
-
-int to_previous_screen_line_internal(struct editor_message_s * msg, codepoint_info_s ** next_start_cpi);
-
-int to_previous_screen_line(struct editor_message_s * msg);
-
-int page_up_internal(struct editor_message_s * _msg, codepoint_info_s  & start_cpi);
-
-// bool page_down_internal(struct editor_message_s * _msg, codepoint_info_s & start_cpi);
-
-// bool page_down(struct editor_message_s * _msg);
-
-int goto_beginning_of_line(struct editor_message_s * msg);
-
-int goto_end_of_line(struct editor_message_s * msg);
-
-int goto_beginning_of_screen_line(struct editor_message_s * _msg);
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 
 // page down until offset is on screen
@@ -389,6 +351,35 @@ int view_clip_offset(
 
 
 
+
+// FIXME: check if eob is on screen
+// FIXME: rename in prepare page down start offset
+int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t * screen, const codepoint_info_s ** start_cpi)
+{
+    // FIXME: must check line splitting
+    // ex: tab expanded on two lines
+
+    size_t index;
+    const screen_line_t * l;
+    auto b = screen_get_last_line(screen, &l, &index); // the last line become the first of the next screen;
+    if (!b) {
+        *start_cpi = nullptr;
+        assert(0);
+        return EDITOR_STATUS_ERROR;
+    }
+
+    const codepoint_info_s * cpi = nullptr;
+    screen_line_get_cpinfo(l, 0, &cpi, screen_line_hint_no_column_fix);
+
+    if (start_cpi) {
+        assert(cpi->used);
+        *start_cpi = cpi;
+    }
+
+    editor_view_set_start_offset(view, cpi->offset);
+    return EDITOR_STATUS_OK;
+}
+
 /*
  FIXME: the first rewind is to wide
  */
@@ -439,7 +430,7 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
     start_cpi.used   = true;
 
     screen_t * tmp_scr = nullptr;
-    screen_alloc_with_dimension(&tmp_scr, __FUNCTION__, &scr_dim);
+    screen_alloc_with_dimension(&tmp_scr, &scr_dim, __FUNCTION__);
     codec_io_ctx_s io_ctx {
         ed_buffer,
         editor_buffer_get_byte_buffer_id(ed_buffer),
@@ -449,6 +440,8 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
     // FIXME:   define editor_log() like printf // app_log << " Build screen line list (looking for offset("<< until_offset<<"))\n";
     do {
+        fprintf(stderr, "screen count(%d)\n", count);
+
         // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
 
         build_screen_layout(&io_ctx, ed_view, &start_cpi,tmp_scr);
@@ -481,7 +474,7 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
             screen_line_get_last_cpinfo(l, &cpi_last, &col_index);
 
             // // FIXME:   define editor_log() like printf // app_log << __FUNCTION__ << " : PUSH " << screen_line_list.size() << " " << cpi_first->offset << " , " << cpi_last->offset << "\n";
-            screen_line_list.emplace_back(cpi_first->offset, cpi_last->offset);
+            screen_line_list.push_back(std::pair<uint64_t,uint64_t>(cpi_first->offset, cpi_last->offset));
         }
 
         // compute  restart offset
@@ -514,7 +507,6 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
             assert(0);
         }
 
-
         // set rdr_begin to first cp offset of LAST LINE of the current screen
         const codepoint_info_t * next_start_cpi = nullptr;
         bool ret = fast_page_down(ed_buffer, ed_view, tmp_scr, &next_start_cpi);
@@ -522,6 +514,9 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
             // EOB
         }
         start_cpi = *next_start_cpi;
+
+        // drop last push line , because it is the first one of next screen
+        screen_line_list.pop_back(); // FIXME: check this in pag up/down
 
         count++;
     } while (true);
@@ -534,9 +529,175 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: create a FILE with line of 10cp newline included
+// example
+/*
+ a0001|xxx
+ b0001|xxx
+ c0001|xxx
+ d0001|xxx
+ e0001|xxx
+ f0001|xxx
+ g0001|xxx
+ h0001|xxx
+ i0001|xxx
+ j0001|xxx
+ k0001|xxx
+ l0001|xxx
+ m0001|xxx
+ n0001|xxx
+ o0001|xxx
+ p0001|xxx
+ q0001|xxx
+ r0001|xxx
+ s0001|xxx
+ t0001|xxx
+ u0001|xxx
+ .....|xxx
+ z0001|
+ a0002|xxx
+
+ */
+
+
+
+int scroll_up(struct editor_message_s * msg)
+{
+    auto screen = get_previous_screen_by_id(msg->view_id);
+
+    // take : start offset
+    const codepoint_info_s * cpi = nullptr;
+    screen_get_first_cpinfo(screen, &cpi);
+    uint64_t until_offset = cpi->offset;
+
+    fprintf(stderr, " first cpi offset = [%lu]\n", cpi->offset);
+
+    // take : start offset
+    uint64_t start_offset = until_offset;
+    uint64_t tmp_offset = 0;
+
+    fprintf(stderr, " until_offset = [%lu]\n", until_offset);
+
+
+    // start_offset = get_beginning_of_line( previous_cp(offset) )
+    {
+        // TODO: need resync here: but we don't know the used codec
+        codec_io_ctx_s io_ctx {
+            msg->editor_buffer_id,
+            editor_buffer_get_byte_buffer_id(msg->editor_buffer_id),
+            editor_view_get_codec_id(msg->view_id),
+            0 /* codex ctx */
+        };
+
+        text_codec_io_s iovc;
+        iovc.offset = start_offset;
+        iovc.size = 0;
+
+        int ret;
+
+
+        // if start of line got to end of previous line
+        ret = text_codec_read_backward(&io_ctx, &iovc, 1);
+        if (ret) {
+
+        }
+
+        fprintf(stderr, " read backward(%lu) -> [%lu]\n", start_offset, iovc.offset);
+
+        start_offset = iovc.offset;
+
+        // goto beginnning of line
+        ret = text_codec_sync_line(&io_ctx, start_offset, -1, &tmp_offset);
+        if (ret) {
+
+        }
+
+        fprintf(stderr, " goto beginning of line (%lu) -> [%lu]\n", start_offset, tmp_offset);
+
+        start_offset = tmp_offset;
+    }
+
+    std::vector<std::pair<uint64_t,uint64_t>> screen_line_list;
+
+
+    fprintf(stderr, " build list of screen line (start_offset(%lu), stop_offset(%lu))\n", start_offset, until_offset);
+
+    // build list of screen line (start_offset, stop_offset) until until_offset//eob is found
+    {
+        screen_dimension_t scr_dim = screen_get_dimension(screen);
+
+        build_screen_line_list(msg->editor_buffer_id,
+                               msg->view_id,
+                               start_offset, until_offset,
+                               0,
+                               scr_dim,
+                               screen_line_list);
+    }
+
+    // get until_offset index
+    size_t until_offset_index = 0;
+    {
+        for (const auto & e : screen_line_list) {
+            fprintf(stderr, "line [%lu >= %lu < %lu] ? \n", e.first, until_offset, e.second);
+
+            if ((e.first >= until_offset) && (until_offset < e.second)) {
+                fprintf(stderr, " found [%lu] @ index %lu]\n", until_offset, until_offset_index);
+                break;
+            }
+            ++until_offset_index;
+        }
+    }
+    if (until_offset_index == screen_line_list.size()) {
+        abort();
+    }
+
+    // get start_line_offset @ (until_offset_index-1)
+    if (until_offset_index)
+    {
+        codepoint_info_t cpi;
+        cpi.offset = screen_line_list[until_offset_index-1].first;
+        cpi.used = true;
+
+        fprintf(stderr, " next start offste is %lu]\n", cpi.offset);
+
+        set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+        set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
+    }
+
+    return EDITOR_STATUS_OK;
+}
+
+// FIXME: use the same algo as scroll_up : ie build line start/end list if list size > scroll_N
+// it is slower but we can remove duplicated code
+int scroll_down(struct editor_message_s * msg)
+{
+    auto screen = get_previous_screen_by_id(msg->view_id);
+
+    // if eob on screen : do nothing
+    auto index = screen_get_number_of_used_lines(screen); // the second line will become the first of the next screen;
+    if (index < 2) {
+        return EDITOR_STATUS_OK;
+    }
+
+    const screen_line_t * l = nullptr;
+    screen_get_line(screen, 1, &l); /* get the second line */
+
+    const codepoint_info_s * cpi = nullptr;
+    screen_line_get_cpinfo(l, 0, &cpi, screen_line_hint_no_column_fix); // get fisrt cp of last line
+
+    // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : cpi->offset " << cpi->offset << "\n";
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+    set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, cpi);
+
+    return EDITOR_STATUS_OK;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 int page_down_internal(struct editor_message_s * msg)
 {
-    auto view   = msg->view_id; // FIXEM: to check
     auto screen = get_previous_screen_by_id(msg->view_id);
 
     // if eob on screen : do nothing
@@ -557,7 +718,6 @@ int page_down_internal(struct editor_message_s * msg)
         return EDITOR_STATUS_OK;
     }
 
-    editor_view_set_start_offset(view, cpi->offset); // TODO: return offset ?
 
     // FIXME:   define editor_log() like printf // app_log << __PRETTY_FUNCTION__ << " : cpi->offset " << cpi->offset << "\n";
 
@@ -660,39 +820,38 @@ int page_up_internal(struct editor_message_s * msg, codepoint_info_s  & start_cp
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int page_up(struct editor_message_s * _msg)
+
+
+int ___new_page_up(struct editor_message_s * msg)
 {
-    codepoint_info_s  start_cpi;
-    return page_up_internal(_msg,start_cpi);
+    // get max number of screen lines
+    auto cur_screen = get_previous_screen_by_id(msg->view_id);
+    int64_t nb_lines = screen_get_max_number_of_lines(cur_screen);
+    if (nb_lines == 0) {
+        return EDITOR_STATUS_OK;
+    }
+
+    // advance screen of nb_lines - 1
+    auto new_screen = editor_view_scroll_n(msg->view_id, nb_lines - 1);
+
+    const screen_line_t * l = nullptr;
+    screen_get_first_line(new_screen, &l);
+
+    size_t column_index;
+    const codepoint_info_t * cpi;
+    screen_line_get_first_cpinfo(l, &cpi, &column_index);
+    set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, cpi);
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+
+    return EDITOR_STATUS_OK;
 }
 
 
-// FIXME: check if eob is on screen
-// FIXME: rename in prepare page down start offset
-int fast_page_down(editor_buffer_id_t ed_buffer, editor_view_id_t view, screen_t * screen, const codepoint_info_s ** start_cpi)
+
+int page_up(struct editor_message_s * msg)
 {
-    // FIXME: must check line splitting
-    // ex: tab expanded on two lines
-
-    size_t index;
-    const screen_line_t * l;
-    auto b = screen_get_last_line(screen, &l, &index); // the last line become the first of the next screen;
-    if (!b) {
-        *start_cpi = nullptr;
-        assert(0);
-        return EDITOR_STATUS_ERROR;
-    }
-
-    const codepoint_info_s * cpi = nullptr;
-    screen_line_get_cpinfo(l, 0, &cpi, screen_line_hint_no_column_fix);
-
-    if (start_cpi) {
-        assert(cpi->used);
-        *start_cpi = cpi;
-    }
-
-    editor_view_set_start_offset(view, cpi->offset);
-    return EDITOR_STATUS_OK;
+    codepoint_info_s  start_cpi;
+    return page_up_internal(msg, start_cpi);
 }
 
 
@@ -736,6 +895,10 @@ void text_mode_register_modules_function()
     editor_register_message_handler("page-up",                   page_up);
     editor_register_message_handler("goto-beginning-of-buffer",  goto_beginning_of_buffer);
     editor_register_message_handler("goto-end-of-buffer",        goto_end_of_buffer);
+
+    editor_register_message_handler("scroll-up",                 scroll_up);
+    editor_register_message_handler("scroll-down",               scroll_down);
+
 
 #if 0
     // selection-mode
@@ -1716,9 +1879,9 @@ int belong_to_word(const int32_t c)
 {
     // need char class
     if ((c >= '0' && c <= '9') ||
-        (c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z') ||
-        (c == '_')) {
+            (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c == '_')) {
         return EDITOR_STATUS_OK;
     }
 
@@ -1860,3 +2023,4 @@ int mouse_wheel_down(struct editor_message_s * msg)
 */
 
 #endif
+

@@ -58,7 +58,7 @@ screen_t * get_new_screen(editor_view * view)
 {
     screen_t * scr = nullptr;
 
-    screen_alloc_with_dimension(&scr, __PRETTY_FUNCTION__, &view->screen_cache.dim);
+    screen_alloc_with_dimension(&scr, &view->screen_cache.dim,  __PRETTY_FUNCTION__);
     assert(scr);
     screen_set_start_offset(scr, view->screen_cache.start_offset);
     return scr;

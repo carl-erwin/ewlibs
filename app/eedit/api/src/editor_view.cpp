@@ -318,6 +318,15 @@ extern "C" {
 
         return view->screen_cache.last_screen;
     }
+
+    /*; // will call the configured layout modules for this screen/view_id */
+    SHOW_SYMBOL
+    screen_t *         editor_view_scroll_n(editor_view_id_t screen_id, int64_t nb)
+    {
+        return nullptr;
+    }
+
+
 } // ! extern "C"
 
 

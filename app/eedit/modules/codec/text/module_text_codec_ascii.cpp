@@ -180,14 +180,14 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
     if (direction == 0)
         return -1;
 
-    int32_t prev_cp = 0;
-    uint64_t cur_pos = near_offset;
+    int32_t  prev_cp  = 0;
+    uint64_t read_pos = near_offset;
     if (direction > 0) {
 
         while (true) {
 
             struct text_codec_io_s iovc;
-            iovc.offset = cur_pos;
+            iovc.offset = read_pos;
             int ret = ascii_read_forward(io_ctx, &iovc, 1);
             if (ret < 0)
                 return -1;
@@ -216,8 +216,8 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
             }
 
             ////
-            cur_pos = iovc.offset + iovc.size;
-            prev_cp = iovc.cp;
+            read_pos = iovc.offset + iovc.size;
+            prev_cp  = iovc.cp;
 
         }
 
@@ -228,7 +228,8 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
     while (true) {
 
         struct text_codec_io_s iovc;
-        iovc.offset = cur_pos;
+        iovc.offset = read_pos;
+
         int ret = ascii_read_backward(io_ctx, &iovc, 1);
         if (ret < 0) {
             // FIXME:
@@ -236,7 +237,6 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
         }
 
         if (ret == 0) {
-            // start of buffer:
             *synced_offset = 0;
             return 0;
         }
@@ -245,18 +245,16 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
 
         case '\r':
         case '\n': {
-            if (iovc.cp == '\n') {
-                *synced_offset = iovc.offset + 1;
-                return 0;
-            }
-            break;
+            *synced_offset = read_pos + 1;
+            return 0;
         }
+        break;
 
         }
 
         ////
-        cur_pos = iovc.offset;
-        prev_cp = iovc.cp;
+        read_pos = iovc.offset;
+        prev_cp  = iovc.cp;
     }
 
     return 0;

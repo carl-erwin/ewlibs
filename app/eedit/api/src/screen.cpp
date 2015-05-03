@@ -227,7 +227,7 @@ int screen_release(screen_t * scr)
     return 0;
 }
 
-int screen_alloc_with_dimension(screen_t ** scr, const char * called_by, const screen_dimension_t * dim)
+int screen_alloc_with_dimension(screen_t ** scr, const screen_dimension_t * dim, const char * called_by)
 {
     return screen_alloc(scr, called_by, dim->l, dim->c, dim->w, dim->h);
 }
@@ -316,6 +316,7 @@ void screen_set_max_number_of_lines(screen_t * scr, uint32_t max)
     scr->m_max_l = max;
 }
 
+EDITOR_EXPORT
 uint32_t  screen_get_max_number_of_lines(screen_t * scr)
 {
     return scr->m_max_l;
@@ -385,12 +386,20 @@ int screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line
     auto sz = scr->m_line_array.size();
     if (line_index >= sz) {
         assert(0);
-        return 0;
+        return -1;
     }
 
     *l = &scr->m_line_array[line_index];
     return 1;
 }
+
+
+EDITOR_EXPORT
+int screen_get_first_line(const screen_t * scr, const screen_line_t ** l)
+{
+    return screen_get_line(scr, 0, l);
+}
+
 
 EDITOR_EXPORT
 int screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t * index)
@@ -407,14 +416,14 @@ EDITOR_EXPORT
 int screen_get_first_cpinfo(screen_t * scr, const codepoint_info_s ** cpi)
 {
     *cpi = &scr->first_cpinfo;
-    return 0;
+    return 1;
 }
 
 EDITOR_EXPORT
 int screen_get_last_cpinfo(screen_t * scr, const codepoint_info_s ** cpi)
 {
     *cpi = &scr->last_cpinfo;
-    return 0;
+    return 1;
 }
 
 int screen_get_first_and_last_cpinfo(screen_t * scr,
@@ -423,7 +432,7 @@ int screen_get_first_and_last_cpinfo(screen_t * scr,
 {
     *fcpi = &scr->first_cpinfo;
     *lcpi = &scr->last_cpinfo;
-    return 0;
+    return 1;
 }
 
 

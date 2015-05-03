@@ -76,17 +76,18 @@ void               screen_dump(const screen_t * scr, const char * by); // FIXME:
 int                screen_alloc(screen_t ** scr, const char * called_by, uint32_t l, uint32_t c, uint32_t w, uint32_t h);
 int                screen_release(screen_t * scr);
 int                screen_copy(screen_t * dst, const screen_t * orig);
-screen_t *         screen_clone(screen_t * scr);
+screen_t *         screen_clone(screen_t * scr); // must be destroy with screen_release
 
 EDITOR_EXPORT
 uint64_t           screen_get_start_offset(screen_t * scr);
 
 EDITOR_EXPORT
-int                screen_alloc_with_dimension(screen_t ** scr, const char * called_by, const screen_dimension_t * dim);
+int                screen_alloc_with_dimension(screen_t ** scr, const screen_dimension_t * dim, const char * called_by);
 
 screen_dimension_t screen_get_dimension(const screen_t * scr);
 
-// internal
+// TODO: sort INTERNAL/EXTERNAL APIs
+// and move internal ones to api/src/editor_screen_internal.h
 
 void               screen_set_buffer_size(screen_t * scr, uint64_t sz);
 int                screen_resize(screen_t * scr, uint32_t l, uint32_t c);
@@ -103,6 +104,9 @@ uint32_t           screen_get_max_height_px(screen_t * scr);
 void               screen_set_number_of_used_lines(screen_t * scr, uint32_t max);
 uint32_t           screen_get_number_of_used_lines(const screen_t * scr);
 int                screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line_t ** l);
+
+int                screen_get_first_line(const screen_t * scr, const screen_line_t ** l); // index = 0
+
 int                screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t * index);
 int                screen_get_codepoint_by_coords(int32_t x, int32_t y, struct codepoint_info_s ** out_cpi);
 int                screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const screen_line_t ** l, size_t * scr_line_index, size_t * scr_col_index);
