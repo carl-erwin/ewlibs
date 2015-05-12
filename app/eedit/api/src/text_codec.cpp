@@ -66,7 +66,7 @@ SHOW_SYMBOL int text_codec_sync_codepoint(struct codec_io_ctx_s * io_ctx, const 
 }
 
 extern "C"
-SHOW_SYMBOL int text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
+SHOW_SYMBOL int64_t text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
     text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
     if (ops == nullptr)

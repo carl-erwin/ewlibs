@@ -36,8 +36,8 @@ struct text_codec_ops_s {
     int (*encode)(int32_t codepoint, uint64_t out_size, uint8_t out[], uint64_t * nb_write);
     int (*decode)(uint64_t in_size, uint8_t in[], int32_t * codepoint);
 
-    int (*sync_codepoint)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
-    int (*sync_line)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
+    int     (*sync_codepoint)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
+    int64_t (*sync_line)(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset); // returns numbers of decoded codepoints
 };
 
 
@@ -51,7 +51,10 @@ int text_codec_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_i
 int text_codec_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt);
 
 int text_codec_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
-int text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
+
+// return the number of codepoint decoded to read *synced_offset
+// < 0 on error
+int64_t text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset);
 
 
 // one codepoint at time

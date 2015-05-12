@@ -174,8 +174,10 @@ int ascii_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, 
 // slow on purpose read 1 codepoint ...
 // can be generalized and move to core ?
 extern "C"
-int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, const int direction, uint64_t * synced_offset)
+int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, const int direction, uint64_t * synced_offset)
 {
+
+    int64_t cp_count = 0;
 
     if (direction == 0)
         return -1;
@@ -192,23 +194,30 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
             if (ret < 0)
                 return -1;
 
+            if (ret == 0) {
+                return cp_count;
+            }
+
+
+            ++cp_count;
+
             switch (prev_cp) {
 
             case '\r': {
                 if (iovc.cp == '\n') {
                     *synced_offset = iovc.offset + 1;
-                    return 0;
+                    return cp_count;
                 }
 
                 *synced_offset = iovc.offset;
-                return 0;
+                return cp_count;
                 break;
             }
 
             case '\n': {
                 if (iovc.cp == '\n') {
                     *synced_offset = iovc.offset;
-                    return 0;
+                    return cp_count;
                 }
                 break;
             }
@@ -221,7 +230,7 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
 
         }
 
-        return 0;
+        return cp_count;
     }
 
     // direction < 0)
@@ -238,15 +247,19 @@ int ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, 
 
         if (ret == 0) {
             *synced_offset = 0;
-            return 0;
+            return cp_count;;
         }
+
+        ++cp_count;
 
         switch (prev_cp) {
 
         case '\r':
         case '\n': {
             *synced_offset = read_pos + 1;
-            return 0;
+            --cp_count;
+            return  cp_count;
+;
         }
         break;
 

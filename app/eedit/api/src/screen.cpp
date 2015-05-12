@@ -264,6 +264,7 @@ int screen_copy(screen_t * dst, const screen_t * orig)
     return 0;
 }
 
+EDITOR_EXPORT
 screen_t * screen_clone(screen_t * scr)
 {
     auto dst = new screen_t;
