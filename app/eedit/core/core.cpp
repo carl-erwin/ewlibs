@@ -58,7 +58,7 @@ screen_t * get_new_screen(editor_view * view)
 {
     screen_t * scr = nullptr;
 
-    screen_alloc_with_dimension(&scr, &view->screen_info.dim,  __PRETTY_FUNCTION__);
+    scr = editor_view_allocate_screen_by_id(view->view);
     assert(scr);
     screen_set_start_offset(scr, view->screen_info.start_offset);
     return scr;
@@ -105,20 +105,10 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     auto view2 = editor_buffer_check_view_id(editor_buffer_id, view);
     if (view2 != 0) {
         app_log <<  " view already added to editor buffer\n";
-
-        app_log <<  " TODO : compare dimension -> flush cache\n";
-
-
-        editor_view * real_view = editor_view_get_internal_pointer(view);
-        assert(real_view);
-        real_view->screen_info.dim = dim;
-
-        return true;
+    } else {
+        app_log <<  " allocating view\n";
+        editor_buffer_add_view(editor_buffer_id, view, &dim);
     }
-
-    app_log <<  " allocating view\n";
-    editor_buffer_add_view(editor_buffer_id, view, &dim);
-
     editor_view * real_view = editor_view_get_internal_pointer(view);
 
     // FIXME: use font space horizontal/vertical advance + inter-line to compute the maximum col/line to resize to
@@ -158,7 +148,18 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         app_log <<  " check cache\n";
     }
 
+    // if dim != release preallocated screen
+    if ((real_view->screen_info.dim.c < dim.c)
+            || (real_view->screen_info.dim.l  < dim.l)
+            || (real_view->screen_info.dim.w  < dim.w)
+            || (real_view->screen_info.dim.h  < dim.h)) {
+        editor_view_release_preallocated_screens(view);
+    }
+
     real_view->screen_info.dim = dim;
+
+    static size_t NB_PREALLOCATED_SCREEN = 3;
+    editor_view_preallocate_screens(view, NB_PREALLOCATED_SCREEN);
 
     return true;
 }
@@ -354,7 +355,9 @@ bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * sta
     if (notify == true) {
 
         editor_view * view = editor_view_get_internal_pointer(msg->view_id);
-        screen_release(view->screen_info.last_screen);
+
+        // screen_release(view->screen_info.last_screen);
+        editor_view_release_screen_by_id(msg->view_id, view->screen_info.last_screen); // put in pool
         view->screen_info.last_screen = nullptr;
 
         /* this screen will be used by next events, screen moves,  etc */

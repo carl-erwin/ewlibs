@@ -20,7 +20,7 @@ bool tab_expansion_init(editor_layout_builder_context_t * blayout_ctx, editor_la
 
     mode_ctx->expansion = 8; // from user config
 
-       app_log << " ------ tab_expansion_init ------\n";
+    app_log << " ------ tab_expansion_init ------\n";
 
     return true;
 }
@@ -37,8 +37,8 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
     size_t expansion = ctx->expansion;
     *nr_out = 0;
 
-   app_log << " tab_expansion_filter nr_in:   " << nr_in << "\n";
-   app_log << " tab_expansion_filter max_out: " << max_out << "\n";
+    app_log << " tab_expansion_filter nr_in:   " << nr_in << "\n";
+    app_log << " tab_expansion_filter max_out: " << max_out << "\n";
 
 
     for (size_t index = 0; index != nr_in; index++) {
@@ -55,7 +55,7 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
             uint64_t col = in[index].cp_index;
 
             if (in[index].cp_index == uint64_t(-1)) {
-              abort();
+                abort();
             }
 
             if (1 /* mode_ctx.debug */) {

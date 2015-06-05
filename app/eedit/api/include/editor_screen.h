@@ -34,7 +34,6 @@ typedef struct screen_line_s screen_line_t;
 typedef struct screen_s      screen_t;
 
 
-
 int screen_dimension_reset(screen_dimension_t * sd); // inline memset()
 
 

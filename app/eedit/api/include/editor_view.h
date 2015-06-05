@@ -41,7 +41,12 @@ editor_font_t editor_view_get_font(editor_view_id_t view);
 
 
 // view -> screen
-screen_t *         get_previous_screen_by_id(editor_view_id_t screen_id);
+size_t       editor_view_preallocate_screens(editor_view_id_t view_id, size_t n);
+void         editor_view_release_preallocated_screens(editor_view_id_t view_id);
+
+screen_t *   get_previous_screen_by_id(editor_view_id_t view_id);
+screen_t *   editor_view_allocate_screen_by_id(editor_view_id_t view_id); // view screen pool
+int          editor_view_release_screen_by_id(editor_view_id_t view_id, screen_t * scr); // view screen pool
 
 /* scrool the view
  the unit depends on the main/codec for text is lines

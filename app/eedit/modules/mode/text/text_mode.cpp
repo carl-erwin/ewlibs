@@ -429,8 +429,10 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
     start_cpi.offset = rewind_off;
     start_cpi.used   = true;
 
-    screen_t * tmp_scr = nullptr;
-    screen_alloc_with_dimension(&tmp_scr, &scr_dim, __FUNCTION__);
+    screen_t * tmp_scr = editor_view_allocate_screen_by_id(ed_view);
+    if (!tmp_scr)
+        return -1;
+
     codec_io_ctx_s io_ctx {
         ed_buffer,
         editor_buffer_get_byte_buffer_id(ed_buffer),
@@ -1914,9 +1916,9 @@ int belong_to_word(const int32_t c)
 {
     // need char class
     if ((c >= '0' && c <= '9') ||
-            (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c == '_')) {
+        (c >= 'a' && c <= 'z') ||
+        (c >= 'A' && c <= 'Z') ||
+        (c == '_')) {
         return EDITOR_STATUS_OK;
     }
 

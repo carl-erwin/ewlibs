@@ -259,7 +259,7 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
             *synced_offset = read_pos + 1;
             --cp_count;
             return  cp_count;
-;
+            ;
         }
         break;
 

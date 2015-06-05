@@ -1,3 +1,4 @@
+#include <cassert>
 #include <map>
 
 #include "handle_table.h"
@@ -304,7 +305,6 @@ extern "C" {
         default:
             break;
 
-
         }
         return 0;
     }
@@ -318,6 +318,91 @@ extern "C" {
 
         return view->screen_info.last_screen;
     }
+
+    SHOW_SYMBOL
+    screen_t *   editor_view_allocate_screen_by_id(editor_view_id_t view_id)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return nullptr;
+
+        screen_t * scr = nullptr;
+        auto size = view->screen_pool.size();
+        if (size == 0) {
+            uint32_t l = view->screen_info.dim.l;
+            uint32_t c = view->screen_info.dim.c;
+            uint32_t w = view->screen_info.dim.w;
+            uint32_t h = view->screen_info.dim.h;
+            screen_alloc(&scr, __FUNCTION__, l, c, w, h);
+            return scr;
+        }
+
+        scr = view->screen_pool.front();
+        assert(scr);
+        view->screen_pool.pop_front();
+
+        return scr;
+    }
+
+
+    SHOW_SYMBOL
+    size_t editor_view_preallocate_screens(editor_view_id_t view_id, size_t n)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return 0;
+
+        for (size_t i = view->screen_pool.size(); i < n ; ++i) {
+            screen_t * scr = nullptr;
+            uint32_t l = view->screen_info.dim.l;
+            uint32_t c = view->screen_info.dim.c;
+            uint32_t w = view->screen_info.dim.w;
+            uint32_t h = view->screen_info.dim.h;
+
+            screen_alloc(&scr, __FUNCTION__, l, c, w, h);
+            if (scr == nullptr) {
+                break;
+            }
+            view->screen_pool.push_front(scr);
+
+        }
+
+        return view->screen_pool.size();
+    }
+
+    SHOW_SYMBOL
+    void         editor_view_release_preallocated_screens(editor_view_id_t view_id)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return;
+
+
+        while (view->screen_pool.size())  {
+            auto scr = view->screen_pool.front();
+            assert(scr);
+            screen_release(scr);
+            view->screen_pool.pop_front();
+        }
+    }
+
+
+    SHOW_SYMBOL
+    int          editor_view_release_screen_by_id(editor_view_id_t view_id, screen_t * scr)
+    {
+        // check dimension
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return -1;
+
+        if (scr) {
+            view->screen_pool.push_front(scr);
+        }
+
+        return 0;
+    }
+
+
 
     /*; // will call the configured layout modules for this screen/view_id */
     SHOW_SYMBOL

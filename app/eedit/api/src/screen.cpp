@@ -229,6 +229,7 @@ int screen_release(screen_t * scr)
 
 int screen_alloc_with_dimension(screen_t ** scr, const screen_dimension_t * dim, const char * called_by)
 {
+    abort();
     return screen_alloc(scr, called_by, dim->l, dim->c, dim->w, dim->h);
 }
 
