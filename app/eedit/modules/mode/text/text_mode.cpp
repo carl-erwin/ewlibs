@@ -658,6 +658,7 @@ int scroll_up_N_lines(struct editor_message_s * msg, uint64_t N)
     // notify layout change
     {
         codepoint_info_t cpi;
+        codepoint_info_reset(&cpi);
         cpi.offset = screen_line_list[until_offset_index].first;
         cpi.used = true;
 
@@ -847,6 +848,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
     // notify layout change
     {
         codepoint_info_t cpi;
+        codepoint_info_reset(&cpi);
 
         cpi.offset = start_offset;
         cpi.used   = true;
