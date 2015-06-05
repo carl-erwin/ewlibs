@@ -295,8 +295,56 @@ int mark_move_to_screen_line(struct editor_message_s * msg, enum mark_move_direc
     return EDITOR_STATUS_OK;
 }
 
+/*
+  Will move the offscreen and onscreen lines (TO)
+
+  (have a special line layout builder ? ie: resync(offset) + build one_line)
+
+  - get the moving marks (TODO: view's marks only / all marks)
+  - sort them in increasing offset order
+
+  - take the first mark offset
+  - resync a temporary screen at the mark's offset (the screen will be reused)
+
+  - for each built screen : take first line offset (off1) and the last offset(off2) of the before last line
+  - iterate over the marks  between (off1 >= m >= off2)
+  - for each mark take the next line corresponding column index (must maintain maximum column when moving to smaller/larger lines)
+  - save a list of (mark, next_offset) in a array  (offset_updates)
+
+  - update all marks offsets
+
+*/
 int mark_move_to_previous_screen_line(struct editor_message_s * msg)
 {
+#if 0
+    // TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
+
+    // setup context
+    auto ebid      = msg->editor_buffer_id;
+    auto bid       = msg->byte_buffer_id;
+
+    auto view      = msg->view_id;
+    auto codec_id  = editor_view_get_codec_id(view);
+    auto codec_ctx = editor_view_get_codec_ctx(view);
+
+    // get the moving marks
+    auto buff_nmark = editor_buffer_number_of_marks(ebid, MOVING_MARK);
+    auto view_nmark = editor_view_number_of_marks(view, MOVING_MARK);
+
+    // accumulate marks
+    std::vector<mark_t> marks(buff_nmark + view_nmark);
+
+    editor_buffer_get_marks(ebid, MOVING_MARK, buff_nmark, &marks[0]);
+    editor_view_get_marks(view, MOVING_MARK,   view_nmark, &marks[buff_nmark]);
+
+    // NB: sort in decreasing offset order
+    std::sort(marks.begin(), marks.end(), [](mark_t m1, mark_t m2) {
+        return mark_get_offset(m1) < mark_get_offset(m2);
+    });
+#endif
+
+
+
     return EDITOR_STATUS_OK;
 }
 

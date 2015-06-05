@@ -891,8 +891,11 @@ int goto_beginning_of_buffer(struct editor_message_s * msg)
 {
     codepoint_info_t cpi;
     codepoint_info_reset(&cpi);
-    cpi.offset = 0;
-    cpi.used   = true;
+    cpi.offset      = 0;
+    cpi.used        = true;
+    cpi.cp_index    = 0;
+    cpi.split_count = 0;
+
     set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     return EDITOR_STATUS_OK;
@@ -904,12 +907,13 @@ int goto_end_of_buffer(struct editor_message_s * msg)
     auto view   = msg->view_id;
 
     size_t buffer_sz;
+
     byte_buffer_size(msg->byte_buffer_id, &buffer_sz);
 
-    editor_view_set_start_offset(view, buffer_sz );
+    editor_view_set_start_offset(view, buffer_sz);
 
     // TODO: center view ?
-    // page_up(msg);
+    // scroll_up(L/2);
 
     codepoint_info_t cpi;
     codepoint_info_reset(&cpi);
@@ -936,7 +940,6 @@ void text_mode_register_modules_function()
     // selection-mode
     editor_register_message_handler("begin-selection",           begin_selection);
     editor_register_message_handler("end-selection",             end_selection);
-
     editor_register_message_handler("mouse-wheel-up",            mouse_wheel_up);
     editor_register_message_handler("mouse-wheel-down",          mouse_wheel_down);
 #endif

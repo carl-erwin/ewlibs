@@ -20,6 +20,8 @@ bool tab_expansion_init(editor_layout_builder_context_t * blayout_ctx, editor_la
 
     mode_ctx->expansion = 8; // from user config
 
+       app_log << " ------ tab_expansion_init ------\n";
+
     return true;
 }
 
@@ -35,6 +37,9 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
     size_t expansion = ctx->expansion;
     *nr_out = 0;
 
+   app_log << " tab_expansion_filter nr_in:   " << nr_in << "\n";
+   app_log << " tab_expansion_filter max_out: " << max_out << "\n";
+
 
     for (size_t index = 0; index != nr_in; index++) {
 
@@ -42,7 +47,21 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
         // tab expansion
         case '\t': {
 
+            if (1 /* mode_ctx.debug */) {
+                app_log << __FUNCTION__ << " offset " << in[index].offset << ", real_cp = " <<  in[index].real_cp << ", cp_index = " <<  in[index].cp_index << " split_count " << in[index].split_count << " |TABS\n";
+            }
+
+
             uint64_t col = in[index].cp_index;
+
+            if (in[index].cp_index == uint64_t(-1)) {
+              abort();
+            }
+
+            if (1 /* mode_ctx.debug */) {
+                app_log << __FUNCTION__ << " col = " << col << "\n";
+            }
+
 
             uint64_t filled;
             if (in[index].split_count) {
@@ -53,10 +72,6 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
                 filled = (col % expansion);
             }
 
-            if (0 /* mode_ctx.debug */) {
-                app_log << __FUNCTION__ << " offset " << in[index].offset << ", real_cp = " <<  in[index].real_cp << ", cp_index = " <<  in[index].cp_index << " |TABS\n";
-                app_log << __FUNCTION__ << " col = " << col << "\n";
-            }
 
             auto filln = expansion - filled;
 
@@ -81,7 +96,7 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
                 out[*nr_out].split_count = 0 + n + filled;
                 out[*nr_out].cp_index    = in[index].cp_index;
 
-                // app_log << " out[" << *nr_out << "].cp_index = " <<  out[*nr_out].cp_index << ", split_count = " << out[*nr_out].split_count <<" |TABS\n";
+                app_log << " out[" << *nr_out << "].cp_index = " <<  out[*nr_out].cp_index << ", split_count = " << out[*nr_out].split_count <<" |TABS\n";
 
 
                 out[*nr_out].real_cp = '\t';
