@@ -855,7 +855,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
         cpi.offset = start_offset;
         cpi.used   = true;
 
-        fprintf(stderr, " next start offset is %lu]\n", cpi.offset);
+	//        fprintf(stderr, " next start offset is %lu]\n", cpi.offset);
 
         set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
         set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
@@ -869,7 +869,7 @@ int page_down(struct editor_message_s * msg)
 {
     auto cur_screen = get_previous_screen_by_id(msg->view_id);
     auto nb_lines = screen_get_max_number_of_lines(cur_screen);
-    fprintf(stderr, "nb_lines= %u\n", nb_lines);
+    //    fprintf(stderr, "nb_lines= %u\n", nb_lines);
     if (nb_lines == 0) {
         return EDITOR_STATUS_OK;
     }
