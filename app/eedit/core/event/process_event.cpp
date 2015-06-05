@@ -13,7 +13,7 @@ namespace core
 {
 
 
-bool process_event(core_context_t * core_ctx, struct editor_message_s * msg)
+bool process_editor_message(core_context_t * core_ctx, struct editor_message_s * msg)
 {
     app_log << __PRETTY_FUNCTION__ << "\n";
 
@@ -42,7 +42,7 @@ bool process_event(core_context_t * core_ctx, struct editor_message_s * msg)
     switch (msg->type & EDITOR_EVENT_TYPE_FAMILY_MASK) {
 
     case EDITOR_APPLICATION_EVENT_FAMILY: {
-        ret = process_application_event(core_ctx, msg);
+        ret = process_application_message(core_ctx, msg);
     }
     break;
 
@@ -50,7 +50,7 @@ bool process_event(core_context_t * core_ctx, struct editor_message_s * msg)
     case EDITOR_POINTER_BUTTON_EVENT_FAMILY: {
         app_log << __PRETTY_FUNCTION__ << " EDITOR_KEYB/POINTER EVENT\n";
 
-        check_input_msg(msg);
+        check_input_message(msg);
         ret = process_input_event(msg);
     }
     break;
@@ -58,8 +58,8 @@ bool process_event(core_context_t * core_ctx, struct editor_message_s * msg)
     case EDITOR_BUILD_LAYOUT_EVENT: {
         app_log << __PRETTY_FUNCTION__ << " EDITOR_BUILD_LAYOUT_EVENT\n";
 
-        check_input_msg(msg);
-        ret = process_build_layout_event(msg);
+        check_input_message(msg);
+        ret = trigger_new_layout(msg);
     }
     break;
 
@@ -205,7 +205,7 @@ bool process_input_event(struct editor_message_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_application_event(core_context_t * core_ctx, struct editor_message_s * msg)
+bool process_application_message(core_context_t * core_ctx, struct editor_message_s * msg)
 {
     switch (msg->type) {
     case EDITOR_QUIT_APPLICATION_DEFAULT:

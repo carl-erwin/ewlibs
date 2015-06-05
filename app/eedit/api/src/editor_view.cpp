@@ -316,7 +316,7 @@ extern "C" {
         if (view == nullptr)
             return nullptr;
 
-        return view->screen_cache.last_screen;
+        return view->screen_info.last_screen;
     }
 
     /*; // will call the configured layout modules for this screen/view_id */

@@ -58,9 +58,9 @@ screen_t * get_new_screen(editor_view * view)
 {
     screen_t * scr = nullptr;
 
-    screen_alloc_with_dimension(&scr, &view->screen_cache.dim,  __PRETTY_FUNCTION__);
+    screen_alloc_with_dimension(&scr, &view->screen_info.dim,  __PRETTY_FUNCTION__);
     assert(scr);
-    screen_set_start_offset(scr, view->screen_cache.start_offset);
+    screen_set_start_offset(scr, view->screen_info.start_offset);
     return scr;
 }
 
@@ -111,7 +111,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
 
         editor_view * real_view = editor_view_get_internal_pointer(view);
         assert(real_view);
-        real_view->screen_cache.dim = dim;
+        real_view->screen_info.dim = dim;
 
         return true;
     }
@@ -158,7 +158,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         app_log <<  " check cache\n";
     }
 
-    real_view->screen_cache.dim = dim;
+    real_view->screen_info.dim = dim;
 
     return true;
 }
@@ -180,13 +180,13 @@ bool push_event(struct editor_message_s * msg)
 
         case EDITOR_KEYBOARD_EVENT:
         case EDITOR_POINTER_BUTTON_EVENT_FAMILY: {
-            check_input_msg(msg);
+            check_input_message(msg);
         }
         break;
 
         case EDITOR_BUILD_LAYOUT_EVENT: {
             app_log << __PRETTY_FUNCTION__ << " EDITOR_BUILD_LAYOUT_EVENT\n";
-            check_input_msg(msg);
+            check_input_message(msg);
         }
         break;
 
@@ -354,16 +354,16 @@ bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * sta
     if (notify == true) {
 
         editor_view * view = editor_view_get_internal_pointer(msg->view_id);
-        screen_release(view->screen_cache.last_screen);
-        view->screen_cache.last_screen = nullptr;
+        screen_release(view->screen_info.last_screen);
+        view->screen_info.last_screen = nullptr;
 
         /* this screen will be used by next events, screen moves,  etc */
-        // allocate screen here base on view->screen_cache.dimension
+        // allocate screen here base on view->screen_info.dimension
         auto last_screen = get_new_screen(view);
         assert(last_screen);
 
         build_screen_layout_from_event(msg, start_cpi, last_screen);
-        view->screen_cache.last_screen = last_screen;
+        view->screen_info.last_screen = last_screen;
 
         if (send_screen == true) {
             auto new_screen = screen_clone(last_screen);
@@ -376,7 +376,7 @@ bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * sta
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool process_build_layout_event(struct editor_message_s * msg)
+bool trigger_new_layout(struct editor_message_s * msg)
 {
     set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
     return true;
@@ -384,7 +384,7 @@ bool process_build_layout_event(struct editor_message_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool check_input_msg(struct editor_message_s * msg)
+bool check_input_message(struct editor_message_s * msg)
 {
     assert(msg->editor_buffer_id);
     assert(msg->view_id);
@@ -405,7 +405,7 @@ int quit_editor(struct editor_message_s * msg)
     quit_msg->src = msg->src;
     quit_msg->dst = msg->dst;
 
-    process_application_event(&core_ctx, quit_msg);
+    process_application_message(&core_ctx, quit_msg);
     editor_event_free(quit_msg);
 
     return 0;
@@ -471,7 +471,7 @@ void main(std::shared_ptr<application> app)
 
             msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
-            process_event(&core_ctx, msg);
+            process_editor_message(&core_ctx, msg);
             auto t1 = ew::core::time::get_ticks();
             if (0) {
                 app_log << "["<<t1<<"] time to process event = " << t1 - t0 << "\n";

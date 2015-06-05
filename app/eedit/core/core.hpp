@@ -83,10 +83,10 @@ bool release_event(struct editor_message_s * msg);
 
 bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * start_cpi, bool send_screen);
 
-bool process_build_layout_event(struct editor_message_s * msg);
-bool check_input_msg(struct editor_message_s * msg);
-bool process_application_event(core_context_t * core_ctx, struct editor_message_s * msg);
-bool process_event(core_context_t * core_ctx, struct editor_message_s * msg);
+bool trigger_new_layout(struct editor_message_s * msg);
+bool check_input_message(struct editor_message_s * msg);
+bool process_application_message(core_context_t * core_ctx, struct editor_message_s * msg);
+bool process_editor_message(core_context_t * core_ctx, struct editor_message_s * msg);
 
 
 

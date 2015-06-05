@@ -18,13 +18,13 @@
 #include "../../core/input/event/input_event_map.hpp" // FIXME: typedef uint64_t editor_input_event_map_id_t;
 
 
-typedef struct screen_cache {
-    screen_cache()
+typedef struct screen_info {
+    screen_info()
     {
         assert(last_screen == nullptr);
     }
 
-    ~screen_cache()
+    ~screen_info()
     {
         screen_release(last_screen);
     }
@@ -32,7 +32,7 @@ typedef struct screen_cache {
     uint64_t start_offset = 0;
     screen_dimension_t dim;
     screen_t * last_screen = nullptr;
-} screen_cache_t;
+} editor_view_screen_info_t;
 
 
 struct editor_view {
@@ -54,7 +54,9 @@ struct editor_view {
 
     codepoint_info_t start_cpi;
 
-    screen_cache_t  screen_cache;
+    editor_view_screen_info_t  screen_info;
+
+    std::list<std::unique_ptr<screen_t>> screen_pool; //
 
     struct {
         std::map<std::string, eedit::editor_input_event_map *> event_map;
