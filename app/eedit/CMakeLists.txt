@@ -47,10 +47,12 @@ ${EW_PROJECT_ROOT}/app/eedit/core/log/log.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/rpc/rpc.cpp
 
 ${EW_PROJECT_ROOT}/app/eedit/core/core.cpp
-${EW_PROJECT_ROOT}/app/eedit/core/process_event_ctx.cpp  # TODO: rename in core/event/process_event_ctx.cpp ?
+${EW_PROJECT_ROOT}/app/eedit/core/event/process_event_ctx.cpp
 ${EW_PROJECT_ROOT}/app/eedit/core/event/process_event.cpp
 
-${EW_PROJECT_ROOT}/app/eedit/core/text_layout.cpp
+${EW_PROJECT_ROOT}/app/eedit/core/text_layout/text_layout.cpp
+${EW_PROJECT_ROOT}/app/eedit/core/text_layout/layout_filter_io_vec.cpp
+
 
 # default filters
 ${EW_PROJECT_ROOT}/app/eedit/core/filters/byte_mode.cpp

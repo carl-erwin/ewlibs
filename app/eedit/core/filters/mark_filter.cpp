@@ -3,7 +3,7 @@
 
 #include "mark.h"
 
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 
 namespace eedit
 {
@@ -76,33 +76,39 @@ bool mark_filter_init(editor_layout_builder_context_t * blayout_ctx, editor_layo
 }
 
 bool mark_filter_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_,
-                        const editor_layout_filter_io_t * const in, const size_t nr_in,
-                        editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+                        layout_io_vec_t in_vec,
+                        layout_io_vec_t out_vec)
 {
     mark_editor_layout_filter_context_t * ctx = static_cast<mark_editor_layout_filter_context_t *>(ctx_);
     // if in[...] is "marked" set mark flag
 
+    size_t nr_in = layout_io_vec_size(in_vec);
+
     if (ctx->skip_pass) {
         for (size_t  i = 0; i < nr_in; i++) {
-            out[i] = in[i];
+            layout_io_t in;
+            layout_io_vec_get(in_vec, &in);
+            layout_io_vec_push(out_vec, &in);
             // look for offset ?
         }
-        *nr_out = nr_in;
         return true;
     }
 
     for (size_t  i = 0; i < nr_in; i++) {
-        out[i] = in[i];
+        layout_io_t in;
 
-        if (ctx->off_index < ctx->offset.size() && (out[i].offset == ctx->offset[ctx->off_index])) {
-            out[i].is_selected = true;
+        layout_io_vec_get(in_vec, &in);
+
+        if (ctx->off_index < ctx->offset.size() && (in.offset == ctx->offset[ctx->off_index])) {
+            in.is_selected = true;
             // skip
-            while (ctx->off_index < ctx->offset.size() && ctx->offset[ctx->off_index] == out[i].offset)
+            while (ctx->off_index < ctx->offset.size() && ctx->offset[ctx->off_index] == in.offset) {
                 ctx->off_index++;
+            }
         }
-    }
 
-    *nr_out = nr_in;
+        layout_io_vec_push(out_vec, &in);
+    }
 
     return true;
 }

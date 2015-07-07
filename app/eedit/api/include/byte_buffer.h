@@ -16,7 +16,6 @@
 #include "editor_export.h"
 #include "editor_types.h"
 
-#include "mark.h"
 
 #ifdef __cplusplus
 extern "C" {

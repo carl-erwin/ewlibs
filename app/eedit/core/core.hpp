@@ -6,7 +6,7 @@
 #include "../application/application.hpp"
 #include "editor_message.h"
 
-#include "../core/process_event_ctx.h"
+#include "../core/event/process_event_ctx.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -435,7 +435,7 @@ struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(
     break;
 
     default: {
-        abort();
+      //        abort();
 
 #if 0
         //  KEY_CODE_YES:		// 0400	       /* A wchar_t contains a key code */

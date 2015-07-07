@@ -1,4 +1,4 @@
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 
 
 namespace eedit
@@ -42,28 +42,34 @@ bool unicode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_l
 
 bool unicode_buffer_filter(editor_layout_builder_context_t * blctx,
                            editor_layout_filter_context_t * ctx,
-                           const editor_layout_filter_io_t * const in, const size_t nr_in,
-                           editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+                           layout_io_vec_t in_vec,
+                           layout_io_vec_t out_vec)
 {
     unicode_context_t * unicode_ctx = static_cast<unicode_context_t *>(ctx);
 
-    *nr_out = 0;
-    size_t index = 0;
-    {
-        *nr_out = 1;
-        out[index] = in[index];
-        out[index].cp     = out[index].real_cp;
-        out[index].valid  = true;
+    if (layout_io_vec_size(in_vec) == 0)
+        return false;
 
-        out[index].cp_index = unicode_ctx->cur_cp_index;
-        assert(out[index].cp_index != uint64_t(-1));
-        out[index].is_selected = false;
-        out[index].split_flag  = unicode_ctx->split_flag;
-        out[index].split_count = unicode_ctx->split_count;
+
+    layout_io_t out;
+
+    layout_io_t & in = *layout_io_vec_first(in_vec);
+
+
+    {
+        out        = in;
+        out.cp     = out.real_cp;
+        out.valid  = true;
+
+        out.cp_index = unicode_ctx->cur_cp_index;
+        assert(out.cp_index != uint64_t(-1));
+        out.is_selected = false;
+        out.split_flag  = unicode_ctx->split_flag;
+        out.split_count = unicode_ctx->split_count;
         unicode_ctx->split_count = 0;
         unicode_ctx->split_flag  = 0;
 
-        if ((out[index].cp == '\r') || (out[index].cp == '\n')) {
+        if ((out.cp == '\r') || (out.cp == '\n')) {
             unicode_ctx->cur_cp_index = 0;
         } else {
             ++unicode_ctx->cur_cp_index;

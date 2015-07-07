@@ -5,9 +5,11 @@
 #include "text_layout.hpp"
 
 #include "ew/core/time/time.hpp"
-#include "log/log.hpp"
+#include "../log/log.hpp"
 
 
+#include "layout_filter_io.h"
+#include "layout_filter_io_vec.h"
 
 editor_layout_builder_context_s::editor_layout_builder_context_s(
     editor_buffer_id_t editor_buffer_id_,
@@ -135,6 +137,28 @@ bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const int32_t cp, 
 // PIPELINE
 /////////////////////////////
 
+#ifdef FILTER_IO_T
+bool ret = mode_list[i]->filter(layout_ctx, tmp_ctx);
+filters call
+int n = get_filter_io(layout_ctx, iovec, io_cnt);   // blocking/notifications
+int n = put_filter_io(layout_ctx, iovec, io_cnt);   // non blocking
+int n = get_filter_io_count(layout_ctx);            // non blocking
+int n = unget_filter_io(layout_ctx, iovec, io_cnt); // blocking/notifications
+int n = unput_filter_io(layout_ctx, iovec, io_cnt); // non blocking
+this will enable potential threading
+
+layout_io_vec_t * in_vec;
+layout_io_vec_t * out_vec;
+
+layout_io_vec_push(v, &cp_info);  // write
+layout_io_vec_pop(v, &cp_info);   // cancel-write
+layout_io_vec_get(v, &cp_info);   // read
+layout_io_vec_unget(v, &cp_info); // un-read
+layout_io_vec_notify(v); // later for multi thread
+layout_io_vec_wait(v);   // later for mutil thread
+#endif
+
+
 // TODO: user config
 // set filter list = byte | text |
 // the screen is implicit
@@ -204,24 +228,17 @@ bool build_layout(editor_layout_builder_context_t & ctx)
     }
 
     // run pipeline
-    const size_t MAX_OUT = 1024;
-    editor_layout_filter_io_t cp_info_1[MAX_OUT * 8];
+
+
+    layout_io_vec_t cp_info_1 = layout_io_vec_new();
+    layout_io_vec_t cp_info_2 = layout_io_vec_new();
     size_t nr_in  = 0;
-    editor_layout_filter_io_t cp_info_2[MAX_OUT * 8];
     size_t nr_out = 0;
 
-    // TODO: rename editor_layout_filter_io_t -> editor_layout_io_t
-    editor_layout_filter_io_t * pin  = cp_info_1;
-    editor_layout_filter_io_t * pout = cp_info_2;
+    // TODO: rename layout_io_t -> layout_io_t
+    layout_io_vec_t pin  = cp_info_1;
+    layout_io_vec_t pout = cp_info_2;
 
-    size_t editor_layout_filter_io_sz = editor_layout_filter_io_size(); // @NOTE@ can be cached
-    editor_layout_filter_io_t * default_cp = (editor_layout_filter_io_t *)alloca(editor_layout_filter_io_sz);
-    filter_io_init(default_cp);
-
-    for (size_t i = 0; i < MAX_OUT; i++) {
-        std::copy(default_cp, default_cp + 1, &cp_info_1[i]);
-        std::copy(default_cp, default_cp + 1, &cp_info_2[i]);
-    }
 
     // TODO: mesure module elapsed time
     /// we will create real pipe/sockets here in future version
@@ -248,7 +265,6 @@ bool build_layout(editor_layout_builder_context_t & ctx)
             nr_out = 0;
             if (filter_list[i]->filter != nullptr) {
 
-                assert(nr_out <= MAX_OUT);
                 /*
                 bool ret = mode_list[i]->filter(layout_ctx, tmp_ctx);
                 filters call
@@ -260,13 +276,12 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                 this will enable potential threading
                 */
 
-                bool ret = filter_list[i]->filter(&ctx, tmp_ctx, pin, nr_in, pout, MAX_OUT, &nr_out);
+                bool ret = filter_list[i]->filter(&ctx, tmp_ctx, pin, pout);
 
                 if (DEBUG_PIPELINE)
                     app_log << "\n" << "mode_list(" << filter_list[i]->name <<")[" << i << "] , nr_in(" << nr_in << ") nr_out(" << nr_out << ")\n";
 
-                assert(nr_out <= 8 * MAX_OUT);
-                if (nr_out == 0) {
+                if (layout_io_vec_size(pout) == 0) {
 
                     // count nr restart , max process time ?
 
@@ -275,10 +290,15 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                     break;
                 }
 
-                if (DEBUG_PIPELINE)
-                    app_log<< " pout["<<nr_out - 1<< "].end_of_pipe == " << pout[nr_out - 1].end_of_pipe << "\n";
+                if (DEBUG_PIPELINE) {
+                    layout_io_t * last_out = layout_io_vec_last(pout);
+                    if (last_out) {
+                        app_log<< " pout["<< layout_io_vec_size(pout) - 1 << "].end_of_pipe == " << last_out->end_of_pipe << "\n";
+                    }
+                }
 
-                if (pout[nr_out - 1].end_of_pipe == true) {
+		layout_io_t * last_out = layout_io_vec_last(pout);
+                if (last_out->end_of_pipe == true) {
                     if (DEBUG_PIPELINE)
                         app_log << " -------- LAYOUT end_of_pipe detected -------- \n";
 
@@ -287,15 +307,16 @@ bool build_layout(editor_layout_builder_context_t & ctx)
 
                 if (ret == true) {
                     std::swap(pin, pout);
-                    std::swap(nr_in, nr_out);
+                    // clear next out
+                    layout_io_vec_clear(pout);
                 }
             }
         }
 
         // TODO: improve end of pipe detection
+        layout_io_t * last_in = layout_io_vec_last(pin);
         if (nr_in) {
-
-            if (pin[nr_in - 1].quit == true) {
+            if (last_in->quit == true) {
                 if (DEBUG_PIPELINE)
                     app_log << " -------- LAYOUT quit detected -------- \n";
 
@@ -317,7 +338,8 @@ bool build_layout(editor_layout_builder_context_t & ctx)
         }
     }
 
-
+    layout_io_vec_release(cp_info_2);
+    layout_io_vec_release(cp_info_1);
     return true;
 }
 
@@ -340,7 +362,7 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
     size_t t0 = ew::core::time::get_ticks();
 
 
-    eedit::core::build_layout(blctx);                         // TODO: the layout code does not need to know the the screen
+    eedit::core::build_layout(blctx);                         // TODO: the layout code does not need to know the screen
 
     // uint64_t rdr_end_off   = (uint64_t)-1; // ed_buffer->rdr_end(); // FROM SID
 #if 0

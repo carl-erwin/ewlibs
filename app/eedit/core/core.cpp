@@ -23,10 +23,10 @@
 #include "../application/application.hpp"
 #include "../core/core.hpp"
 #include "../core/log/log.hpp"
-#include "../core/text_layout.hpp"
+#include "../core/text_layout/text_layout.hpp"
 #include "../core/rpc/rpc.hpp"
 
-#include "text_layout.hpp"
+#include "text_layout/text_layout.hpp"
 
 
 
@@ -34,7 +34,7 @@
 
 
 //
-#include "process_event_ctx.h"
+#include "event/process_event_ctx.h"
 
 #include "../api/include/buffer_log.h"
 #include "../api/include/text_codec.h"
@@ -150,9 +150,9 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
 
     // if dim != release preallocated screen
     if ((real_view->screen_info.dim.c < dim.c)
-            || (real_view->screen_info.dim.l  < dim.l)
-            || (real_view->screen_info.dim.w  < dim.w)
-            || (real_view->screen_info.dim.h  < dim.h)) {
+        || (real_view->screen_info.dim.l  < dim.l)
+        || (real_view->screen_info.dim.w  < dim.w)
+        || (real_view->screen_info.dim.h  < dim.h)) {
         editor_view_release_preallocated_screens(view);
     }
 
@@ -328,6 +328,9 @@ bool build_screen_layout_from_event(struct editor_message_s * msg, const codepoi
             codec_ctx
     };
 
+
+    assert(start_cpi);
+    assert(start_cpi->cp_index != uint64_t(-1));
     bool ret = build_screen_layout(&io_ctx, msg->view_id, start_cpi, scr);
     if (ret == true) {
         // adjust editor_buffer ?

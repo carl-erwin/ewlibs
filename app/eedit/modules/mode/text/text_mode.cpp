@@ -6,20 +6,18 @@
 #include "editor_message_handler.h"
 
 
-#include "../../../application/application.hpp"
-#include "../../../core/core.hpp"
+#include "application/application.hpp"
+#include "core.hpp"
 
-#include "../../../core/text_layout.hpp"
-#include "../../../core/rpc/rpc.hpp"
+#include "text_layout.hpp"
+#include "rpc/rpc.hpp"
 
 //
-#include "../../../core/process_event_ctx.h"
+#include "event/process_event_ctx.h"
 
-#include "../../../api/include/buffer_log.h"
-
+#include "buffer_log.h"
 #include "editor_screen.h"
-
-#include "../../../api/include/text_codec.h"
+#include "text_codec.h"
 
 
 /*
@@ -855,7 +853,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
         cpi.offset = start_offset;
         cpi.used   = true;
 
-	//        fprintf(stderr, " next start offset is %lu]\n", cpi.offset);
+        //        fprintf(stderr, " next start offset is %lu]\n", cpi.offset);
 
         set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
         set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);

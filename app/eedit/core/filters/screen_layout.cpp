@@ -1,4 +1,4 @@
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 
 //#define DEBUG_SCREEN 1
 
@@ -202,14 +202,13 @@ bool screen_mode_init(editor_layout_builder_context_t * blayout_ctx, editor_layo
 }
 
 bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx,
-                        const editor_layout_filter_io_t * const in, size_t nr_in,
-                        editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+                        layout_io_vec_t in_vec,
+                        layout_io_vec_t out_vec)
 {
     screen_mode_context_t * screen_mode_ctx = reinterpret_cast<screen_mode_context_t *>(ctx);
 
     advance adv;
     bool do_fetch = true;
-    size_t out_index = 0;
     size_t in_index = 0;
 
     bool quit = false;
@@ -226,7 +225,12 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
     auto & max_row = screen_mode_ctx->max_row;
     auto & max_col = screen_mode_ctx->max_col;
 
+    layout_io_t in;
+    layout_io_t out;
+
+    size_t nr_in = layout_io_vec_size(in_vec);
     while ((in_index != nr_in) && !quit) {
+        layout_io_vec_get(in_vec, &in);
 
 #if 0
         app_log << " x("<<x<<") < W("<<W<<")\n";
@@ -234,19 +238,19 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
 #endif
         //
         if (do_fetch == true) {
-            out[out_index].end_of_pipe = false;
-            out[out_index].quit        = in[in_index].end_of_pipe;
-            out[out_index].cp          = in[in_index].cp;
-            out[out_index].real_cp     = in[in_index].real_cp;
-            out[out_index].offset      = in[in_index].offset;
-            out[out_index].cp_index    = in[in_index].cp_index;
+            out.end_of_pipe = false;
+            out.quit        = in.end_of_pipe;
+            out.cp          = in.cp;
+            out.real_cp     = in.real_cp;
+            out.offset      = in.offset;
+            out.cp_index    = in.cp_index;
 
 
-            out[out_index].is_selected = in[in_index].is_selected;
+            out.is_selected = in.is_selected;
 
 
-            out[out_index].split_flag  = in[in_index].split_flag;
-            out[out_index].split_count = in[in_index].split_count;
+            out.split_flag  = in.split_flag;
+            out.split_count = in.split_count;
 
 
             screen_mode_ctx->cp_count++; // not really cps
@@ -258,19 +262,18 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
         if (screen_mode_ctx->y + screen_mode_ctx->space_glyph_info.vert_advance >= H) {
             // must have an eof flag / augment pipeline info ?
             quit = true;
-            out[out_index].valid = false;
-            out[out_index].quit  = true;
-            out[out_index].end_of_pipe = true;
-            out_index++;
+            out.valid = false;
+            out.quit  = true;
+            out.end_of_pipe = true;
             break;
         }
 
         enum build_layout_action_e layout_action = move_pen_to_next_char;
-        filter_codepoint(screen_mode_ctx->previous_cp, in[in_index].cp, &out[out_index].cp, &layout_action);
+        filter_codepoint(screen_mode_ctx->previous_cp, in.cp, &out.cp, &layout_action);
 
-        screen_mode_ctx->previous_cp = in[in_index].cp;
+        screen_mode_ctx->previous_cp = in.cp;
 
-        auto layout_error = codepoint_fits(out[out_index].cp, W, x, y, ft, adv, &out[out_index].cp); // TODO return a pen status ?
+        auto layout_error = codepoint_fits(out.cp, W, x, y, ft, adv, &out.cp); // TODO return a pen status ?
         switch (layout_error) {
         case layout_font_error: {
             // replace by <?> 0x1FFF ?
@@ -288,7 +291,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             col = 0;
             row++;
             if (y + screen_mode_ctx->space_glyph_info.vert_advance >= H) {
-                out[out_index].quit = true;
+                out.quit = true;
                 quit = true;
                 break;
             }
@@ -301,7 +304,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             const codepoint_info_s * ro_cpi = nullptr;
             codepoint_info_s * cpi          = nullptr;
 
-            bool bret = screen_put_cp(outscr, in[in_index].real_cp, out[out_index].cp, row, col, &l, &ro_cpi);  //
+            bool bret = screen_put_cp(outscr, in.real_cp, out.cp, row, col, &l, &ro_cpi);  //
             assert(bret == true);
             if (bret == true) {
                 /// TODO:
@@ -311,7 +314,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             screen_mode_ctx->blayout_ctx->nr_put++;
 
             assert(cpi != nullptr);
-            out[out_index].valid = true; // here ?
+            out.valid = true; // here ?
 
             // eedit::core::codepoint_info tmp_cpi
 
@@ -321,15 +324,15 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             cpi->y = y + screen_mode_ctx->space_glyph_info.vert_advance; // fonts are render bottom -> up
             cpi->w = screen_mode_ctx->space_glyph_info.hori_advance;
             cpi->h = screen_mode_ctx->space_glyph_info.vert_advance;
-            cpi->offset      = out[out_index].offset;
+            cpi->offset      = out.offset;
 
 
-            cpi->is_selected = out[out_index].is_selected;
+            cpi->is_selected = out.is_selected;
 
-            cpi->split_flag  = out[out_index].split_flag;
-            cpi->split_count = out[out_index].split_count;
+            cpi->split_flag  = out.split_flag;
+            cpi->split_count = out.split_count;
 
-            cpi->cp_index    = out[out_index].cp_index;
+            cpi->cp_index    = out.cp_index;
             cpi->used        = true;
 
 #ifdef DEBUG_SCREEN
@@ -380,12 +383,11 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
 
 
                 if (y + screen_mode_ctx->space_glyph_info.vert_advance >= H) {
-                    out[out_index].quit = true;
+                    out.quit = true;
                 }
             }
 
             in_index++;
-            out_index++;
             do_fetch = true;
 
         }
@@ -397,7 +399,6 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
     max_row = std::max(col, max_col);
 
     // validate output
-    *nr_out = out_index;
 
     return true;
 }

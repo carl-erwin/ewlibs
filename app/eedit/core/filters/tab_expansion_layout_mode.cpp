@@ -1,5 +1,5 @@
 #include "core/log/log.hpp"
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 
 namespace eedit
 {
@@ -29,32 +29,32 @@ bool tab_expansion_init(editor_layout_builder_context_t * blayout_ctx, editor_la
 static int32_t tab_first_cp = ' '; // 0x2192;
 
 bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_,
-                          const editor_layout_filter_io_t * const in, const size_t nr_in,
-                          editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+                          layout_io_vec_t in_vec,
+                          layout_io_vec_t out_vec)
 {
     tab_expansion_context_t * ctx = static_cast<tab_expansion_context_t *>(ctx_);
 
     size_t expansion = ctx->expansion;
-    *nr_out = 0;
 
-    app_log << " tab_expansion_filter nr_in:   " << nr_in << "\n";
-    app_log << " tab_expansion_filter max_out: " << max_out << "\n";
+    app_log << " ------------------------------------------------\n";
 
-
+    size_t nr_in = layout_io_vec_size(in_vec);
     for (size_t index = 0; index != nr_in; index++) {
 
-        switch (in[index].cp) {
+        layout_io_t in;
+        layout_io_vec_get(in_vec, &in);
+        switch (in.cp) {
         // tab expansion
         case '\t': {
 
             if (1 /* mode_ctx.debug */) {
-                app_log << __FUNCTION__ << " offset " << in[index].offset << ", real_cp = " <<  in[index].real_cp << ", cp_index = " <<  in[index].cp_index << " split_count " << in[index].split_count << " |TABS\n";
+                app_log << __FUNCTION__ << " offset " << in.offset << ", real_cp = " <<  in.real_cp << ", cp_index = " <<  in.cp_index << " split_count " << in.split_count << " |TABS\n";
             }
 
 
-            uint64_t col = in[index].cp_index;
+            uint64_t col = in.cp_index;
 
-            if (in[index].cp_index == uint64_t(-1)) {
+            if (in.cp_index == uint64_t(-1)) {
                 abort();
             }
 
@@ -64,11 +64,11 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
 
 
             uint64_t filled;
-            if (in[index].split_count) {
-                col = expansion - in[index].split_count;
-                filled = in[index].split_count;
+            if (in.split_count) {
+                col = expansion - in.split_count;
+                filled = in.split_count;
             } else {
-                col = (in[index].cp_index % expansion);
+                col = (in.cp_index % expansion);
                 filled = (col % expansion);
             }
 
@@ -80,41 +80,42 @@ bool tab_expansion_filter(editor_layout_builder_context_t * blctx, editor_layout
 
             for (size_t n = 0; n < filln; n++) {
 
-                out[*nr_out].offset = in[index].offset;
+                layout_io_t out;
+                out.offset = in.offset;
 
                 if (n == 0) {
-                    out[*nr_out].cp = tab_first_cp;
+                    out.cp = tab_first_cp;
                 } else {
-                    out[*nr_out].cp = ' ';
-                    out[*nr_out].cp = tab_first_cp;
-
+                    out.cp = ' ';
+                    out.cp = tab_first_cp;
                 }
 
-                out[*nr_out].is_selected = true; // TO DEBUG
+                out.is_selected = true; // TO DEBUG
 
-                out[*nr_out].split_flag  = 1;
-                out[*nr_out].split_count = 0 + n + filled;
-                out[*nr_out].cp_index    = in[index].cp_index;
+                out.split_flag  = 1;
+                out.split_count = 0 + n + filled;
+                out.cp_index    = in.cp_index;
 
-                app_log << " out[" << *nr_out << "].cp_index = " <<  out[*nr_out].cp_index << ", split_count = " << out[*nr_out].split_count <<" |TABS\n";
+                app_log << " out[" << n << "].cp_index = " <<  out.cp_index << ", split_count = " << out.split_count <<" |TABS\n";
 
+                out.real_cp = '\t';
+                out.valid = true;
+                out.end_of_pipe = in.end_of_pipe;
 
-                out[*nr_out].real_cp = '\t';
-                out[*nr_out].valid = true;
-                out[*nr_out].end_of_pipe = in[index].end_of_pipe;
-                (*nr_out)++;
+                layout_io_vec_push(out_vec, &out);
             }
         }
         break;
 
         default: {
-            out[*nr_out] = in[index]; // exact copy
-            assert(out[*nr_out].cp_index == in[index].cp_index);
-            out[*nr_out].split_flag  = 0;
-            out[*nr_out].split_count = 0;
-            out[*nr_out].valid       = true;
+            layout_io_t out = in; // exact copy
+            assert(out.cp_index == in.cp_index);
+            out.split_flag  = 0;
+            out.split_count = 0;
+            out.valid       = true;
 
-            (*nr_out)++;
+            layout_io_vec_push(out_vec, &out);
+
         }
         break;
         }

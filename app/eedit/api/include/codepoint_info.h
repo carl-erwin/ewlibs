@@ -60,7 +60,7 @@ inline void codepoint_info_reset(codepoint_info_t * info)
 
     info->split_flag  = 0;
     info->split_count = 0;
-    info->cp_index    = uint64_t(-1); // FIXME: use int64_t ?
+    info->cp_index    = uint64_t(0); // offset 0 // FIXME: use int64_t ?
 
     // style
     info->is_selected = false;

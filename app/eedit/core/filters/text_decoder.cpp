@@ -3,7 +3,7 @@
 #include "../../api/include/text_codec.h"
 
 #include "ew/codecs/text/unicode/utf8/utf8.hpp"
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 #include "../../api/include/text_codec.h"
 
 
@@ -23,7 +23,10 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
     size_t   buffer_size = 0;
 
 
-    editor_layout_filter_io_t end_of_buffer;
+    layout_io_t end_of_buffer;
+
+    layout_io_t tmp_io;
+
 
     struct text_codec_io_s * iovc = nullptr;
 
@@ -62,6 +65,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     mode_ctx->split_flag   = 0;
     mode_ctx->cur_cp_index = 0;
 
+    filter_io_init(&mode_ctx->tmp_io);
 
     // info
     if (blayout_ctx->start_cpi && blayout_ctx->start_cpi->used) {
@@ -97,13 +101,13 @@ bool text_decoder_finish(editor_layout_builder_context_t * blctx, editor_layout_
 
 bool text_decoder_filter(editor_layout_builder_context_t * blctx,
                          editor_layout_filter_context_t * ctx_,
-                         const editor_layout_filter_io_t * const in, const size_t nr_in,
-                         editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+                         layout_io_vec_t in_vec,
+                         layout_io_vec_t out_vec)
 {
 
 
-//	int get_filter_io(editor_layout_filter_io_t * in, size_t max_in);
-//	int put_filter_io(const editor_layout_filter_io_t * const out, const size_t nr_out);
+//	int get_filter_io(layout_io_t * in, size_t max_in);
+//	int put_filter_io(const layout_io_t * const out, const size_t nr_out);
 
     text_decoder_context_t * ctx = static_cast<text_decoder_context_t *>(ctx_);
 
@@ -122,16 +126,18 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
 
     bool is_selected = false;
 
-    *nr_out = 0;
     size_t index = 0;
     size_t buf_sz = ctx->buffer_size;
 
+    auto & out = ctx->tmp_io;
 
     static int debug = 0; // MOVE FLAG PER MODULE + appctl ?
     if (debug) {
         app_log <<__PRETTY_FUNCTION__ << " buffer size  = " << buf_sz << "\n";
         app_log <<__PRETTY_FUNCTION__ << " start offset = " << ctx->next_offset << "\n";
     }
+
+
 
     int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
 
@@ -146,27 +152,29 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     }
 
     for (size_t i = 0; i < index; i++) {
-        out[i].end_of_pipe  = false;
-        out[i].content_type = editor_stream_type_unicode;
-        out[i].offset       = ctx->iovc[i].offset;
-        out[i].cp           = ctx->iovc[i].cp;
-        out[i].real_cp      = ctx->iovc[i].cp;
-        out[i].valid        = true;
-        out[i].is_selected  = is_selected;
+        out.end_of_pipe  = false;
+        out.content_type = editor_stream_type_unicode;
+        out.offset       = ctx->iovc[i].offset;
+        out.cp           = ctx->iovc[i].cp;
+        out.real_cp      = ctx->iovc[i].cp;
+        out.valid        = true;
+        out.is_selected  = is_selected;
         assert(ctx->iovc[i].offset <= buf_sz);
 
 
-        out[i].cp_index    = ctx->cur_cp_index;
-        out[i].split_flag  = ctx->split_flag;
-        out[i].split_count = ctx->split_count;
+        out.cp_index    = ctx->cur_cp_index;
+        out.split_flag  = ctx->split_flag;
+        out.split_count = ctx->split_count;
         ctx->split_count = 0;
         ctx->split_flag  = 0;
 
-        if ((out[i].cp == '\r') || (out[i].cp == '\n')) {
+        if ((out.cp == '\r') || (out.cp == '\n')) {
             ctx->cur_cp_index = 0;
         } else {
             ++ctx->cur_cp_index;
         }
+
+        layout_io_vec_push(out_vec, &out);
 
 
     }
@@ -177,11 +185,11 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
         if (debug)
             app_log <<__PRETTY_FUNCTION__ << " index("<<index<<") < iocnt("<<ctx->iocnt<<"), end-of-buffer reached\n";
 
-        out[index] = ctx->end_of_buffer;
+        out = ctx->end_of_buffer;
+        layout_io_vec_push(out_vec, &out);
         ++index;
     }
 
-    *nr_out = index;
 
 
     // prepare next offset
@@ -196,11 +204,6 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     if (debug) {
         app_log <<__PRETTY_FUNCTION__ << " next start offset = " << ctx->next_offset << "\n";
     }
-
-    if (debug) {
-        app_log <<__PRETTY_FUNCTION__ << " nr_out = " << *nr_out  << "\n";
-    }
-
 
 
     return true;

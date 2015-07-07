@@ -3,9 +3,9 @@
 #include <algorithm>
 
 
-#include "../../../core/core.hpp"// FIXME: C apis
-#include "../../../core/text_layout.hpp"   // FIXME: C apis
-#include "../../../core/process_event_ctx.h"
+#include "core.hpp"// FIXME: C apis
+#include "text_layout/text_layout.hpp"   // FIXME: C apis
+#include "event/process_event_ctx.h"
 
 #include "editor_event_queue.h"
 #include "editor_message_handler.h"

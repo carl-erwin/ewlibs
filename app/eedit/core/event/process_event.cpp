@@ -93,6 +93,8 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
             app_log <<  "  start_cpi->offset      = " << start_cpi->offset << "\n";
             app_log <<  "  start_cpi->split_count = " << start_cpi->split_count << "\n";
             app_log <<  "  start_cpi->split_flag  = " << start_cpi->split_flag << "\n";
+
+            assert(start_cpi_ref.cp_index != uint64_t(-1));
         }
     }
 

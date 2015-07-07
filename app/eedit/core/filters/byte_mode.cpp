@@ -1,6 +1,6 @@
 #include "core/log/log.hpp"
 
-#include "../text_layout.hpp"
+#include "../text_layout/text_layout.hpp"
 
 #include "../../api/include/byte_buffer.h"
 
@@ -17,6 +17,10 @@ struct byte_mode_context_t : public editor_layout_filter_context_t {
     byte_buffer_id_t bid        = 0;
     uint64_t       total_read = 0;
     size_t    buf_size   = 0;
+
+    layout_io_t out;
+
+
 };
 
 bool byte_mode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor_layout_filter_context_t ** out)
@@ -33,6 +37,9 @@ bool byte_mode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor
 
     assert(ctx->bid);
 
+    filter_io_init(&ctx->out);
+
+
     int ret = byte_buffer_size(ctx->bid, &ctx->buf_size);
     if (ret != 0)
         return false;
@@ -43,7 +50,9 @@ bool byte_mode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor
     return true;
 }
 
-bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_, const editor_layout_filter_io_t * const in, const size_t nr_in, editor_layout_filter_io_t * out, const size_t max_out, size_t * nr_out)
+bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_,
+                             layout_io_vec_t in_vec,
+                             layout_io_vec_t out_vec)
 {
     byte_mode_context_t * ctx = static_cast<byte_mode_context_t *>(ctx_);
 
@@ -60,23 +69,26 @@ bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_lay
         ctx->total_read += nb_read;
     }
 
-    *nr_out = 0;
-    size_t index = 0;
-    {
-        out[index].content_type = editor_stream_type_bytes;
-        out[index].offset = ctx->cur_offset;
 
-        if (out[index].offset == ctx->buf_size) {
+    layout_io_t & out = ctx->out;
+
+
+    {
+        out.content_type = editor_stream_type_bytes;
+        out.offset = ctx->cur_offset;
+
+        if (out.offset == ctx->buf_size) {
             byte_value = ' ';
-            out[index].end_of_pipe = true;
+            out.end_of_pipe = true;
         }
 
-        out[index].byte_value  = byte_value;
+        out.byte_value  = byte_value;
 
 
-        out[index].valid       = true;
-        out[index].is_selected = false;
-        *nr_out = 1;
+        out.valid       = true;
+        out.is_selected = false;
+
+        layout_io_vec_push(out_vec, &out);
 
         ctx->cur_offset += nb_read;
     }

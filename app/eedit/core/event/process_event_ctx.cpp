@@ -4,7 +4,7 @@
 
 #include "process_event_ctx.h"
 
-#include "../core/core.hpp"
+#include "../core.hpp"
 
 void reset_buffer_view_flags(editor_buffer_id_t editor_buffer_id,  byte_buffer_id_t bid, editor_view_id_t view)
 {
