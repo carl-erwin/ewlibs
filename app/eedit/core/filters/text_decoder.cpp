@@ -58,7 +58,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     mode_ctx->end_of_buffer.real_cp      = ' ';
     mode_ctx->end_of_buffer.valid        = true;
 
-    mode_ctx->iocnt = 1024;
+    mode_ctx->iocnt = 1024 * 16;
     mode_ctx->iovc  = new text_codec_io_s[mode_ctx->iocnt];
 
     mode_ctx->split_count  = 0;
