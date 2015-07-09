@@ -265,6 +265,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             out.valid = false;
             out.quit  = true;
             out.end_of_pipe = true;
+            layout_io_vec_push(out_vec, &out);
             break;
         }
 
@@ -293,6 +294,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             if (y + screen_mode_ctx->space_glyph_info.vert_advance >= H) {
                 out.quit = true;
                 quit = true;
+		layout_io_vec_get(out_vec, &out); // must push eof
                 break;
             }
         }
@@ -312,6 +314,9 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             cpi = const_cast<codepoint_info_s *>(ro_cpi);
 
             screen_mode_ctx->blayout_ctx->nr_put++;
+
+            layout_io_vec_push(out_vec, &out); // needed only if the screen filter is not the end of the pipeline
+                                               // TODO: the core must push a status flag filter_is_end_of_pipe
 
             assert(cpi != nullptr);
             out.valid = true; // here ?
