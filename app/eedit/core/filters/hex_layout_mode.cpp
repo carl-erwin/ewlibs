@@ -51,6 +51,7 @@ bool hex_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_filt
             out.cp     = ' ';
             out.end_of_pipe = true;
             out.offset = offset;
+            layout_io_vec_push(out_vec, &out);
         } else {
 
             uint8_t byte_val = in.byte_value;
