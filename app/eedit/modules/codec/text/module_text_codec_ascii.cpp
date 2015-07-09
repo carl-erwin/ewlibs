@@ -79,7 +79,7 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
         offset += nb_read;
 
         // always true
-        if (nb_read < sizeof (buff)) {
+        if (nb_read <= sizeof (buff)) {
             break;
         }
     }
