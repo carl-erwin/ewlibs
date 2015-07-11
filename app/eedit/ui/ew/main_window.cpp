@@ -81,9 +81,9 @@ public:
         assert(owner);
         m_owner = owner;
 
-        m_tab_bar     = new tab_bar(m_owner);
+        //m_tab_bar     = new tab_bar(m_owner);
         m_buffer_view = new buffer_view(m_owner);
-        m_status_bar  = new status_bar(m_owner);
+        //m_status_bar  = new status_bar(m_owner);
     }
 
     ~main_window_private()
@@ -371,7 +371,7 @@ bool main_window::main_window_private::create_buffer_view()
     //   assert(m_buffer_view->m_text_view);
 
     // line number /////////////////////////////////////////////////////////////////////
-#if 1
+#if 0
     uint32_t line_number_w = 1 + (9 * ft->pixel_width()) + 1; // TODO: max 16 digits + @
     line_number_w = 12;
     app_log << "line_number_w = " << line_number_w << "\n";
@@ -387,14 +387,14 @@ bool main_window::main_window_private::create_buffer_view()
     m_buffer_view->m_text_view->set_font(ft);
     m_buffer_view->m_text_view->set_width(m_owner->width());
     m_buffer_view->m_text_view->set_height(m_owner->height());
-    m_buffer_view->m_text_view->horizontal_policy().type() = alignment::relative;
+    m_buffer_view->m_text_view->horizontal_policy().type() = alignment::fixed;
     m_buffer_view->m_text_view->horizontal_policy().ratio() = 100;
 
     // add text_view2 to buffer_view
     m_buffer_view->add_widget(m_buffer_view->m_text_view);
 
     // scroll bar /////////////////////////////////////////////////////////////////////
-#if 1
+#if 0
     uint32_t scrool_bar_w = 12; // TODO: put this in header
     m_buffer_view->m_scrool_bar->set_height(m_owner->height());
     m_buffer_view->m_scrool_bar->set_width(scrool_bar_w);
@@ -404,11 +404,10 @@ bool main_window::main_window_private::create_buffer_view()
     m_buffer_view->m_scrool_bar->set_end_ratio(0.0f);
     m_buffer_view->add_widget(m_buffer_view->m_scrool_bar);
     ///////////////////////////////////////////////////////////////////////////////////
-#endif
-
     // link view and scrool bar
     m_buffer_view->m_text_view->set_scroll_area( m_buffer_view->m_scrool_bar );
     m_buffer_view->m_scrool_bar->set_textview(m_buffer_view->m_text_view);
+#endif
 
     return true;
 }
@@ -464,8 +463,8 @@ bool main_window::on_create(const widget_event * ev)
     // setup_layout()
     cur_parent->set_layout(new vertical_layout);
 
-    m_priv->create_tab_bar();
-    m_priv->create_status_bar();
+    //m_priv->create_tab_bar();
+    //m_priv->create_status_bar();
     m_priv->create_buffer_view();
 
     auto ret = widget::on_create(ev);

@@ -276,7 +276,11 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                 this will enable potential threading
                 */
 
+                auto t0 = ew::core::time::get_ticks();
                 bool ret = filter_list[i]->filter(&ctx, tmp_ctx, pin, pout);
+                auto t1 = ew::core::time::get_ticks();
+                app_log << "\n" << " filter " << filter_list[i]->name << " TIME = " << (t1 - t0) << "\n";
+
 
                 if (DEBUG_PIPELINE)
                     app_log << "\n" << "mode_list(" << filter_list[i]->name <<")[" << i << "] , nr_in(" << nr_in << ") nr_out(" << nr_out << ")\n";
@@ -297,7 +301,7 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                     }
                 }
 
-		layout_io_t * last_out = layout_io_vec_last(pout);
+                layout_io_t * last_out = layout_io_vec_last(pout);
                 if (last_out->end_of_pipe == true) {
                     if (DEBUG_PIPELINE)
                         app_log << " -------- LAYOUT end_of_pipe detected -------- \n";
@@ -356,6 +360,12 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
     assert(!start_cpi || start_cpi->used);
 
     assert(view);
+
+    if (start_cpi) {
+        if (start_cpi->split_count > 100) {
+            abort();
+        }
+    }
 
     editor_layout_builder_context_t blctx(io_ctx->editor_buffer_id, io_ctx->bid, view, start_cpi, out);
 

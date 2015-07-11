@@ -30,7 +30,7 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
 
     struct text_codec_io_s * iovc = nullptr;
 
-    int iocnt = 16*1024;
+    int iocnt = 1024 * 4;
 
     uint32_t split_count;
     uint32_t split_flag;
@@ -50,15 +50,20 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     byte_buffer_size(blayout_ctx->bid, &mode_ctx->buffer_size);
 
 // prepare eof
-    mode_ctx->end_of_buffer.is_selected  = true;
+    mode_ctx->end_of_buffer.is_selected  = true; // DEBUG
     mode_ctx->end_of_buffer.end_of_pipe  = true;
     mode_ctx->end_of_buffer.content_type = editor_stream_type_unicode;
     mode_ctx->end_of_buffer.offset       = mode_ctx->buffer_size;
     mode_ctx->end_of_buffer.cp           = ' ';
     mode_ctx->end_of_buffer.real_cp      = ' ';
+    mode_ctx->end_of_buffer.split_count  = 0;
+    mode_ctx->end_of_buffer.split_flag   = 0;
+    mode_ctx->end_of_buffer.cp_index     = 0;
+
     mode_ctx->end_of_buffer.valid        = true;
 
-    mode_ctx->iocnt = 1024 * 16;
+
+    mode_ctx->iocnt = 1024 * 4;
     mode_ctx->iovc  = new text_codec_io_s[mode_ctx->iocnt];
 
     mode_ctx->split_count  = 0;
@@ -75,13 +80,23 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
 //	must add the resync
 //	assert(mode_ctx->cur_cp_index != uint64_t(-1));
 
+        if (blayout_ctx->start_cpi->split_count > 100) {
+            abort();
+        }
+
+
         if (blayout_ctx->start_cpi->split_count) {
             mode_ctx->split_count   = blayout_ctx->start_cpi->split_count;
             mode_ctx->split_flag    = blayout_ctx->start_cpi->split_flag;
         }
     }
 
+    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->split_count  = " << mode_ctx->split_count << "\n";
+    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->split_flag  = " << mode_ctx->split_flag << "\n";
+    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->cur_cp_index  = " << mode_ctx->cur_cp_index << "\n";
 
+    if (mode_ctx->split_count > 100)
+        abort();
 
 
     return true;
@@ -175,8 +190,6 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
         }
 
         layout_io_vec_push(out_vec, &out);
-
-
     }
 
     if (((int)index < ctx->iocnt)) {

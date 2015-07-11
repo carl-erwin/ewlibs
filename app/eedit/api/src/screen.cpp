@@ -103,12 +103,18 @@ int screen_line_get_cpinfo(const screen_line_t * l, uint32_t column, const codep
 {
     auto sz = l->m_cpinfo_array.size();
     assert(sz);
-    if ((column >= sz) && !(h & screen_line_hint_fix_column_overflow)) {
+    if ((column >= sz) && !(h & (screen_line_hint_fix_used_column_overflow|screen_line_hint_fix_max_column_overflow))) {
         assert(0);
         return 0;
     }
 
-    column = std::min<uint32_t>(column , (sz-1));
+    if ((h & screen_line_hint_fix_used_column_overflow) && column > sz) {
+        column = sz - 1;
+    }
+
+    if ((h & screen_line_hint_fix_used_column_overflow) && (column >= (uint32_t)l->m_used)) {
+        column = l->m_used - 1;
+    }
 
     *cpi = &l->m_cpinfo_array[column];
     return 1;
@@ -139,6 +145,7 @@ size_t  screen_line_capacity(const screen_line_t * l)
     return l->m_cpinfo_array.size();
 }
 
+EDITOR_EXPORT
 size_t  screen_line_get_number_of_used_columns(const screen_line_t * l)
 {
     return l->m_used;

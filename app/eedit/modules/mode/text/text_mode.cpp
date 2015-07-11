@@ -423,7 +423,9 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
     int found = 0;
     // uint64_t restart_offset = 0;
 
+    // TODO: fix cp_index
     codepoint_info_s start_cpi;
+    codepoint_info_reset(&start_cpi);
     start_cpi.offset = rewind_off;
     start_cpi.used   = true;
 
@@ -800,6 +802,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 
         std::vector<std::pair<uint64_t,uint64_t>> tmp_list;
 
+        fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__);
         build_screen_line_list(msg->editor_buffer_id,
                                msg->view_id,
                                start_offset, until_offset,
@@ -807,8 +810,8 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
                                scr_dim,
                                tmp_list);
 
-//        fprintf(stderr, "tmp_list.size(%lu)\n", tmp_list.size());
-//        fprintf(stderr, "LOOP start_offset(%lu), until_offset(%lu)", start_offset, until_offset);
+        fprintf(stderr, "tmp_list.size(%lu)\n", tmp_list.size());
+        fprintf(stderr, "LOOP start_offset(%lu), until_offset(%lu)", start_offset, until_offset);
 
         start_offset = until_offset; // next screen
         until_offset += (scr_dim.c * scr_dim.l) / 2;

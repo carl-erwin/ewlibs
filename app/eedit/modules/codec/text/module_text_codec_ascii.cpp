@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+#include <alloca.h>
 
 #include "ew/ew_config.hpp"
 #include "editor_module.h"
@@ -52,13 +53,14 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 {
     // read up to iocnt codepont
     int64_t offset = iovc->offset;
-    uint8_t buff[16 * 1024]; // codec ctx // move this to codec ctx // and adapt
+    size_t buff_size = 32 * 1024;
+    uint8_t * buff = (uint8_t *)alloca(buff_size); // buff[16 * 1024]; // codec ctx // move this to codec ctx // and adapt
 
     int i = 0;
     while (i < (int)iocnt) {
 
         size_t nb_read = 0;
-        int res = byte_buffer_read(io_ctx->bid, offset,  buff,  sizeof (buff) - i, &nb_read);
+        int res = byte_buffer_read(io_ctx->bid, offset,  buff,  buff_size - i, &nb_read);
         if (res != 0) {
             /* */
             return -1;
@@ -79,7 +81,7 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
         offset += nb_read;
 
         // always true
-        if (nb_read <= sizeof (buff)) {
+        if (nb_read <= buff_size) {
             break;
         }
     }

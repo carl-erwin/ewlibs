@@ -135,8 +135,8 @@ private:
     class main_window * m_main_window;
 
     // move to user configuration: init file
-    uint32_t app_width  = 800;
-    uint32_t app_height = 600;
+    uint32_t app_width  = 1024;
+    uint32_t app_height = 768;
 };
 
 eedit::user_interface * new_ew_ui()

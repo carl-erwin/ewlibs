@@ -435,7 +435,7 @@ struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(
     break;
 
     default: {
-      //        abort();
+        //        abort();
 
 #if 0
         //  KEY_CODE_YES:		// 0400	       /* A wchar_t contains a key code */
@@ -592,7 +592,7 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
 
         for (uint32_t c = 0; c < screen_line_get_number_of_used_columns(l); c++) {
             const codepoint_info_s * cpi;
-            screen_line_get_cpinfo(l, c, &cpi, screen_line_hint_fix_column_overflow);
+            screen_line_get_cpinfo(l, c, &cpi, screen_line_hint_fix_used_column_overflow);
 
             if (cpi->is_selected) {
                 attron(A_REVERSE);

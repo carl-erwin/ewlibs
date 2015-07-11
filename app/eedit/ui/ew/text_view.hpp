@@ -200,7 +200,7 @@ public:
         const screen_line_t * l;
         const codepoint_info_t * cpi;
 
-        int ret = screen_get_codepoint_info(screen(), line_idx, 0xff, &l, &cpi, screen_line_hint_fix_column_overflow);
+        int ret = screen_get_codepoint_info(screen(), line_idx, 0xff, &l, &cpi, screen_line_hint_fix_used_column_overflow);
         if (ret == 0) {
             return false;
         }

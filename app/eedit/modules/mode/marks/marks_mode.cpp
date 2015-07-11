@@ -54,7 +54,8 @@ enum mark_move_direction_e {
 };
 
 // split in buffer / view get marks
-std::vector<mark_t> get_marks(struct editor_message_s * msg, mark_type_t mark_mask)
+// return in increasing offset order (TODO: sort order flag ?)
+std::vector<mark_t> get_marks(struct editor_message_s * msg, int mark_mask)
 {
     auto ebid      = msg->editor_buffer_id;
     auto view      = msg->view_id;
@@ -133,10 +134,9 @@ std::vector<mark_t> get_marks(struct editor_message_s * msg, mark_type_t mark_ma
     }
 
     std::sort(marks.begin(), marks.end(), [](mark_t m1, mark_t m2) {
-        return mark_get_offset(m1) > mark_get_offset(m2);
+        return mark_get_offset(m1) < mark_get_offset(m2);
     });
 
-    abort();
     return marks;
 }
 
@@ -314,36 +314,183 @@ int mark_move_to_screen_line(struct editor_message_s * msg, enum mark_move_direc
   - update all marks offsets
 
 */
+
+int sync_to_start_of_previous_line(codec_io_ctx_s & io_ctx, const uint64_t offset, uint64_t & sync_offset)
+{
+    std::cerr << __PRETTY_FUNCTION__ << " offset " << offset << "\n";
+
+
+    uint64_t start_offset = offset;
+    sync_offset   = start_offset;
+    size_t count = 2;
+
+    do {
+
+        std::cerr << __PRETTY_FUNCTION__ << " loop " << count << "\n";
+
+
+        int ret = text_codec_sync_line(&io_ctx, start_offset, -1, &sync_offset);
+        if (ret == -1) {
+            abort();
+            return -1;
+        } else {
+
+        }
+
+        start_offset = sync_offset;
+        if (sync_offset == 0) {
+            break;
+        }
+
+        --count;
+        if (count == 0) {
+            break;
+        }
+
+        // FIXME: codec read _backward
+        start_offset = sync_offset - 1;
+
+    } while (true);
+
+    std::cerr << __PRETTY_FUNCTION__ << " sync_offset " << sync_offset << "\n";
+
+    return 0;
+}
+
 int mark_move_to_previous_screen_line(struct editor_message_s * msg)
 {
-#if 0
-    // TODO: TEXT MODE CONTEXT { ebid, view, codec_id(view), codec_ctx(view) } ?
-
     // setup context
     auto ebid      = msg->editor_buffer_id;
-    auto bid       = msg->byte_buffer_id;
-
     auto view      = msg->view_id;
-    auto codec_id  = editor_view_get_codec_id(view);
-    auto codec_ctx = editor_view_get_codec_ctx(view);
 
-    // get the moving marks
-    auto buff_nmark = editor_buffer_number_of_marks(ebid, MOVING_MARK);
-    auto view_nmark = editor_view_number_of_marks(view, MOVING_MARK);
+    auto  marks = get_marks(msg, MOVING_MARK|FIXED_MARK);
 
-    // accumulate marks
-    std::vector<mark_t> marks(buff_nmark + view_nmark);
+    // std::cerr << __PRETTY_FUNCTION__ << " marks.size() " << marks.size() << "\n";
 
-    editor_buffer_get_marks(ebid, MOVING_MARK, buff_nmark, &marks[0]);
-    editor_view_get_marks(view, MOVING_MARK,   view_nmark, &marks[buff_nmark]);
+    if (marks.size() == 0) {
+        return EDITOR_STATUS_OK;
+    }
 
-    // NB: sort in decreasing offset order
-    std::sort(marks.begin(), marks.end(), [](mark_t m1, mark_t m2) {
-        return mark_get_offset(m1) < mark_get_offset(m2);
-    });
-#endif
+    // display marks
+//    for (auto m: marks) {
+//        // std::cerr << __PRETTY_FUNCTION__ << " m.offset() " << mark_get_offset(m) << "\n";
+//    }
 
 
+    screen_t * tmp_scr = editor_view_allocate_screen_by_id(view);
+    if (!tmp_scr)
+        return EDITOR_STATUS_ERROR;
+
+
+    // get first offset
+    uint64_t start_offset = mark_get_offset(marks[0]);
+    // resync to beginning of line
+    codec_io_ctx_s io_ctx {
+        ebid,
+        editor_buffer_get_byte_buffer_id(ebid),
+        editor_view_get_codec_id(view),
+        0 /* codex ctx */
+    };
+
+
+    const codepoint_info_t * lcp = nullptr;
+    const codepoint_info_t * fcp = nullptr;
+    const codepoint_info_t * ecp = nullptr;
+
+
+    uint64_t sync_offset = start_offset;
+    if (screen_contains_offset(tmp_scr, start_offset) == 0) {
+        sync_to_start_of_previous_line(io_ctx, start_offset, sync_offset);
+        start_offset = sync_offset;
+    } else {
+        screen_get_first_cpinfo(tmp_scr, &fcp);
+        start_offset = fcp->offset;
+    }
+
+    codepoint_info_s start_cpi;
+    codepoint_info_reset(&start_cpi);
+    start_cpi.offset = start_offset;
+    start_cpi.used   = true;
+    bool update_screen = true;
+
+
+    size_t loop = 0;
+
+    size_t line_index;
+
+    auto cur_mark = marks.begin();
+    while (cur_mark != marks.end()) {
+
+        uint64_t mark_offset = mark_get_offset(*cur_mark);
+
+        ++loop;
+
+        if (update_screen) {
+
+            do {
+                // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
+                build_screen_layout(&io_ctx, view, &start_cpi, tmp_scr);
+
+                screen_get_first_cpinfo(tmp_scr, &fcp);
+                const screen_line_t * l = nullptr;
+                screen_get_last_line(tmp_scr, &l, &line_index);
+                size_t column_index;
+                screen_line_get_first_cpinfo(l, &lcp, &column_index);
+                screen_line_get_last_cpinfo(l, &ecp, &column_index);
+
+                // fast page_down
+                if (screen_contains_offset(tmp_scr, mark_offset) == 0) {
+                    start_cpi.offset = lcp->offset;
+                    continue;
+                } else {
+                    break;
+                }
+            } while (true);
+
+            update_screen = false;
+        }
+
+        // consume marks
+        // std::cerr << __PRETTY_FUNCTION__ << " mark_offset() " << mark_offset << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " last_line_index " << line_index << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " last_line start offset_ " << lcp->offset << "\n";
+
+        if (line_index == 0) {
+            ++cur_mark;
+            continue;
+        }
+
+        if (screen_contains_offset(tmp_scr, mark_offset)) {
+            const screen_line_t * lm = nullptr;
+            const codepoint_info_t * mark_update = nullptr;
+
+            size_t sc_line_index;
+            size_t sc_column_index;
+            screen_get_line_by_offset(tmp_scr, mark_offset, &lm, &sc_line_index, &sc_column_index);
+            screen_get_line(tmp_scr, sc_line_index - 1, &lm);
+            // std::cerr << __PRETTY_FUNCTION__ << " sc_line_index - 1 " << sc_line_index - 1 << "\n";
+            screen_line_get_cpinfo(lm, sc_column_index, &mark_update, screen_line_hint_fix_used_column_overflow);
+            // std::cerr << __PRETTY_FUNCTION__ << " mark_update->offset = " << mark_update->offset << "\n";
+
+            mark_set_offset(*cur_mark, mark_update->offset);
+
+            ++cur_mark;
+
+            // TODO: add mark target_max_col // if up/down movement clipped ..
+        } else {
+            update_screen = true;
+            start_offset = mark_offset;
+
+            sync_to_start_of_previous_line(io_ctx, start_offset, sync_offset);
+            start_offset = sync_offset;
+            start_cpi.offset = sync_offset;
+        }
+    }
+
+    screen_release(tmp_scr);
+
+    // notify change
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
 
     return EDITOR_STATUS_OK;
 }
@@ -353,6 +500,119 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
 
 int mark_move_to_next_screen_line(struct editor_message_s * msg)
 {
+    // setup context
+    auto ebid      = msg->editor_buffer_id;
+    auto view      = msg->view_id;
+
+    auto  marks = get_marks(msg, MOVING_MARK|FIXED_MARK);
+
+    // std::cerr << __PRETTY_FUNCTION__ << " marks.size() " << marks.size() << "\n";
+
+    if (marks.size() == 0) {
+        return EDITOR_STATUS_OK;
+    }
+
+    // display marks
+//    for (auto m: marks) {
+//        // std::cerr << __PRETTY_FUNCTION__ << " m.offset() " << mark_get_offset(m) << "\n";
+//    }
+
+    // get first offset
+    uint64_t start_offset = mark_get_offset(marks[0]);
+    // resync to beginning of line
+    codec_io_ctx_s io_ctx {
+        ebid,
+        editor_buffer_get_byte_buffer_id(ebid),
+        editor_view_get_codec_id(view),
+        0 /* codex ctx */
+    };
+
+    uint64_t sync_offset = start_offset;
+    int ret = text_codec_sync_line(&io_ctx, start_offset, -1, &sync_offset);
+    if (ret == -1) {
+
+    } else {
+
+    }
+
+    // and move screen there
+    // std::cerr << __PRETTY_FUNCTION__ << " sync_offset @ " << sync_offset << "\n";
+
+    start_offset = sync_offset;
+
+    codepoint_info_s start_cpi;
+    codepoint_info_reset(&start_cpi);
+    start_cpi.offset = start_offset;
+    start_cpi.used   = true;
+    bool update_screen = true;
+
+    screen_t * tmp_scr = editor_view_allocate_screen_by_id(view);
+    if (!tmp_scr)
+        return EDITOR_STATUS_ERROR;
+
+
+    size_t loop = 0;
+    const codepoint_info_t * lcp = nullptr;
+    const codepoint_info_t * fcp = nullptr;
+    size_t line_index;
+
+    // FIXME:   define editor_log() like printf // app_log << " Build screen line list (looking for offset("<< until_offset<<"))\n";
+
+    auto cur_mark = marks.begin();
+    while (cur_mark != marks.end()) {
+
+        ++loop;
+//        fprintf(stderr, "screen count(%d)\n", count);
+
+        if (update_screen) {
+            // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
+            build_screen_layout(&io_ctx, view, &start_cpi, tmp_scr);
+            screen_get_first_cpinfo(tmp_scr, &fcp);
+            const screen_line_t * l = nullptr;
+            screen_get_last_line(tmp_scr, &l, &line_index);
+            size_t column_index;
+            screen_line_get_first_cpinfo(l, &lcp, &column_index);
+            update_screen = false;
+        }
+
+        // consume marks
+        uint64_t mark_offset = mark_get_offset(*cur_mark);
+
+        // std::cerr << __PRETTY_FUNCTION__ << " mark_offset() " << mark_offset << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " last_line_index " << line_index << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " last_line start offset_ " << lcp->offset << "\n";
+
+        if (mark_offset >= start_offset && mark_offset < lcp->offset) {
+            // mark is on screen
+
+            const screen_line_t * lm = nullptr;
+            const codepoint_info_t * mark_update = nullptr;
+
+            size_t sc_line_index;
+            size_t sc_column_index;
+            screen_get_line_by_offset(tmp_scr, mark_offset, &lm, &sc_line_index, &sc_column_index);
+            screen_get_line(tmp_scr, sc_line_index + 1, &lm);
+            // std::cerr << __PRETTY_FUNCTION__ << " sc_line_index + 1 " << sc_line_index + 1 << "\n";
+            screen_line_get_cpinfo(lm, sc_column_index, &mark_update, screen_line_hint_fix_used_column_overflow);
+            // std::cerr << __PRETTY_FUNCTION__ << " mark_update->offset = " << mark_update->offset << "\n";
+
+            mark_set_offset(*cur_mark, mark_update->offset);
+
+            ++cur_mark;
+
+            // TODO: add mark target_max_col // if up/down movement clipped ..
+        } else {
+            update_screen = true;
+            start_cpi.offset = lcp->offset;
+            // std::cerr << __PRETTY_FUNCTION__ << " new start_cpi.offset = " << start_cpi.offset << "\n";
+        }
+    }
+
+    screen_release(tmp_scr);
+
+    // notify change
+    set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+
     return EDITOR_STATUS_OK;
 }
 

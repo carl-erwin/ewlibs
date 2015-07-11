@@ -111,11 +111,13 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
         assert(0);
     }
 
-
     auto m = mark_new(0, "");
     moving_marks.push_back(m);
 
     return;
+
+    m = mark_new(10000, "");
+    moving_marks.push_back(m);
 
     app_log << __PRETTY_FUNCTION__ << " FIXME: move mark init to proper module\n";
     size_t max_size;

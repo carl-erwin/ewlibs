@@ -230,7 +230,6 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
 
     size_t nr_in = layout_io_vec_size(in_vec);
     while ((in_index != nr_in) && !quit) {
-        layout_io_vec_get(in_vec, &in);
 
 #if 0
         app_log << " x("<<x<<") < W("<<W<<")\n";
@@ -238,6 +237,8 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
 #endif
         //
         if (do_fetch == true) {
+            layout_io_vec_get(in_vec, &in);
+
             out.end_of_pipe = false;
             out.quit        = in.end_of_pipe;
             out.cp          = in.cp;
@@ -294,7 +295,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             if (y + screen_mode_ctx->space_glyph_info.vert_advance >= H) {
                 out.quit = true;
                 quit = true;
-		layout_io_vec_get(out_vec, &out); // must push eof
+                layout_io_vec_get(out_vec, &out); // must push eof
                 break;
             }
         }
@@ -316,7 +317,7 @@ bool screen_mode_filter(editor_layout_builder_context_t * blctx, editor_layout_f
             screen_mode_ctx->blayout_ctx->nr_put++;
 
             layout_io_vec_push(out_vec, &out); // needed only if the screen filter is not the end of the pipeline
-                                               // TODO: the core must push a status flag filter_is_end_of_pipe
+            // TODO: the core must push a status flag filter_is_end_of_pipe
 
             assert(cpi != nullptr);
             out.valid = true; // here ?

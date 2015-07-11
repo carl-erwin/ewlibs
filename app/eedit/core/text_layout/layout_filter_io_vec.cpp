@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <deque>
 
 #include "layout_filter_io.h"
@@ -66,6 +67,8 @@ extern "C" {
     EDITOR_EXPORT
     int layout_io_vec_push(layout_io_vec_t vec, layout_io_t * io)
     {
+        if (io->split_count > 100)
+            abort();
         vec->q.push_back(*io);
         return 0;
     }

@@ -11,7 +11,8 @@ extern "C" {
 
 enum screen_line_hints {
     screen_line_hint_no_column_fix,
-    screen_line_hint_fix_column_overflow = 1
+    screen_line_hint_fix_used_column_overflow = 1,
+    screen_line_hint_fix_max_column_overflow = 2
 };
 
 enum build_screen_list_hints {
@@ -49,8 +50,12 @@ int                screen_line_get_cpinfo(const screen_line_t * l, uint32_t colu
 int                screen_line_get_first_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index);
 int                screen_line_get_last_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index);
 size_t             screen_line_capacity(const screen_t * scr);
+
+EDITOR_EXPORT
 size_t             screen_line_get_number_of_used_columns(const screen_line_t * l);
-void               screen_line_set_number_of_used_columns(screen_line_t * l, size_t nr);
+
+//void               screen_line_set_number_of_used_columns(screen_line_t * l, size_t nr);
+
 uint64_t           screen_line_first_offset(const screen_line_t * l);
 uint64_t           screen_line_last_offset(const screen_line_t * l);
 uint64_t           screen_get_buffer_size(const screen_t * scr);
