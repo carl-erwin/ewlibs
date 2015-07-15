@@ -799,16 +799,12 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 
         std::vector<std::pair<uint64_t,uint64_t>> tmp_list;
 
-        fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__);
         build_screen_line_list(msg->editor_buffer_id,
                                msg->view_id,
                                start_offset, until_offset,
                                0,
                                scr_dim,
                                tmp_list);
-
-        fprintf(stderr, "tmp_list.size(%lu)\n", tmp_list.size());
-        fprintf(stderr, "LOOP start_offset(%lu), until_offset(%lu)", start_offset, until_offset);
 
         start_offset = until_offset; // next screen
         until_offset += (scr_dim.c * scr_dim.l) / 2;
@@ -828,7 +824,6 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 
         if (screen_line_list.size() > N) {
             eob = 1;
-//            fprintf(stderr, " screen_line_list.size() > N\n");
         }
 
         if (eob) {
@@ -836,11 +831,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
         }
     }
 
-//    fprintf(stderr, "N(%lu)\n", N);
-//    fprintf(stderr, "screen_line_list.size(%lu)\n", screen_line_list.size());
-
     N = std::min<uint64_t>(screen_line_list.size(), N);
-//    fprintf(stderr, "normalized N(%lu)\n", N);
 
     start_offset = 0;
     start_offset = screen_line_list[N-1].first;
@@ -852,8 +843,6 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 
         cpi.offset = start_offset;
         cpi.used   = true;
-
-        //        fprintf(stderr, " next start offset is %lu]\n", cpi.offset);
 
         set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
         set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
