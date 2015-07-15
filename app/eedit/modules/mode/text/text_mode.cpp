@@ -862,6 +862,8 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
         set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
     }
 
+    screen_release(tmp_scr);
+    
     return EDITOR_STATUS_OK;
 }
 
