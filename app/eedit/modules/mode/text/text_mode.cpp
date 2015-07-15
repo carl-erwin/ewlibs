@@ -785,6 +785,9 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
     std::vector<std::pair<uint64_t,uint64_t>> screen_line_list;
 
     auto tmp_scr = screen_clone(screen);
+    if (!tmp_scr) {
+        return EDITOR_STATUS_ERROR;
+    }
 
     uint64_t until_offset = 0;
 
