@@ -377,9 +377,7 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
 //    }
 
 
-    screen_t * tmp_scr = editor_view_allocate_screen_by_id(view);
-    if (!tmp_scr)
-        return EDITOR_STATUS_ERROR;
+    screen_t * tmp_scr = nullptr;
 
 
     // get first offset
@@ -392,31 +390,55 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
         0 /* codex ctx */
     };
 
-
     const codepoint_info_t * lcp = nullptr;
     const codepoint_info_t * fcp = nullptr;
     const codepoint_info_t * ecp = nullptr;
+    uint64_t sync_offset         = start_offset;
+    bool need_resync = true;
+    bool update_screen = true;
 
+    size_t line_index;
 
-    uint64_t sync_offset = start_offset;
-    if (screen_contains_offset(tmp_scr, start_offset) == 0) {
+    screen_t * cur_screen = get_previous_screen_by_id(view);
+
+    if (screen_contains_offset(cur_screen, start_offset)) {
+
+        screen_get_first_cpinfo(cur_screen, &fcp);
+        const screen_line_t * l = nullptr;
+        screen_get_last_line(cur_screen, &l, &line_index);
+        if (line_index != 0) {
+            size_t column_index;
+            screen_line_get_first_cpinfo(l, &lcp, &column_index);
+            screen_line_get_last_cpinfo(l, &ecp, &column_index);
+
+            tmp_scr = screen_clone(cur_screen);
+            if (!tmp_scr)
+                return EDITOR_STATUS_ERROR;
+
+            need_resync = false;
+            update_screen = false;
+
+        }
+    }
+
+    if (need_resync) {
         sync_to_start_of_previous_line(io_ctx, start_offset, sync_offset);
         start_offset = sync_offset;
-    } else {
-        screen_get_first_cpinfo(tmp_scr, &fcp);
-        start_offset = fcp->offset;
     }
+
+    if (!tmp_scr) {
+        tmp_scr = editor_view_allocate_screen_by_id(view);
+        if (!tmp_scr)
+            return EDITOR_STATUS_ERROR;
+    }
+
 
     codepoint_info_s start_cpi;
     codepoint_info_reset(&start_cpi);
     start_cpi.offset = start_offset;
     start_cpi.used   = true;
-    bool update_screen = true;
-
 
     size_t loop = 0;
-
-    size_t line_index;
 
     auto cur_mark = marks.begin();
     while (cur_mark != marks.end()) {
@@ -426,6 +448,8 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
         ++loop;
 
         if (update_screen) {
+
+            std::cerr << __PRETTY_FUNCTION__ << " update_screen\n";
 
             do {
                 // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
@@ -467,12 +491,15 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
             size_t sc_line_index;
             size_t sc_column_index;
             screen_get_line_by_offset(tmp_scr, mark_offset, &lm, &sc_line_index, &sc_column_index);
-            screen_get_line(tmp_scr, sc_line_index - 1, &lm);
-            // std::cerr << __PRETTY_FUNCTION__ << " sc_line_index - 1 " << sc_line_index - 1 << "\n";
-            screen_line_get_cpinfo(lm, sc_column_index, &mark_update, screen_line_hint_fix_used_column_overflow);
-            // std::cerr << __PRETTY_FUNCTION__ << " mark_update->offset = " << mark_update->offset << "\n";
 
-            mark_set_offset(*cur_mark, mark_update->offset);
+            if (sc_line_index) {
+                screen_get_line(tmp_scr, sc_line_index - 1, &lm);
+                // std::cerr << __PRETTY_FUNCTION__ << " sc_line_index - 1 " << sc_line_index - 1 << "\n";
+                screen_line_get_cpinfo(lm, sc_column_index, &mark_update, screen_line_hint_fix_used_column_overflow);
+                // std::cerr << __PRETTY_FUNCTION__ << " mark_update->offset = " << mark_update->offset << "\n";
+
+                mark_set_offset(*cur_mark, mark_update->offset);
+            }
 
             ++cur_mark;
 
