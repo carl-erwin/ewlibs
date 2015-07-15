@@ -14,7 +14,7 @@ extern "C" {
         EDITOR_STATUS_NOT_IMPLEMENTED,
     } editor_module_status_t;
 
-    typedef int (*editor_message_handler_t)(struct editor_message_s * ev); // int -> editor_module_status_t
+    typedef int (*editor_message_handler_t)(struct editor_message_s * msg); // int -> editor_module_status_t
 
     EDITOR_EXPORT
     int editor_register_message_handler(const char * name, editor_message_handler_t);

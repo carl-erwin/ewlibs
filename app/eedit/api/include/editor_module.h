@@ -31,5 +31,4 @@ extern "C" {
 
     int  module_quit();
 
-} // extern "C"
-/////
+} // ! extern "C"

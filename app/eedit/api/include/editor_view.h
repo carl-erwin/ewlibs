@@ -50,8 +50,8 @@ int          editor_view_release_screen_by_id(editor_view_id_t view_id, screen_t
 
 /* scrool the view
  the unit depends on the main/codec for text is lines
-   n=line(s)
-        m=frame(s) in future version
+   nb=line(s)
+   nb=frame(s) in future version
 
  */
 screen_t *         editor_view_scroll_n(editor_view_id_t screen_id, int64_t nb); // will call the configured layout modules for this screen/view_id
