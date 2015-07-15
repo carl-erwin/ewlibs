@@ -757,12 +757,6 @@ int page_down_internal(struct editor_message_s * msg)
 }
 
 
-// FIXME
-int __new__page_down(struct editor_message_s * _msg)
-{
-    return page_down_internal(_msg);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // 1 - forward * N
 // 2 - build line list
