@@ -26,6 +26,8 @@ void     editor_view_set_end_offset(editor_view_id_t view, uint64_t offset);
 uint64_t editor_view_number_of_marks(editor_view_id_t view, mark_type_t type);
 int      editor_view_get_marks(editor_view_id_t view, mark_type_t type, uint64_t max_number_of_marks, mark_t * marks);
 
+int    editor_view_set_main_mark(editor_view_id_t view, mark_t mark);
+mark_t editor_view_get_main_mark(editor_view_id_t view_id);
 
 
 // view -> codec

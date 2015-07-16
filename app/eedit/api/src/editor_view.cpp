@@ -45,6 +45,14 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
 
     app_log << " font ptr " <<  font.ft << "\n";
 
+#if 0
+    // setup view main mark
+    mark_t m = nullptr;
+    editor_buffer_get_marks(editor_buffer_id_, MOVING_MARK, 1, &m);
+    assert(m);
+    editor_view_set_main_mark(view_id_, m);
+    app_log << " set main mark " <<  m << "\n";
+#endif
 }
 
 editor_view::~editor_view()
@@ -85,6 +93,18 @@ extern "C" {
         }
 
         vptr->editor_buffer_id = editor_buffer_id; // bind
+
+// TODO: hook
+#if 1
+        // setup view main mark
+        mark_t m = nullptr;
+        editor_buffer_get_marks(editor_buffer_id, MOVING_MARK, 1, &m);
+        if (!m)
+            abort();
+        editor_view_set_main_mark(view_id, m);
+        app_log << " set main mark " <<  m << "\n";
+#endif
+
         return 0;
     }
 
@@ -308,6 +328,28 @@ extern "C" {
         }
         return 0;
     }
+
+    SHOW_SYMBOL
+    int      editor_view_set_main_mark(editor_view_id_t view_id, mark_t mark)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return -1;
+
+        view->main_mark = mark;
+        return 0;
+    }
+
+    SHOW_SYMBOL
+    mark_t editor_view_get_main_mark(editor_view_id_t view_id)
+    {
+        editor_view * view = editor_view_get_internal_pointer(view_id);
+        if (view == nullptr)
+            return nullptr;
+
+        return view->main_mark;
+    }
+
 
     SHOW_SYMBOL
     screen_t *         get_previous_screen_by_id(editor_view_id_t view_id)

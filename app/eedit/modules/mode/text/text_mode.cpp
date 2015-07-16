@@ -849,7 +849,7 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
     }
 
     screen_release(tmp_scr);
-    
+
     return EDITOR_STATUS_OK;
 }
 
