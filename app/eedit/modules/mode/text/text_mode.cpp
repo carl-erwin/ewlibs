@@ -536,6 +536,9 @@ int build_screen_line_list(editor_buffer_id_t ed_buffer,
 
 int scroll_up_N_lines(struct editor_message_s * msg, uint64_t N)
 {
+    if (!N)
+        return 0;
+
     auto screen = get_previous_screen_by_id(msg->view_id);
 
     // take : start offset
@@ -764,6 +767,9 @@ int page_down_internal(struct editor_message_s * msg)
 
 int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 {
+    if (!N)
+        return 0;
+
     auto screen = get_previous_screen_by_id(msg->view_id);
 
     uint64_t buffer_size;
@@ -833,21 +839,22 @@ int scroll_down_N_lines(struct editor_message_s * msg, uint64_t N)
 
     N = std::min<uint64_t>(screen_line_list.size(), N);
 
-    start_offset = 0;
-    start_offset = screen_line_list[N-1].first;
+    if (N) {
+        start_offset = 0;
+        start_offset = screen_line_list[N-1].first;
 
-    // notify layout change
-    {
-        codepoint_info_t cpi;
-        codepoint_info_reset(&cpi);
+        // notify layout change
+        {
+            codepoint_info_t cpi;
+            codepoint_info_reset(&cpi);
 
-        cpi.offset = start_offset;
-        cpi.used   = true;
+            cpi.offset = start_offset;
+            cpi.used   = true;
 
-        set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
-        set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
+            set_ui_change_flag(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
+            set_ui_next_screen_start_cpi(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, &cpi);
+        }
     }
-
     screen_release(tmp_scr);
 
     return EDITOR_STATUS_OK;
