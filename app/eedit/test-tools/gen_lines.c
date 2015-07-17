@@ -14,7 +14,7 @@ int main(int ac, char *av[])
   size_t num_line = strtoul(av[2], 0, 10);
   size_t width    = strtoul(av[3], 0, 10);
 
-  char * s = malloc(width + 1);
+  char * s = (char *)malloc(width + 1);
   if (!s)
     return 1;
   for (size_t i = 0; i < width; ++i) {

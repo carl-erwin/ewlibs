@@ -1,12 +1,12 @@
-use std::os;
+use std::env;
 
 fn main()
 {
-  let os_args = os::args();
-  let args    = os_args.as_slice();
+  let os_args = env::args();
+  let args: Vec<_>    = os_args.collect();
 
   if args.len() != 4 {
-    println!("usage : {} start stop width", args[0]);
+    println!("usage : {} start numline width", args[0]);
     return;
   }
 
@@ -21,21 +21,22 @@ fn gen_lines(start: u64, stop: u64, linewidth: u64) -> ()
 {
   let string = gen_line(linewidth);
 
-  for x in range(start, stop) {
-    print!("{} {}", x + 1, string);
+  for x in (start..start+stop+1) {
+    print!("{:012} {}", x, string);
   }
 }
-
-
 
 fn gen_line(linewidth : u64) -> String
 {
   let mut string = String::new();
 
-  for x in range(0, linewidth) {
-    string.push('x');
+  let table = [ '0','1','2','3','4','5','6','7','8','9',
+                'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
+
+  for x  in (0..linewidth) {
+      string.push(table[x as usize % table.len() ]);
   }
   string.push('\n');
+
   return string;
 }
-

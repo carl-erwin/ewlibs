@@ -222,13 +222,14 @@ bool ncurses_ui_interface::main_loop()
 
     while (!m_quit) {
 
-        editor_event_queue_wait(q, 1);
+        // core -> ui
+        editor_event_queue_wait(q, 0);
         auto nr = editor_event_queue_size(q);
         struct editor_message_s * core_msg = nullptr;
         while (nr) {
             core_msg = editor_event_queue_get(q);
             process_editor_ui_event(core_msg);
-            --nr;
+            nr = editor_event_queue_size(q);
         }
 
         if (m_quit)
