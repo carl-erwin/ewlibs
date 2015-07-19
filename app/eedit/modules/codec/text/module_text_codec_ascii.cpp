@@ -173,12 +173,11 @@ int ascii_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, 
     return 0;
 }
 
-// slow on purpose read 1 codepoint ...
-// can be generalized and move to core ?
+
+// TODO: improve forward direction
 extern "C"
 int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, const int direction, uint64_t * synced_offset)
 {
-
     int64_t cp_count = 0;
 
     if (direction == 0)
@@ -236,12 +235,38 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
     }
 
     // direction < 0)
+    // read_pos = near_offset;
+
+    size_t READ_SIZE = 32 * 1024;
+    struct text_codec_io_s iovec[READ_SIZE]; // BIGGER ?
+
+    size_t loop = 0;
     while (true) {
 
-        struct text_codec_io_s iovc;
-        iovc.offset = read_pos;
+        ++loop;
+        //std::cerr << __PRETTY_FUNCTION__ << " loop " << loop << "\n";
 
-        int ret = ascii_read_backward(io_ctx, &iovc, 1);
+
+        // fetch
+        uint64_t start;
+
+        size_t maxio = READ_SIZE;
+        if (read_pos <= READ_SIZE) {
+            start = 0;
+            maxio = read_pos;
+        } else {
+            start = read_pos - READ_SIZE;
+        }
+
+        if (0) {
+            std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
+            std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
+            std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+        }
+
+
+        iovec[0].offset = start;
+        int ret = ascii_read_forward(io_ctx, iovec, maxio);
         if (ret < 0) {
             // FIXME:
             return -1;
@@ -249,34 +274,56 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
 
         if (ret == 0) {
             *synced_offset = 0;
-            return cp_count;;
+            return cp_count;
         }
 
-        ++cp_count;
+        //std::cerr << __PRETTY_FUNCTION__ << " ret = " << ret << "\n";
 
-        switch (prev_cp) {
+        read_pos -= ret;
 
-        case '\r':
-        case '\n': {
-            *synced_offset = read_pos + 1;
-            --cp_count;
-            return  cp_count;
-            ;
+        struct text_codec_io_s * iovc;
+
+        for (iovc = iovec + ret; ; ) {
+
+            --iovc;
+            if (iovc < iovec) {
+                break;
+            }
+
+            if (0) {
+                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->cp = " << iovc->cp << "\n";
+                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->offset = " << iovc->offset << "\n";
+                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->size  = " << iovc->size << "\n";
+                std::cerr << __PRETTY_FUNCTION__ << " prev_cp  = " << prev_cp << "\n";
+            }
+
+            ++cp_count;
+
+            switch (prev_cp) {
+
+            case '\r':
+            case '\n': {
+                *synced_offset = iovc->offset + 1;
+                --cp_count;
+                return  cp_count;
+                ;
+            }
+            break;
+
+            }
+
+            ////
+            prev_cp  = iovc->cp;
         }
-        break;
 
-        }
 
-        ////
-        read_pos = iovc.offset;
-        prev_cp  = iovc.cp;
     }
 
     return 0;
 }
 
 
-// one codepoint at time
+// one cod	epoint at time
 extern "C"
 int ascii_encode(int32_t codepoint, uint64_t out_size, uint8_t out[], size_t * nb_write)
 {
