@@ -419,8 +419,26 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
     size_t line_index;
 
     if (need_resync) {
-        sync_to_start_of_previous_line(io_ctx, start_offset, sync_offset);
-        start_offset = sync_offset;
+
+        bool force_start = false;
+        if (cur_screen) {
+            const screen_line_t * lm = nullptr;
+            size_t sc_column_index;
+            size_t sc_line_index;
+            uint64_t mark_offset = mark_get_offset(marks[0]);
+            screen_get_line_by_offset(cur_screen, mark_offset, &lm, &sc_line_index, &sc_column_index);
+            if (screen_contains_offset(cur_screen, mark_offset) && (sc_line_index != 0)) {
+                force_start = true;
+            }
+        }
+
+        if (force_start) {
+            sync_offset  = screen_start_offset;
+            start_offset = screen_start_offset;
+        } else {
+            sync_to_start_of_previous_line(io_ctx, start_offset, sync_offset);
+            start_offset = sync_offset;
+        }
     }
 
     if (!tmp_scr) {
