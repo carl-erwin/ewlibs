@@ -609,9 +609,6 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
             screen_get_last_line(tmp_scr, &last_line, &last_line_index);
             size_t column_index;
             screen_line_get_first_cpinfo(last_line, &lcp, &column_index);
-
-
-
         }
 
         {
@@ -675,14 +672,8 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
             update_screen = false;
         }
 
-        std::cerr << __PRETTY_FUNCTION__ << " start_offset = " << start_offset << "\n";
-        std::cerr << __PRETTY_FUNCTION__ << " mark_offset = " << mark_offset << "\n";
-        std::cerr << __PRETTY_FUNCTION__ << " lcp->offset = " << lcp->offset << "\n";
-
         if (mark_offset >= start_offset && mark_offset < lcp->offset) {
             // mark is on screen
-            std::cerr << __PRETTY_FUNCTION__ << " mark is on screen\n";
-
             const screen_line_t * lm = nullptr;
             const codepoint_info_t * mark_update = nullptr;
 
@@ -704,7 +695,6 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
 
             // TODO: add mark target_max_col // if up/down movement clipped ..
         } else {
-            std::cerr << __PRETTY_FUNCTION__ << " mark is off screen\n";
 
             update_screen = true;
             start_cpi.offset = lcp->offset;
@@ -717,8 +707,6 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
 
                     const codepoint_info_t * cp = nullptr;
                     screen_line_get_cpinfo(lm, 0, &cp, screen_line_hint_no_column_fix);
-
-                    std::cerr << __PRETTY_FUNCTION__ << " 2nd cp->offset = " << cp->offset << "\n";
 
                     if ((*cur_mark == main_mark) && (mark_offset >= lcp->offset)) {
                         start_cpi.offset = cp->offset;
