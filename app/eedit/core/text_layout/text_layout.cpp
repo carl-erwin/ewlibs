@@ -6,6 +6,7 @@
 
 #include "ew/core/time/time.hpp"
 #include "../log/log.hpp"
+#include "api/src/editor_view_internal.h"
 
 
 #include "layout_filter_io.h"
@@ -49,6 +50,8 @@ editor_layout_builder_context_s::editor_layout_builder_context_s(
 
     max_width_px  = screen_get_max_width_px(out);
     max_height_px = screen_get_max_height_px(out);
+
+    screen_dump(out, __PRETTY_FUNCTION__);
 
     nr_put = 0;
 

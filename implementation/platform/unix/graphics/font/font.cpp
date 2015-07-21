@@ -128,8 +128,8 @@ public:
     FT_Long face_index;
 
     // font
-    u32 _pxWidth;
-    u32 _pxHeight;
+    u32 _width_in_px;
+    u32 _height_in_px;
 
     // move to texture manager
     // must recycle texture based on last time used
@@ -632,14 +632,14 @@ bool font::private_data::renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 
 
 
 //
-u32 font::pixel_width()
+u32 font::width_in_pixels()
 {
-    return data->_pxWidth;
+    return data->_width_in_px;
 }
 
-u32 font::pixel_height()
+u32 font::height_in_pixels()
 {
-    return data->_pxHeight;
+    return data->_height_in_px;
 }
 
 bool font::renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 y_pos)
@@ -839,19 +839,19 @@ font::font(const char * filename,  u32 pxWidth, u32 pxHeight)
     //std::cerr << __PRETTY_FUNCTION__ << " this = " << this << " " << filename <<  " " << pxWidth << " " << pxHeight << "\n";
 
     data->_filename = filename;
-    data->_pxWidth  = pxWidth;
-    data->_pxHeight = pxHeight;
+    data->_width_in_px  = pxWidth;
+    data->_height_in_px = pxHeight;
 
-    if (data->_pxWidth == 0)
-        data->_pxWidth = data->_pxHeight;
+    if (data->_width_in_px == 0)
+        data->_width_in_px = data->_height_in_px;
 
-    if (data->_pxHeight == 0)
-        data->_pxHeight = data->_pxWidth;
+    if (data->_height_in_px == 0)
+        data->_height_in_px = data->_width_in_px;
 
     // throw badRange ?
-    if (data->_pxWidth == 0) {
-        data->_pxWidth = 10;
-        data->_pxHeight = 10;
+    if (data->_width_in_px == 0) {
+        data->_width_in_px = 10;
+        data->_height_in_px = 10;
     }
 
     data->aface = 0;
@@ -882,7 +882,7 @@ bool font::font::private_data::texture__init()
         data->font_texHeight = 1024; // / Font_Texheight;
         data->font_texWidth  = 1024; // / Font_Texheight;
 
-        data->subtex_W = data->subtex_H = next_p2(data->_pxHeight);
+        data->subtex_W = data->subtex_H = next_p2(data->_height_in_px);
 
         NR_SUBTEX_PER_LINE = data->font_texHeight / data->subtex_H;
 
@@ -949,8 +949,8 @@ bool font::open()
 
     Ft_ret  = FT_Set_Pixel_Sizes(
                   data->aface,        /* handle to face object */
-                  data->_pxWidth,     /* pixel_width           */
-                  data->_pxHeight);   /* pixel_height          */
+                  data->_width_in_px,     /* pixel_width           */
+                  data->_height_in_px);   /* pixel_height          */
     if (Ft_ret != 0) {
         cerr << "Freetype error : can't set char size" << "\n";
         return false;
@@ -1039,7 +1039,7 @@ bool font_print(ew::graphics::fonts::font & ft,
     float g = color.green() / 255.0f;
     float b = color.blue()  / 255.0f;
 
-    y += ft.pixel_height();
+    y += ft.height_in_pixels();
 
     ew_debug_glGetError("", __FUNCTION__, __LINE__);
 

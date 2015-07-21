@@ -89,8 +89,8 @@ public:
     virtual u32 get_character_texture_id(s32 c);
 
     //
-    virtual u32 pixel_width(); // TODO : return ctor pxWidth
-    virtual u32 pixel_height(); // TODO : return ctor pxHeight
+    virtual u32 width_in_pixels();
+    virtual u32 height_in_pixels();
 
     virtual bool renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 y_pos);
 

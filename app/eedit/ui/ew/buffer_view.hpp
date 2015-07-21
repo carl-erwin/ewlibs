@@ -14,9 +14,10 @@ public:
     {
         set_name("buffer_view");
         set_parent(parent);
-        m_line_number = new line_number_view(this);
+
+        // m_line_number = new line_number_view(this);
         m_text_view  = new text_view(this);
-        m_scrool_bar  = new scroll_area(this);
+        // m_scrool_bar  = new scroll_area(this);
     }
 
     virtual ~buffer_view()
@@ -29,9 +30,14 @@ public:
 
     virtual bool set_font(std::shared_ptr<ew::graphics::fonts::font> ft)
     {
-        m_line_number->set_font(ft);
-        m_text_view->set_font(ft);
-        m_scrool_bar->set_font(ft);
+        if (m_line_number)
+            m_line_number->set_font(ft);
+
+        if (m_text_view)
+            m_text_view->set_font(ft);
+
+        if (m_scrool_bar)
+            m_scrool_bar->set_font(ft);
 
         return true;
     }

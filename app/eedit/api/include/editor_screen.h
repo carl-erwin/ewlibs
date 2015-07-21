@@ -109,6 +109,7 @@ void               screen_set_number_of_used_lines(screen_t * scr, uint32_t max)
 uint32_t           screen_get_number_of_used_lines(const screen_t * scr);
 int                screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line_t ** l);
 
+
 int                screen_get_first_line(const screen_t * scr, const screen_line_t ** l); // index = 0
 
 int                screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t * index);

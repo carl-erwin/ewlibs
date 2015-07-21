@@ -132,28 +132,40 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     // FIXME: use this to compute ncurses screen dimension
     int32_t hadvance = tmp_glyph_info.hori_advance;
     int32_t vadvance = tmp_glyph_info.vert_advance;
+
+    if (debug) {
+        app_log << " hadvance = " <<  hadvance <<  "\n";
+        app_log << " vadvance = " <<  vadvance <<  "\n";
+    }
+
     // border + cp height + border
-    auto number_of_lines       = dim.h / (vadvance + 0 /* interline*/)  + ((dim.h % vadvance) != 0);
-    auto number_of_cp_per_line = dim.w / hadvance + ((dim.w % hadvance) != 0);
+    auto number_of_lines       = dim.h / (vadvance + 0 /* interline*/); //   + ((dim.h % vadvance) != 0);
+    auto number_of_cp_per_line = dim.w / hadvance; //  + ((dim.w % hadvance) != 0);
     dim.l = std::max<int32_t>(number_of_lines, 1);
     dim.c = std::max<int32_t>(number_of_cp_per_line, 1);
 
     if (debug) {
         app_log <<  " normalized dim.c = " <<  dim.c <<  "\n";
         app_log <<  " normalized dim.l = " <<  dim.l <<  "\n";
+        app_log <<  " normalized dim.w = " <<  dim.w <<  "\n";
+        app_log <<  " normalized dim.h = " <<  dim.h <<  "\n";
     }
-
 
     if (debug) {
         app_log <<  " check cache\n";
     }
 
     // if dim != release preallocated screen
-    if ((real_view->screen_info.dim.c < dim.c)
-        || (real_view->screen_info.dim.l  < dim.l)
-        || (real_view->screen_info.dim.w  < dim.w)
-        || (real_view->screen_info.dim.h  < dim.h)) {
+    if ((real_view->screen_info.dim.c != dim.c)
+        || (real_view->screen_info.dim.l  != dim.l)
+        || (real_view->screen_info.dim.w  != dim.w)
+        || (real_view->screen_info.dim.h  != dim.h)) {
         editor_view_release_preallocated_screens(view);
+
+        app_log <<  " release previous screens\n";
+
+    } else {
+        app_log <<  " reuse previous screens\n";
     }
 
     real_view->screen_info.dim = dim;

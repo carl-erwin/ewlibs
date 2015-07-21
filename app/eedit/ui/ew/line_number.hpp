@@ -66,8 +66,8 @@ public:
 
         auto m_ft = get_font();
         for (int32_t y = 0;
-             y + (int32_t)m_ft->pixel_height() < (int32_t)height() && (line_idx < max_line_index);
-             y += m_ft->pixel_height(), ++line_idx) {
+             y + (int32_t)m_ft->height_in_pixels() < (int32_t)height() && (line_idx < max_line_index);
+             y += m_ft->height_in_pixels(), ++line_idx) {
 
             if (line_idx == nr_lines)
                 break;

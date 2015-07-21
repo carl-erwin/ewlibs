@@ -836,14 +836,14 @@ public:
         gears_init();
         glDisable(GL_LIGHTING);
 
-        std::cerr << "ft->pixel_height() = " << ft->pixel_height() << "\n";
+        std::cerr << "ft->pixel_height() = " << ft->height_in_pixels() << "\n";
 
         int rect_w = width();
         int rect_h = height() / 2; // ft->pixel_height() + 2;
-        rect_h = ft->pixel_height() + 2;
+        rect_h = ft->height_in_pixels() + 2;
 
         int rect_x_start = 0;
-        int rect_y_start = ft->pixel_height();
+        int rect_y_start = ft->height_in_pixels();
 
 
         int rect_x_spacing = 1;

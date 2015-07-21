@@ -368,21 +368,31 @@ extern "C" {
         if (view == nullptr)
             return nullptr;
 
+        uint32_t l = view->screen_info.dim.l;
+        uint32_t c = view->screen_info.dim.c;
+        uint32_t w = view->screen_info.dim.w;
+        uint32_t h = view->screen_info.dim.h;
+
         screen_t * scr = nullptr;
         auto size = view->screen_pool.size();
-        if (size == 0) {
-            uint32_t l = view->screen_info.dim.l;
-            uint32_t c = view->screen_info.dim.c;
-            uint32_t w = view->screen_info.dim.w;
-            uint32_t h = view->screen_info.dim.h;
-            screen_alloc(&scr, __FUNCTION__, l, c, w, h);
-            return scr;
+        if (size) {
+            scr = view->screen_pool.front();
+            assert(scr);
+            view->screen_pool.pop_front();
+
+            screen_dump(scr, __PRETTY_FUNCTION__);
+
+            screen_dimension_t dm = screen_get_dimension(scr);
+
+            if (::memcmp(&dm, &view->screen_info.dim, sizeof (screen_dimension_t)) != 0) {
+                screen_release(scr);
+                scr = nullptr;
+            } else	 {
+                return scr;
+            }
         }
 
-        scr = view->screen_pool.front();
-        assert(scr);
-        view->screen_pool.pop_front();
-
+        screen_alloc(&scr, __FUNCTION__, l, c, w, h);
         return scr;
     }
 
@@ -406,7 +416,6 @@ extern "C" {
                 break;
             }
             view->screen_pool.push_front(scr);
-
         }
 
         return view->screen_pool.size();

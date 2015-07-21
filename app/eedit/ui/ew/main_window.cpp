@@ -310,7 +310,7 @@ bool main_window::main_window_private::create_tab_bar()
     m_tab_bar->set_font(ft);
 
     m_tab_bar->vertical_policy().type() = alignment::fixed;
-    m_tab_bar->set_height(1 + ft->pixel_width() + 1);
+    m_tab_bar->set_height(1 + ft->width_in_pixels() + 1);
 
     m_tab_bar->horizontal_policy().type()  = alignment::relative;
     m_tab_bar->horizontal_policy().ratio() = 100;
@@ -333,7 +333,7 @@ bool main_window::main_window_private::create_status_bar()
     m_status_bar->set_font(ft);
 
     m_status_bar->vertical_policy().type() = alignment::fixed;
-    m_status_bar->set_height(1 + ft->pixel_width() + 1);
+    m_status_bar->set_height(1 + ft->width_in_pixels() + 1);
 
     m_status_bar->horizontal_policy().type() = alignment::relative;
     m_status_bar->horizontal_policy().ratio() = 100;
@@ -366,48 +366,50 @@ bool main_window::main_window_private::create_buffer_view()
 
     // setup children
 
-    m_buffer_view->m_line_number->set_font(ft);
-    m_buffer_view->m_line_number->set_textview(m_buffer_view->m_text_view);
-    //   assert(m_buffer_view->m_text_view);
-
     // line number /////////////////////////////////////////////////////////////////////
-#if 0
-    uint32_t line_number_w = 1 + (9 * ft->pixel_width()) + 1; // TODO: max 16 digits + @
-    line_number_w = 12;
-    app_log << "line_number_w = " << line_number_w << "\n";
-    m_buffer_view->m_line_number->set_width(line_number_w);
-    m_buffer_view->m_line_number->set_height(m_owner->height());
-    m_buffer_view->m_line_number->horizontal_policy().type() = alignment::fixed;
-    m_buffer_view->m_line_number->horizontal_policy().ratio() = 100;
-    m_buffer_view->add_widget(m_buffer_view->m_line_number);
-#endif
+    if (m_buffer_view->m_line_number) {
+
+        m_buffer_view->m_line_number->set_font(ft);
+        m_buffer_view->m_line_number->set_textview(m_buffer_view->m_text_view);
+        //   assert(m_buffer_view->m_text_view);
+
+        uint32_t line_number_w = 1 + (12 * ft->width_in_pixels()) + 1; // TODO: max 16 digits + @
+        app_log << "line_number_w = " << line_number_w << "\n";
+        m_buffer_view->m_line_number->set_width(line_number_w);
+        m_buffer_view->m_line_number->set_height(m_owner->height());
+        m_buffer_view->m_line_number->horizontal_policy().type() = alignment::fixed;
+        m_buffer_view->m_line_number->horizontal_policy().ratio() = 100;
+        m_buffer_view->add_widget(m_buffer_view->m_line_number);
+    }
 
 
     // text view ///////////////////////////////////////////////////////////////////
-    m_buffer_view->m_text_view->set_font(ft);
-    m_buffer_view->m_text_view->set_width(m_owner->width());
-    m_buffer_view->m_text_view->set_height(m_owner->height());
-    m_buffer_view->m_text_view->horizontal_policy().type() = alignment::fixed;
-    m_buffer_view->m_text_view->horizontal_policy().ratio() = 100;
+    if (m_buffer_view->m_text_view) {
+        m_buffer_view->m_text_view->set_font(ft);
+        m_buffer_view->m_text_view->set_width(m_owner->width());
+        m_buffer_view->m_text_view->set_height(m_owner->height());
+        m_buffer_view->m_text_view->horizontal_policy().type() = alignment::relative;
+        m_buffer_view->m_text_view->horizontal_policy().ratio() = 100;
 
-    // add text_view2 to buffer_view
-    m_buffer_view->add_widget(m_buffer_view->m_text_view);
+        // add text_view2 to buffer_view
+        m_buffer_view->add_widget(m_buffer_view->m_text_view);
+    }
 
     // scroll bar /////////////////////////////////////////////////////////////////////
-#if 0
-    uint32_t scrool_bar_w = 12; // TODO: put this in header
-    m_buffer_view->m_scrool_bar->set_height(m_owner->height());
-    m_buffer_view->m_scrool_bar->set_width(scrool_bar_w);
-    m_buffer_view->m_scrool_bar->horizontal_policy().type() = alignment::fixed;
-    m_buffer_view->m_scrool_bar->horizontal_policy().ratio() = 100;
-    m_buffer_view->m_scrool_bar->set_begin_ratio(0.0f);
-    m_buffer_view->m_scrool_bar->set_end_ratio(0.0f);
-    m_buffer_view->add_widget(m_buffer_view->m_scrool_bar);
-    ///////////////////////////////////////////////////////////////////////////////////
-    // link view and scrool bar
-    m_buffer_view->m_text_view->set_scroll_area( m_buffer_view->m_scrool_bar );
-    m_buffer_view->m_scrool_bar->set_textview(m_buffer_view->m_text_view);
-#endif
+    if (m_buffer_view->m_scrool_bar) {
+        uint32_t scrool_bar_w = 12; // TODO: put this in header
+        m_buffer_view->m_scrool_bar->set_height(m_owner->height());
+        m_buffer_view->m_scrool_bar->set_width(scrool_bar_w);
+        m_buffer_view->m_scrool_bar->horizontal_policy().type() = alignment::fixed;
+        m_buffer_view->m_scrool_bar->horizontal_policy().ratio() = 100;
+        m_buffer_view->m_scrool_bar->set_begin_ratio(0.0f);
+        m_buffer_view->m_scrool_bar->set_end_ratio(0.0f);
+        m_buffer_view->add_widget(m_buffer_view->m_scrool_bar);
+        ///////////////////////////////////////////////////////////////////////////////////
+        // link view and scrool bar
+        m_buffer_view->m_text_view->set_scroll_area( m_buffer_view->m_scrool_bar );
+        m_buffer_view->m_scrool_bar->set_textview(m_buffer_view->m_text_view);
+    }
 
     return true;
 }

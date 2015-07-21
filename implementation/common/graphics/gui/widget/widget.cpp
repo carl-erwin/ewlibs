@@ -415,9 +415,6 @@ bool widget::on_create(const widget_event * ev)
 
 bool widget::render()
 {
-    // only if no parent ?
-    std::cerr << "[" << ew::core::time::get_ticks() << "]" << __PRETTY_FUNCTION__ << "widget->name() " << this->name() << "\n";
-
     this->clear();
 
     //
@@ -426,7 +423,7 @@ bool widget::render()
 
     u32 n = number_of_children();
 
-    std::cerr << "number_of_children = " << n << "\n";
+    // std::cerr << "number_of_children = " << n << "\n";
 
     for (u32 i = 0; i < n; ++i) {
 

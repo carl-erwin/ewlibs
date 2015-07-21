@@ -195,7 +195,6 @@ void screen_set_buffer_size(screen_t * scr, uint64_t sz)
 
 void screen_dump(const screen_t * scr, const char * by)
 {
-    return;
     app_log << __PRETTY_FUNCTION__ << " by " << by << "\n";
     app_log << " screen m_max_l = " << scr->m_max_l << "\n";
     app_log << " screen m_max_c = " << scr->m_max_c << "\n";
@@ -217,8 +216,12 @@ int screen_alloc(screen_t ** scr, const char * called_by, uint32_t l, uint32_t c
     s->m_max_height_px = h;
     screen_resize(s, l, c);
 
+
+
     codepoint_info_reset(&s->first_cpinfo);
     codepoint_info_reset(&s->last_cpinfo);
+
+    screen_dump(s, __PRETTY_FUNCTION__);
 
     *scr = s;
     return 0;
@@ -387,7 +390,7 @@ uint32_t  screen_get_number_of_used_lines(const screen_t * scr)
 {
     return scr->m_used_l;
 }
-//
+
 
 EDITOR_EXPORT
 int screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line_t ** l)
