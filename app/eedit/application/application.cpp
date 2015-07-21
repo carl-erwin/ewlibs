@@ -191,8 +191,10 @@ bool application::set_ui_name(const char * ui_name)
     if (name == "debug")
         return true;
 
-    if (name == "ncurses")
+    if (name == "ncurses") {
+        set_default_font_size(1); // console
         return true;
+    }
 
     return false;
 }

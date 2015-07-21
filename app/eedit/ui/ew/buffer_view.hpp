@@ -15,9 +15,9 @@ public:
         set_name("buffer_view");
         set_parent(parent);
 
-        // m_line_number = new line_number_view(this);
+        m_line_number = new line_number_view(this);
         m_text_view  = new text_view(this);
-        // m_scrool_bar  = new scroll_area(this);
+        m_scrool_bar  = new scroll_area(this);
     }
 
     virtual ~buffer_view()

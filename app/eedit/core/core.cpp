@@ -404,12 +404,12 @@ bool trigger_new_layout(struct editor_message_s * msg)
 
 bool check_input_message(struct editor_message_s * msg)
 {
-    assert(msg->editor_buffer_id);
-    assert(msg->view_id);
-    assert(msg->screen_dim.w);
-    assert(msg->screen_dim.h);
-    assert(msg->screen_dim.c);
-    assert(msg->screen_dim.l);
+    // assert(msg->editor_buffer_id);
+    // assert(msg->view_id);
+    // assert(msg->screen_dim.w);
+    // assert(msg->screen_dim.h);
+    // assert(msg->screen_dim.c);
+    // assert(msg->screen_dim.l);
     return true;
 }
 

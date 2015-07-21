@@ -81,9 +81,9 @@ public:
         assert(owner);
         m_owner = owner;
 
-        //m_tab_bar     = new tab_bar(m_owner);
+        m_tab_bar     = new tab_bar(m_owner);
         m_buffer_view = new buffer_view(m_owner);
-        //m_status_bar  = new status_bar(m_owner);
+        m_status_bar  = new status_bar(m_owner);
     }
 
     ~main_window_private()
@@ -465,8 +465,8 @@ bool main_window::on_create(const widget_event * ev)
     // setup_layout()
     cur_parent->set_layout(new vertical_layout);
 
-    //m_priv->create_tab_bar();
-    //m_priv->create_status_bar();
+    m_priv->create_tab_bar();
+    m_priv->create_status_bar();
     m_priv->create_buffer_view();
 
     auto ret = widget::on_create(ev);
