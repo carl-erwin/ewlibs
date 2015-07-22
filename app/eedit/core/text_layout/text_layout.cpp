@@ -140,27 +140,6 @@ bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const int32_t cp, 
 // PIPELINE
 /////////////////////////////
 
-#ifdef FILTER_IO_T
-bool ret = mode_list[i]->filter(layout_ctx, tmp_ctx);
-filters call
-int n = get_filter_io(layout_ctx, iovec, io_cnt);   // blocking/notifications
-int n = put_filter_io(layout_ctx, iovec, io_cnt);   // non blocking
-int n = get_filter_io_count(layout_ctx);            // non blocking
-int n = unget_filter_io(layout_ctx, iovec, io_cnt); // blocking/notifications
-int n = unput_filter_io(layout_ctx, iovec, io_cnt); // non blocking
-this will enable potential threading
-
-layout_io_vec_t * in_vec;
-layout_io_vec_t * out_vec;
-
-layout_io_vec_push(v, &cp_info);  // write
-layout_io_vec_pop(v, &cp_info);   // cancel-write
-layout_io_vec_get(v, &cp_info);   // read
-layout_io_vec_unget(v, &cp_info); // un-read
-layout_io_vec_notify(v); // later for multi thread
-layout_io_vec_wait(v);   // later for mutil thread
-#endif
-
 
 // TODO: user config
 // set filter list = byte | text |
