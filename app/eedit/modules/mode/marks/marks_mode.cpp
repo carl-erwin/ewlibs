@@ -581,6 +581,9 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
         return EDITOR_STATUS_OK;
     }
 
+    size_t end_of_buffer_offset = 0;
+    byte_buffer_size(ebid, &end_of_buffer_offset);
+
 //  display marks
 //  for (auto m: marks) {
 //      // std::cerr << __PRETTY_FUNCTION__ << " m.offset() " << mark_get_offset(m) << "\n";
@@ -688,6 +691,12 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
             size_t column_index;
             screen_line_get_first_cpinfo(last_line, &lcp, &column_index);
             update_screen = false;
+        }
+
+
+        if (mark_offset == end_of_buffer_offset) {
+            ++cur_mark;
+            continue;
         }
 
         if (mark_offset >= start_offset && mark_offset < lcp->offset) {
