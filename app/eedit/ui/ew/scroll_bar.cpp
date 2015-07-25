@@ -32,15 +32,13 @@ namespace eedit
 
 bool vertical_scroll_bar::on_pointer_motion(const pointer_event * ev)
 {
-    // app_log << __PRETTY_FUNCTION__ << " ev->x = " << ev->x << "\n";
-    // app_log << __PRETTY_FUNCTION__ << " ev->y = " << ev->y << "\n";
-
-    // app_log << "m_scroll_X = " << m_scroll_X << "\n";
-    // app_log << "m_scroll_Y = " << m_scroll_Y << "\n";
-    // app_log << "m_scroll_W = " << m_scroll_W << "\n";
-    // app_log << "m_scroll_H = " << m_scroll_H << "\n";
-
-    // app_log << "m_is_pressed = " << m_is_pressed << "\n";
+    app_logln(-1, "%s ev->x = %d", __PRETTY_FUNCTION__, ev->x);
+    app_logln(-1, "%s ev->y = %d", __PRETTY_FUNCTION__, ev->y);
+    app_logln(-1, "m_scroll_X = %d", m_scroll_X);
+    app_logln(-1, "m_scroll_Y = %d", m_scroll_Y);
+    app_logln(-1, "m_scroll_W = %d", m_scroll_W);
+    app_logln(-1, "m_scroll_H = %d", m_scroll_H);
+    app_logln(-1, "m_is_pressed = %d", m_is_pressed);
 
     // move to widget handling
     if (((ev->x >= m_scroll_X) && (ev->x <= (m_scroll_X + m_scroll_W)))
@@ -61,7 +59,7 @@ bool vertical_scroll_bar::on_pointer_motion(const pointer_event * ev)
         new_ratio = ew::maths::max<float>(new_ratio, 0.0f);
         new_ratio = ew::maths::min<float>(new_ratio, 1.0f);
 
-        // app_log << __PRETTY_FUNCTION__ << " ** new ratio = " << new_ratio << "\n";
+        app_logln(-1, " ** new ratio = %e", new_ratio );
 
         set_begin_ratio(new_ratio);
         m_txt_view->set_start_offset_by_ratio(new_ratio);

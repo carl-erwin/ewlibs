@@ -728,7 +728,9 @@ public:
 
     bool set_start_offset_by_ratio(float ratio)
     {
-        if (this->m_buffer_id == 0) {
+        if (this->m_ebuffer_id == 0) {
+	    app_logln(-1, "%s this->m_ebuffer_id == 0", __PRETTY_FUNCTION__);
+
             return false;
         }
 
