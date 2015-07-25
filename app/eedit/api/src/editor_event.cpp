@@ -36,7 +36,7 @@ static inline void release_args(const int ac, char ** & av)
 inline void print_args(const int ac, char ** & av)
 {
     for (int i = 0; i < ac; ++i) {
-        app_log <<  "av[" << i << "] = " << av[i] <<  "\n";
+        app_logln(-1, "av[%d] = '%s'", av[i]);
     }
 
 }

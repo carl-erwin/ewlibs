@@ -15,17 +15,16 @@ namespace core
 
 bool process_editor_message(core_context_t * core_ctx, struct editor_message_s * msg)
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
     bool ret = false;
 
 //FIXME:	editor_view_reset_flags(msg->editor_buffer_id, msg->view_id);
     reset_buffer_view_flags(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id);
-    app_log << " reset_buffer_view_flags..ok\n";
     // refresh screen cache
 
     setup_screen_by_id(msg->editor_buffer_id, msg->byte_buffer_id, msg->view_id, msg->screen_dim);
-    app_log << " setup_screen_by_id..ok\n";
 
     auto buffer = msg->editor_buffer_id;
     auto view   = msg->view_id;
@@ -36,7 +35,7 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
 
 
     if (buffer == INVALID_EDITOR_BUFFER_ID) {
-        app_log << " no buffer_id defined\n";
+        app_logln(-1, " no buffer_id defined");
     }
 
     switch (msg->type & EDITOR_EVENT_TYPE_FAMILY_MASK) {
@@ -48,16 +47,12 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
 
     case EDITOR_KEYBOARD_EVENT:
     case EDITOR_POINTER_BUTTON_EVENT_FAMILY: {
-        app_log << __PRETTY_FUNCTION__ << " EDITOR_KEYB/POINTER EVENT\n";
-
         check_input_message(msg);
         ret = process_input_event(msg);
     }
     break;
 
     case EDITOR_BUILD_LAYOUT_EVENT: {
-        app_log << __PRETTY_FUNCTION__ << " EDITOR_BUILD_LAYOUT_EVENT\n";
-
         check_input_message(msg);
         ret = trigger_new_layout(msg);
     }
@@ -69,7 +64,7 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
     break;
 
     default: {
-        app_log <<  "core : receive : unhandled event type " <<  (void *)msg->type << "\n";
+        app_logln(-1, "core : receive : unhandled event type %p", (void *)msg->type);
     }
     break;
     }
@@ -90,9 +85,9 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
         editor_view_get_start_cpi(view, &start_cpi_ref);
         if (start_cpi_ref.used) {
             start_cpi = &start_cpi_ref;
-            app_log <<  "  start_cpi->offset      = " << start_cpi->offset << "\n";
-            app_log <<  "  start_cpi->split_count = " << start_cpi->split_count << "\n";
-            app_log <<  "  start_cpi->split_flag  = " << start_cpi->split_flag << "\n";
+            app_logln(-1, "  start_cpi->offset      = %lu" ,start_cpi->offset);
+            app_logln(-1, "  start_cpi->split_count = %u"  ,start_cpi->split_count);
+            app_logln(-1, "  start_cpi->split_flag  = %u"  ,start_cpi->split_flag );
 
             assert(start_cpi_ref.cp_index != uint64_t(-1));
         }
@@ -113,17 +108,18 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
  */
 bool eval_input_event(struct editor_message_s * msg)
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
     auto buffer = editor_buffer_check_id(msg->editor_buffer_id);
     if (buffer == INVALID_EDITOR_BUFFER_ID) {
-        app_log << "no buffer id " << msg->byte_buffer_id << "\n";
+        app_log(-1, "no buffer id %lu", msg->byte_buffer_id);
         assert(0);
         return true;
     }
 
     if (msg->view_id == INVALID_EDITOR_VIEW_ID) {
-        app_log << "no view/screen id " << msg->view_id << "\n";
+        app_log(-1, "no view/screen id %lu", msg->view_id);
         assert(0);
         return true;
     }
@@ -155,7 +151,7 @@ bool eval_input_event(struct editor_message_s * msg)
     bool found = eval_input_event(&msg->input.ev, cur_seq, &match_found);
     if (!found) {
         //
-        app_log << "no match : reset user keymap context\n";
+        app_logln(-1, "no match : reset user keymap context");
         view->input.cur_event_map      = nullptr;
         view->input.last_keymap_entry = nullptr;
         return false;
@@ -171,7 +167,7 @@ bool eval_input_event(struct editor_message_s * msg)
         assert(cur_seq->size() != 0);
 
         // the sequence is valid but non terminal -> need more key
-        app_log << " need more input(s)\n";
+        app_logln(-1, " need more input(s)");
         return true;
     }
 
@@ -181,16 +177,16 @@ bool eval_input_event(struct editor_message_s * msg)
     // TODO: cache fn in action
     editor_message_handler_t fn = editor_get_message_handler(match_found->action->fn_name);
     if (fn) {
-        app_log << "'" << match_found->action->fn_name << "' is defined\n";
-        app_log << "BEGIN '" << match_found->action->fn_name << "'\n";
+        app_logln(-1, "'%s' is defined", match_found->action->fn_name);
+        app_logln(-1, "BEGIN '%s'", match_found->action->fn_name);
         fn(msg);
-        app_log << "END '" << match_found->action->fn_name << "'\n";
+	app_logln(-1, "END '%s'", match_found->action->fn_name);
     } else {
-        app_log << "'" << match_found->action->fn_name << "' is not defined\n";
+        app_logln(-1, "'%s' is not defined", match_found->action->fn_name);
     }
 
 
-    app_log << "match : reset user keymap context\n";
+    app_logln(-1, "match : reset user keymap context");
     view->input.cur_event_map      = nullptr;
     view->input.last_keymap_entry = nullptr;
 

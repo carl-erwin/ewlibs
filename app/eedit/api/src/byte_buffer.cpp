@@ -62,16 +62,16 @@ extern "C" {
             return 0;
         }
 
-        app_log << __PRETTY_FUNCTION__ << " allocated fd   = " << fd << "\n";
-        app_log << __PRETTY_FUNCTION__ << " allocated fd   = " << bid << "\n";
-        app_log << __PRETTY_FUNCTION__ << " allocated file = " << file << "\n";
+        app_logln(-1, " allocated fd   = %u", fd  );
+        app_logln(-1, " allocated fd   = %u", bid );
+        app_logln(-1, " allocated file = %u", file);
         return bid;
     }
 
     SHOW_SYMBOL
     int     byte_buffer_close(byte_buffer_id_t bid)
     {
-        app_log << __PRETTY_FUNCTION__ << " release fd = " << bid << "\n";
+        app_logln(-1, " release bid = %lu", bid);
         auto ret = table.destroy(bid);
         return ret == true;
     }

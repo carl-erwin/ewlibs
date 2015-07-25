@@ -53,14 +53,16 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 {
     // read up to iocnt codepont
     int64_t offset = iovc->offset;
-    size_t buff_size = 32 * 1024;
+    size_t buff_size = 16 * 1024;
     uint8_t * buff = (uint8_t *)alloca(buff_size); // buff[16 * 1024]; // codec ctx // move this to codec ctx // and adapt
 
     int i = 0;
     while (i < (int)iocnt) {
 
         size_t nb_read = 0;
-        int res = byte_buffer_read(io_ctx->bid, offset,  buff,  buff_size - i, &nb_read);
+	size_t to_read = std::min<size_t>(iocnt, buff_size);
+	
+        int res = byte_buffer_read(io_ctx->bid, offset,  buff,  to_read, &nb_read);
         if (res != 0) {
             /* */
             return -1;

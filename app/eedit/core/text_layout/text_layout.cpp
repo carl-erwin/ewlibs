@@ -75,14 +75,14 @@ namespace core
 
 void dump_glyp_info(const ew::graphics::fonts::font_glyph_info & glyph_info)
 {
-    app_log << " glyph_info.width           " << glyph_info.width << "\n";
-    app_log << " glyph_info.height          " << glyph_info.height << "\n";
-    app_log << " glyph_info.hori_bearing_x  " << glyph_info.hori_bearing_x << "\n";
-    app_log << " glyph_info.hori_bearing_y  " << glyph_info.hori_bearing_y << "\n";
-    app_log << " glyph_info.hori_advance    " << glyph_info.hori_advance << "\n";
-    app_log << " glyph_info.vert_bearing_x  " << glyph_info.vert_bearing_x << "\n";
-    app_log << " glyph_info.vert_bearing_y  " << glyph_info.vert_bearing_y << "\n";
-    app_log << " glyph_info.vert_advance    " << glyph_info.vert_advance << "\n";
+    app_logln(-1, " glyph_info.width           %d", glyph_info.width);
+    app_logln(-1, " glyph_info.height          %d", glyph_info.height);
+    app_logln(-1, " glyph_info.hori_bearing_x  %d", glyph_info.hori_bearing_x);
+    app_logln(-1, " glyph_info.hori_bearing_y  %d", glyph_info.hori_bearing_y);
+    app_logln(-1, " glyph_info.hori_advance    %d", glyph_info.hori_advance);
+    app_logln(-1, " glyph_info.vert_bearing_x  %d", glyph_info.vert_bearing_x);
+    app_logln(-1, " glyph_info.vert_bearing_y  %d", glyph_info.vert_bearing_y);
+    app_logln(-1, " glyph_info.vert_advance    %d", glyph_info.vert_advance);
 }
 
 
@@ -118,7 +118,7 @@ bool get_codepoint_glyph_info(ew::graphics::fonts::font * ft, const int32_t cp, 
     if (bret == false) {
         bret = ft->get_codepoint_glyph_info(vcp, glyph_info);
         if (bret == false) {
-            app_log << "cannot get coddepoint("<<vcp<<") info, use substitute 0xfffd\n";
+            app_logln(-1, "cannot get coddepoint(%u) info, use substitute 0xfffd");
             vcp = 0xfffd;
         }
         *cp_filtered = vcp;
@@ -231,14 +231,14 @@ bool build_layout(editor_layout_builder_context_t & ctx)
 
 
     if (DEBUG_PIPELINE)
-        app_log << "\n\n\n -------- LAYOUT MODE LOOP START -------- \n";
+        app_log(-1, "\n\n\n -------- LAYOUT MODE LOOP START -------- \n");
 
     bool end_of_pipe = false;
 
     while (end_of_pipe == false) {
 
         if (DEBUG_PIPELINE)
-            app_log << " end_of_pipe("<<end_of_pipe<<") \n";
+            app_log(-1, " end_of_pipe(%d)", end_of_pipe);
 
         nr_in  = 0;
         for (size_t i = 0; i < filter_list.size(); i++) {
@@ -261,33 +261,22 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                 auto t0 = ew::core::time::get_ticks();
                 bool ret = filter_list[i]->filter(&ctx, tmp_ctx, pin, pout);
                 auto t1 = ew::core::time::get_ticks();
-                app_log << "\n" << " filter " << filter_list[i]->name << " TIME = " << (t1 - t0) << "\n";
-
+                app_log(-1, "\n filter %s, TIME = %u", filter_list[i]->name, (t1 - t0));
 
                 if (DEBUG_PIPELINE)
-                    app_log << "\n" << "mode_list(" << filter_list[i]->name <<")[" << i << "] , nr_in(" << nr_in << ") nr_out(" << nr_out << ")\n";
+                    app_log(-1, "\n mode_list[%u](%s) , nr_in(%u) nr_out(%u)", i, filter_list[i]->name, nr_in, nr_out);
 
                 if (layout_io_vec_size(pout) == 0) {
 
                     // count nr restart , max process time ?
-
                     if (DEBUG_PIPELINE)
-                        app_log << " ... RESTART\n\n";
+                        app_log(-1, " ... RESTART\n\n");
+		    
                     break;
                 }
 
-                if (DEBUG_PIPELINE) {
-                    layout_io_t * last_out = layout_io_vec_last(pout);
-                    if (last_out) {
-                        app_log<< " pout["<< layout_io_vec_size(pout) - 1 << "].end_of_pipe == " << last_out->end_of_pipe << "\n";
-                    }
-                }
-
                 layout_io_t * last_out = layout_io_vec_last(pout);
-                if (last_out->end_of_pipe == true) {
-                    if (DEBUG_PIPELINE)
-                        app_log << " -------- LAYOUT end_of_pipe detected -------- \n";
-
+                if (last_out && last_out->end_of_pipe == true) {
                     end_of_pipe = true;
                 }
 
@@ -303,16 +292,10 @@ bool build_layout(editor_layout_builder_context_t & ctx)
         layout_io_t * last_in = layout_io_vec_last(pin);
         if (nr_in) {
             if (last_in->quit == true) {
-                if (DEBUG_PIPELINE)
-                    app_log << " -------- LAYOUT quit detected -------- \n";
-
                 break;
             }
         }
     }
-
-    if (DEBUG_PIPELINE)
-        app_log << " -------- LAYOUT MODE LOOP END -------- \n\n\n";
 
     // slow :-) , on purpose
     // close pipeline
@@ -389,15 +372,15 @@ bool build_screen_layout(struct codec_io_ctx_s * io_ctx, editor_view_id_t view, 
 #endif
         // rdr_end_off = last_cpi->offset;
     } else {
-        app_log << "first_cpi.used "  << first_cpi->used << "\n";
-        app_log << "last_cpi.used " << last_cpi->used << "\n";
+        app_logln(-1, "first_cpi.used %d", first_cpi->used);
+        app_logln(-1, "last_cpi.used  %d", last_cpi->used);
     }
 
     // ed_buffer->rdr_end() = rdr_end_off;
 
     size_t t1 = ew::core::time::get_ticks();
     if (0) {
-        app_log << " time to build layout = " << (t1 - t0) << " ms, nr put " << blctx.nr_put << "\n";
+        app_logln(-1, " time to build layout = %u ms, nr_put %lu", (t1 - t0), blctx.nr_put);
     }
 
 

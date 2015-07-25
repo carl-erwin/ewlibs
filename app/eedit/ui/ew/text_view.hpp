@@ -67,7 +67,6 @@ public:
         m_parent = parent;
         set_name("text_view");
         m_screen_id = (uint64_t)this;
-        app_log << __PRETTY_FUNCTION__ << " m_screen_id = " << m_screen_id << "\n";
     }
 
     void set_scroll_area(eedit::scroll_area * scroll_a)
@@ -96,7 +95,7 @@ public:
         assert(screen_dim.w);
         assert(screen_dim.h);
 
-        app_log << " send_rcp_event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+        app_logln(-1, " send_rcp_event : ui -> core @%u", ew::core::time::get_ticks());
 
         eedit::core::push_event(msg);
         return true;
@@ -112,10 +111,9 @@ public:
         m_screen_dim.c = width();
         m_screen_dim.l = height();
 
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << __PRETTY_FUNCTION__ << " width() = " << width() << "\n";
-        app_log << __PRETTY_FUNCTION__ << " height() = " << height() << "\n";
-        app_log << __PRETTY_FUNCTION__ << " send_rpc_call\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
+        app_logln(-1, " send_rpc_call");
 
         const char * func = "get_buffer_id_list";
         send_rpc_event(1,  &func, 0, 0, m_screen_id, m_screen_dim);
@@ -245,12 +243,6 @@ public:
         uint64_t boff = first_cpinfo->offset;
         uint64_t eoff = last_cpinfo->offset;
 
-        if (0) {
-            app_log << " text_size = " << sz << "\n";
-            app_log << " b off = " << boff << "\n";
-            app_log << " e off = " << eoff << "\n";
-        }
-
         float b = 0.0;
         float e = 1.0;
 
@@ -261,13 +253,6 @@ public:
             b = 0.0f;
             e = 1.0f;
         }
-
-        if (0) {
-            app_log << " text_size = " << sz << "\n";
-            app_log << " b ratio = " << b << "\n";
-            app_log << " e ratio = " << e << "\n";
-        }
-
 
         if (m_scrool_bar) {
             m_scrool_bar->set_begin_ratio( b );
@@ -284,7 +269,7 @@ public:
         auto t0 = ew::core::time::get_ticks();
 
         if (screen() == nullptr) {
-            app_log << __PRETTY_FUNCTION__ << "screen is null !!\n";
+            app_logln(-1, "%s : screen is null !!!", __PRETTY_FUNCTION__);
             return true;
         }
 
@@ -530,7 +515,8 @@ public:
         }
 
         auto t1 = ew::core::time::get_ticks();
-        app_log << " TIME TO RENDER SCREEN (ft_index == "<< ft_index << "): " << std::dec << (t1 - t0) << "\n";
+        app_logln(-1, " TIME TO RENDER SCREEN (ft_index == %u) : %u", ft_index, (t1 - t0));
+	
 
         pending_redraw = false;
         return true;
@@ -538,11 +524,8 @@ public:
 
     bool send_build_layout_event(uint32_t w, uint32_t h) const
     {
-        app_log << __PRETTY_FUNCTION__ << " ui -> core @" << ew::core::time::get_ticks() << "\n";
-
         if (m_have_buffer_id ==  false) {
-            app_log << __PRETTY_FUNCTION__ << " m_have_screen_id ==  false" << "\n";
-            return false;
+             return false;
         }
 
         // ask for new layout
@@ -563,17 +546,17 @@ public:
         msg->screen_dim.c = width();
         msg->screen_dim.l = height();
 
-        app_log << " send_build_layout_event : ui -> core @" << ew::core::time::get_ticks() << "\n";
-
         eedit::core::push_event(msg);
         return true;
     }
 
     bool resize(uint32_t w, uint32_t h)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << __PRETTY_FUNCTION__ << " width() = " << width() << "\n";
-        app_log << __PRETTY_FUNCTION__ << " height() = " << height() << "\n";
+        app_logln(-1, "%s: width(%u) height(%u)",
+		  __PRETTY_FUNCTION__,
+		  width(),
+		  height());
+
         set_width(w);
         set_height(h);
 
@@ -631,12 +614,7 @@ public:
 
     bool on_key_press(const  ew::graphics::gui::events::keyboard_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ <<  "\n";
-        // TODO: translate keyboard_event to struct editor_message_s ?
-        // send translated event to core thread
-
         if (this->m_have_buffer_id == false) {
-            app_log << __PRETTY_FUNCTION__ <<  " no screen id defined\n";
             return true;
         }
 
@@ -656,7 +634,7 @@ public:
 
         // display current key on console
         editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
-        app_log << "\n";
+        app_logln(-1, "");
 
         eedit::core::push_event(msg);
         return false;
@@ -664,10 +642,10 @@ public:
 
     bool on_mouse_button_press(const button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << "ev->x " << ev->x << "\n";
-        app_log << "ev->y " << ev->y << "\n";
-        app_log << "ev->button " << ev->button << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "ev->x %u", ev->x);
+	app_logln(-1, "ev->y %u", ev->y);
+	app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_PRESS_EVENT;
@@ -685,10 +663,10 @@ public:
 
     bool on_mouse_button_release(const button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << "ev->x " << ev->x << "\n";
-        app_log << "ev->y " << ev->y << "\n";
-        app_log << "ev->button " << ev->button << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "ev->x %u", ev->x);
+	app_logln(-1, "ev->y %u", ev->y);
+	app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_RELEASE_EVENT; // FIXME: EDITOR_INPUT_EVENT
@@ -706,10 +684,10 @@ public:
 
     bool on_mouse_wheel_up(const button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << "ev->x " << ev->x << "\n";
-        app_log << "ev->y " << ev->y << "\n";
-        app_log << "ev->button " << ev->button << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "ev->x %u", ev->x);
+	app_logln(-1, "ev->y %u", ev->y);
+	app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_UP;
@@ -727,10 +705,10 @@ public:
 
     bool on_mouse_wheel_down(const button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
-        app_log << "ev->x " << ev->x << "\n";
-        app_log << "ev->y " << ev->y << "\n";
-        app_log << "ev->button " << ev->button << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "ev->x %u", ev->x);
+	app_logln(-1, "ev->y %u", ev->y);
+	app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_DOWN;
@@ -789,7 +767,7 @@ public:
         query_av[i] = &buffer[i][0];
         ++i;
 
-        app_log << __PRETTY_FUNCTION__ << " send rpc -> to core : offset("<<offset<<") : OK\n";
+        app_logln(-1, "%s send rpc -> to core : offset(%lu)", __PRETTY_FUNCTION__, offset);
         send_rpc_event(i, query_av, m_ebuffer_id, m_buffer_id, m_screen_id, m_screen_dim);
 
         return true;
@@ -797,7 +775,6 @@ public:
 
     bool process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg)
     {
-        app_log << __PRETTY_FUNCTION__ << " core -> ui @" << ew::core::time::get_ticks() << "\n";
 
         if (msg->rpc.ac == 0) {
             assert(0);
@@ -817,7 +794,7 @@ public:
                 this->m_ebuffer_id = atoi(msg->rpc.av[1]);
                 this->m_buffer_id = 0;
 
-                app_log << __PRETTY_FUNCTION__ << " select buffer_id " <<  m_ebuffer_id <<  "\n";
+                app_logln(-1, " select buffer_id %u", m_ebuffer_id);
                 view_state = initialized;
                 send_build_layout_event(width(), height());
             }

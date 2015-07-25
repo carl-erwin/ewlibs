@@ -123,7 +123,7 @@ struct input_map_entry {
         editor_input_event_dump(&ev, __PRETTY_FUNCTION__);
 
         if (action != nullptr) {
-            app_log << " = action(" << (action ? action->fn_name : "") << ")";
+            app_logln(-1, " = action(%s)", (action ? action->fn_name : ""));
         }
 
     }
@@ -160,9 +160,9 @@ inline void dump_keymap_entries_array(std::vector<input_map_entry *> & cur_path)
         (*i)->dump_event();
         ++i;
         if (i != cur_path.end())
-            app_log << "| ";
+            app_log(-1, "| ");
     }
-    app_log << "\n";
+    app_logln(-1, "");
 }
 
 struct editor_input_event_map {
@@ -308,7 +308,7 @@ inline bool skip_line(parse_context * ctx)
 inline bool expected_token(parse_context * ctx, const u8 * expected, const size_t expected_len)
 {
     if (ctx->remain() < expected_len) {
-        app_log << __FUNCTION__ << " no enough bytes\n";
+        app_logln(-1, "%s no enough bytes", __FUNCTION__);
         return false;
     }
 
@@ -317,7 +317,7 @@ inline bool expected_token(parse_context * ctx, const u8 * expected, const size_
         return true;
     }
 
-    app_log << __FUNCTION__ << " '" << expected << "' not found\n";
+    app_logln(-1, "%s '%s' not found\n", __FUNCTION__, expected);
     return false;
 }
 
@@ -329,7 +329,7 @@ inline bool expect_c_string(parse_context * ctx, const char * str, const size_t 
 inline bool extract_int(parse_context * ctx, int * val)
 {
     if (ctx->remain() == 0) {
-        app_log << __FUNCTION__ << " no enough bytes\n";
+        app_logln(-1, "%s no enough bytes", __FUNCTION__);
         return false;
     }
 
@@ -340,7 +340,7 @@ inline bool extract_int(parse_context * ctx, int * val)
     }
     ctx->p = (u8 *)endptr;
 
-    app_log << __FUNCTION__ << " extracted val = " << v << "\n";
+    app_logln(-1, " extracted val = %ld", v);
     *val = v;
     return false;
 }
@@ -466,8 +466,8 @@ inline input_map_token_type get_token_keyname(parse_context * ctx)
     // check keymap str table
     ctx->tmp_kval = c_string_to_editor_key_value((const char *)buff);
 
-    app_log << "found ctx->tmp_kval str '" << buff << "'\n";
-    app_log << "found ctx->tmp_kval : " << ctx->tmp_kval << "\n";
+    app_log(-1, "found ctx->tmp_kval str '%s'", buff);
+    app_log(-1, "found ctx->tmp_kval : %u", ctx->tmp_kval);
 
     delete [] buff;
 
@@ -569,7 +569,7 @@ inline bool parse_control(parse_context * ctx)
     }
 
     if (ctx->current_input_map_entry->ev.ctrl == true) {
-        app_log << "ctrl already defined !\n";
+        app_logln(-1, "ctrl already defined !");
         return false;
     }
     ctx->current_input_map_entry->ev.ctrl = true;
@@ -764,7 +764,7 @@ inline bool parse_unicode(parse_context * ctx)
 
         case parse_error:
         default: {
-            app_log << "parse_error\n";
+            app_logln(-1, "parse_error");
             stop_parser = true;
         }
         break;
@@ -836,7 +836,7 @@ inline bool parse_alt(parse_context * ctx)
     ctx->current_input_map_entry->ev.type = keypress;
 
     if (ctx->current_input_map_entry->ev.altL == true) {
-        app_log << "alt already defined !\n";
+        app_logln(-1, "alt already defined !");
         return false;
     }
     ctx->current_input_map_entry->ev.altL = true;
@@ -891,7 +891,7 @@ inline bool extract_action_name(parse_context * ctx)
     ::strncpy(action->fn_name, (const char *)s, slen);
     action->fn_name[slen] = 0;
 
-    app_log << "extracted action_name["<< (int)slen<<"] = '" << action->fn_name << "\n";
+    app_log(-1, "extracted action_name[%d] = '%s'", (int)slen, action->fn_name);
 
     ctx->current_input_map_entry->action = action;
 
@@ -945,7 +945,7 @@ inline bool find_seq_nodes(int depth, const std::vector<input_map_entry *> & key
     }
 
     if (debug)
-        app_log << " find_seq_nodes  depth = " << depth << "\n";
+        app_log(-1, " find_seq_nodes  depth = %d", depth);
 
     // app_log << "lookin for " << "\n";
     // (*seq_head)->dump_event();
@@ -970,11 +970,12 @@ inline bool find_seq_nodes(int depth, const std::vector<input_map_entry *> & key
         if (editor_input_event_is_equal(&(*a).ev, &(*b).ev)) {
 
             if (debug) {
-                app_log << "{ ";
+                app_log(-1, "{ ");
                 a->dump_event();
-                app_log << " == ";
+                app_log(-1, " == ");
                 b->dump_event();
-                app_log << " }\n";
+                app_log(-1, " }");
+                app_logln(-1, "");
             }
 
             found = true;
@@ -983,13 +984,13 @@ inline bool find_seq_nodes(int depth, const std::vector<input_map_entry *> & key
             ++seq_head;
             if (seq_head == seq_end) {
                 if (debug) {
-                    app_log << " seq_head == seq_end\n";
+                    app_logln(-1, " seq_head == seq_end");
                 }
                 break;
             }
 
             if (debug) {
-                app_log << " seq_head != seq_end\n";
+                app_logln(-1, " seq_head != seq_end");
             }
 
             return find_seq_nodes(depth + 1, b->entries, seq_head, seq_end, out);
@@ -997,17 +998,18 @@ inline bool find_seq_nodes(int depth, const std::vector<input_map_entry *> & key
         } else {
 
             if (debug) {
-                app_log << "{ ";
+                app_log(-1, "{ ");
                 a->dump_event();
-                app_log << " != ";
+                app_log(-1, " != ");
                 b->dump_event();
-                app_log << " }\n";
+                app_log(-1, " }");
+                app_logln(-1, "");
             }
         }
     }
 
     if (debug) {
-        app_log << " find_seq_nodes  depth = " << depth << " retcode " << found << "\n";
+        app_log(-1, " find_seq_nodes  depth = %d, retcode %d", depth, found);
     }
 
     return found;
@@ -1065,12 +1067,12 @@ inline bool add_keys_to_current_input_map(parse_context * ctx)
 
 
     if (0) {
-        app_log << " ==================================================\n";
-        app_log << " add_keys_to_current_keymap\n";
-        app_log << " ctx->cur_seq.size() = " << ctx->cur_seq.size() << "\n";
-        app_log << " == cur seq  ======================================\n";
+        app_logln(-1, " ==================================================");
+        app_logln(-1, " add_keys_to_current_keymap");
+        app_logln(-1, " ctx->cur_seq.size() = %d", ctx->cur_seq.size());
+        app_logln(-1, " == cur seq  ======================================");
         dump_keymap_entries_array(ctx->cur_seq);
-        app_log << " ==================================================\n";
+        app_logln(-1, " ==================================================");
     }
     bool found = find_sequence(ctx->current_input_map,
                                ctx->cur_seq,
@@ -1078,10 +1080,10 @@ inline bool add_keys_to_current_input_map(parse_context * ctx)
 
     // TODO: remove old sequence
     if (debug) {
-        app_log << " find_sequence = " << found << "\n";
-        app_log << " out.size()    = " << out.size() << "\n";
-        app_log << " ctx->current_keymap->entries.size() = " << ctx->current_input_map->entries.size() << "\n";
-        app_log << " ---------------------------------------\n";
+        app_logln(-1, " find_sequence = %d", found);
+        app_logln(-1, " out.size()    = %u", out.size());
+        app_logln(-1, " ctx->current_keymap->entries.size() = %u", ctx->current_input_map->entries.size());
+        app_logln(-1, " ---------------------------------------");
     }
 
     found = keymap_insert_sequence(ctx->current_input_map, ctx->cur_seq, out);
@@ -1164,7 +1166,7 @@ inline bool parse_input_map_string(parse_context & ctx)
 
 inline bool parse_input_map_config(const u8 * start, const u8 * pend, std::map<std::string, editor_input_event_map *> & input_event_table)
 {
-    app_log << __FUNCTION__ << " begin\n";
+    app_logln(-1, "%s begin", __FUNCTION__);
 
     parse_context ctx;
 
@@ -1176,18 +1178,19 @@ inline bool parse_input_map_config(const u8 * start, const u8 * pend, std::map<s
     ctx.pend = (u8 *)pend;
     ctx.remain();
 
-    app_log << __FUNCTION__ << " parsing :\n'" << ctx.p << "'\n";
+    app_logln(-1, " parsing :\n'%s'", ctx.p);
 
     parse_input_map_string(ctx);
 
-    app_log << " FINAL : ctx.current_keymap->entries.size() = " << ctx.current_input_map->entries.size() << "\n\n";
-
+    app_logln(-1, " FINAL : ctx.current_keymap->entries.size() = %u", ctx.current_input_map->entries.size());
+    app_logln(-1, "");
+    
     ctx.current_input_map->dump();
 
     input_event_table.insert(std::pair<std::string, editor_input_event_map *>(std::string("default"), ctx.current_input_map));
 
-    app_log << "\n";
-    app_log << __FUNCTION__ << " pend\n";
+    app_logln(-1, "");
+    app_logln(-1, "%s end", __FUNCTION__);
 
     return true;
 }
@@ -1211,14 +1214,14 @@ inline bool eval_input_event(const editor_input_event_s * ev,
             return true;
         }
 
-        app_log << "is equal ---> false...\n";
+        app_logln(-1, "is equal ---> false...");
 
         if (editor_input_event_contains(&(a->ev), ev)) {
             *match_found = a;
             return true;
         }
 
-        app_log << "contains --> false...\n";
+        app_logln(-1, "contains --> false...");
     }
 
     *match_found = nullptr;

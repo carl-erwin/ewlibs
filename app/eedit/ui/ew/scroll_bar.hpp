@@ -171,8 +171,7 @@ public:
 
     virtual bool resize(uint32_t w, uint32_t h)
     {
-
-        app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
+        app_logln(-1, "%s : w = %u h = %u", __PRETTY_FUNCTION__, w, h);
 
         bool ret = widget::resize(w, h);
         return ret;
@@ -251,8 +250,7 @@ public:
 
     virtual bool on_focus_in(const ew::graphics::gui::events::widget_event * ev)
     {
-
-        app_log << __FUNCTION__ << "\n";
+        app_logln(-1, __FUNCTION__);
 
         set_focus_in_color();
         anim_on = true;
@@ -267,8 +265,7 @@ public:
 
     virtual bool on_focus_out(const ew::graphics::gui::events::widget_event * ev)
     {
-
-        app_log << __FUNCTION__ << "\n";
+        app_logln(-1, __FUNCTION__);
 
         set_focus_out_color();
 
@@ -316,8 +313,7 @@ public:
 
     virtual bool resize(uint32_t w, uint32_t h)
     {
-
-        app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
+        app_logln(-1, "%s w = %u h = %u", __PRETTY_FUNCTION__, w, h);
 
         bool ret = widget::resize(w, h);
         return ret;
@@ -410,7 +406,8 @@ public:
     virtual bool on_create(const widget_event * ev)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
         ew::graphics::gui::vertical_layout * vert_layout = new vertical_layout;
         this->set_layout(vert_layout);
@@ -524,7 +521,8 @@ public:
     virtual bool resize(uint32_t w, uint32_t h)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "w = " << w << " h = " << h << "\n";
+              app_logln(-1, "%s w = %u h = %u", __PRETTY_FUNCTION__, w, h);
+
 
         bool ret = widget::resize(w, h);
         return ret;
@@ -540,11 +538,9 @@ public:
 
         switch (scroll_dir) {
         case scroll_up: {
-            app_log << __PRETTY_FUNCTION__ << " auto sroll\n";
+            app_logln(-1, "%s  auto scroll up", __PRETTY_FUNCTION__);
             assert(0);
             //          auto txtv = get_textview();
-
-
 //           txtv->scroll_up(1, true);
 
             need_redraw = true;
@@ -561,7 +557,8 @@ public:
         break;
 
         case scroll_down: {
-            app_log << __PRETTY_FUNCTION__ << " auto scroll down\n";
+	    app_logln(-1, "%s   auto scroll down", __PRETTY_FUNCTION__);
+
             assert(0);
 //            auto txtv = get_textview();
 //            txtv->scroll_down(1, true);

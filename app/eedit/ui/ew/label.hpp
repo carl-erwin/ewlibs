@@ -49,7 +49,8 @@ public:
     virtual bool render()
     {
 #if 0
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         app_log <<  " x = " << x() << ", ";
         app_log <<  " y = " << y() << ", ";
         app_log <<  " w = " << width() << ", ";

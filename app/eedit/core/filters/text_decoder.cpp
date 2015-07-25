@@ -91,10 +91,6 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
         }
     }
 
-    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->split_count  = " << mode_ctx->split_count << "\n";
-    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->split_flag  = " << mode_ctx->split_flag << "\n";
-    app_log <<__PRETTY_FUNCTION__ << " mode_ctx->cur_cp_index  = " << mode_ctx->cur_cp_index << "\n";
-
     if (mode_ctx->split_count > 100)
         abort();
 
@@ -142,23 +138,12 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     bool is_selected = false;
 
     size_t index = 0;
-    size_t buf_sz = ctx->buffer_size;
 
     auto & out = ctx->tmp_io;
 
-    static int debug = 0; // MOVE FLAG PER MODULE + appctl ?
-    if (debug) {
-        app_log <<__PRETTY_FUNCTION__ << " buffer size  = " << buf_sz << "\n";
-        app_log <<__PRETTY_FUNCTION__ << " start offset = " << ctx->next_offset << "\n";
-    }
-
-
 
     int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
-
-    if (debug)
-        app_log <<__PRETTY_FUNCTION__ << " text_codec_read = " << ret << "\n";
-
+    
     if (ret <= 0) {
         // error : log, auto eof
         index = 0;
@@ -193,11 +178,6 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     }
 
     if (((int)index < ctx->iocnt)) {
-
-
-        if (debug)
-            app_log <<__PRETTY_FUNCTION__ << " index("<<index<<") < iocnt("<<ctx->iocnt<<"), end-of-buffer reached\n";
-
         out = ctx->end_of_buffer;
         layout_io_vec_push(out_vec, &out);
         ++index;
@@ -212,12 +192,6 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
         //
         ctx->next_offset = ctx->buffer_size; // STOP
     }
-
-
-    if (debug) {
-        app_log <<__PRETTY_FUNCTION__ << " next start offset = " << ctx->next_offset << "\n";
-    }
-
 
     return true;
 }

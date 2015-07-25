@@ -53,7 +53,7 @@ bool debug_ui_interface::main_loop()
     msg->view_id =  0;
 
     ew::core::time::sleep(100);
-    app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+    app_logln(-1, " send quit app event : ui -> core @%u", ew::core::time::get_ticks());
     eedit::core::push_event(msg);
 
     return true;

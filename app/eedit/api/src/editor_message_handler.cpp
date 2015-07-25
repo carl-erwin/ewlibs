@@ -15,8 +15,7 @@ int register_module_function(const char * name, editor_message_handler_t fn)
 {
     auto ret = modfunc_table.insert(std::pair<std::string, editor_message_handler_t>(std::string(name), fn));
     if (ret.second == false) {
-        app_log << "function '" << name << "' already existed\n";
-        app_log << " with a value of " << ret.first->second << '\n';
+        app_logln(-1, "function '%s' already exists with a value of %p", name, ret.first->second);
         return -1;
     }
 
@@ -29,7 +28,9 @@ int register_module_function(const char * name, editor_message_handler_t fn)
     if (ret != modfunc_table.end()) {
         return *ret->second;
     }
-    app_log << __PRETTY_FUNCTION__ << " function '" << name << "' not found\n";
+    
+    app_logln(-1, "function '%s' not found ", name);
+
     return nullptr;
 }
 }

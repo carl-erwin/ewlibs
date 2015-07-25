@@ -19,7 +19,7 @@
 editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_buffer_id_)
     : editor_buffer_id(editor_buffer_id_), view(view_id_)
 {
-    app_log << "loading input map configuration\n";
+    app_logln(-1, "loading input map configuration");
     auto bret = eedit::setup_default_input_map(input.event_map);
     assert(bret == true);
 
@@ -28,7 +28,7 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
     codepoint_info_reset(&start_cpi);
     start_cpi.used      = 1;
 
-    app_log << "set default text codec\n";
+    app_logln(-1, "set default text codec");
     //
     codec_id = codec_get_by_name("text/ascii");
 
@@ -38,21 +38,10 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
 
     ew::graphics::fonts::init();
 
-    app_log << " font filename " <<  app->font_file_name().c_str() << "\n";
+    app_logln(-1, " font filename '%s'", app->font_file_name().c_str());
 
     font.ft = new ew::graphics::fonts::font(app->font_file_name().c_str(), app->font_width(), app->font_height());
     font.ft->open();
-
-    app_log << " font ptr " <<  font.ft << "\n";
-
-#if 0
-    // setup view main mark
-    mark_t m = nullptr;
-    editor_buffer_get_marks(editor_buffer_id_, MOVING_MARK, 1, &m);
-    assert(m);
-    editor_view_set_main_mark(view_id_, m);
-    app_log << " set main mark " <<  m << "\n";
-#endif
 }
 
 editor_view::~editor_view()
@@ -84,17 +73,17 @@ extern "C" {
         if (it == table.end()) {
             vptr =  new editor_view(view_id, editor_buffer_id);
             table[view_id] = vptr;
-            app_log << __PRETTY_FUNCTION__ << " allocated view   = " << vptr << "\n";
+            app_log(-1, " allocated view   = %p",  vptr);
 
         } else 	if (it->first) {
             vptr = it->second;
-            app_log << __PRETTY_FUNCTION__ << " reuse view   = " << vptr << "\n";
-
+	    app_log(-1, " reuse view   = %p",  vptr);
         }
 
         vptr->editor_buffer_id = editor_buffer_id; // bind
 
-// TODO: hook
+// TODO: hook on_new_view(bid, vid)
+// TODO: view evetns : view_created, view_destroyed, buffer_open, buffer_close, etc .. 
 #if 1
         // setup view main mark
         mark_t m = nullptr;
@@ -102,7 +91,7 @@ extern "C" {
         if (!m)
             abort();
         editor_view_set_main_mark(view_id, m);
-        app_log << " set main mark " <<  m << "\n";
+        app_logln(-1,  " set main mark %p", m);
 #endif
 
         return 0;

@@ -70,43 +70,42 @@ screen_t * get_new_screen(editor_view * view)
 // compute the screen dimension according to editor buffer id / fonts
 bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t bid,  editor_view_id_t view, screen_dimension_t & dim)
 {
-    app_log <<  __PRETTY_FUNCTION__ <<  " ---\n";
+    app_logln(-1, "%s ---------", __PRETTY_FUNCTION__);
 
     static int debug = 1;
 
     if (editor_buffer_id == 0) {
-        app_log <<  __PRETTY_FUNCTION__ <<  " skipped editor_buffer_id == 0\n";
+        app_logln(-1, " skipped editor_buffer_id == 0");
         return false;
     }
 
     if (view == 0) {
-        app_log <<  __PRETTY_FUNCTION__ <<  " skipped bid == 0\n";
+        app_logln(-1, " skipped view == 0");
         return false;
     }
 
-
     if (debug) {
-        app_log <<  __PRETTY_FUNCTION__ <<  "\n";
-        app_log <<  " editor_buffer_id  = " <<  editor_buffer_id <<  "\n";
-        app_log <<  " bid   = " <<  bid <<  "\n";
-        app_log <<  " view   = " << view <<  "\n";
-        app_log <<  " dim.w = " <<  dim.w <<  ", ";
-        app_log <<  " dim.h = " <<  dim.h <<  ", ";
-        app_log <<  " dim.c = " <<  dim.c <<  ", ";
-        app_log <<  " dim.l = " <<  dim.l <<  "\n";
+        app_log(-1, " editor_buffer_id = %lu", editor_buffer_id);
+        app_log(-1, " bid   = %u,", bid  );
+        app_log(-1, " view  = %u,", view );
+        app_log(-1, " dim.w = %u,", dim.w);
+        app_log(-1, " dim.h = %u,", dim.h);
+        app_log(-1, " dim.c = %u,", dim.c);
+        app_log(-1, " dim.l = %u",  dim.l);
+	app_logln(-1, "");
     }
 
     auto buffer = editor_buffer_check_id(editor_buffer_id);
     if (!buffer) {
-        app_log <<  " editor_buffer_check_id error\n";
+        app_logln(-1, " editor_buffer_check_id error");
         return false;
     }
 
     auto view2 = editor_buffer_check_view_id(editor_buffer_id, view);
     if (view2 != 0) {
-        app_log <<  " view already added to editor buffer\n";
+        app_logln(-1, " view already added to editor buffer");
     } else {
-        app_log <<  " allocating view\n";
+        app_logln(-1, " allocating view");
         editor_buffer_add_view(editor_buffer_id, view, &dim);
     }
     editor_view * real_view = editor_view_get_internal_pointer(view);
@@ -134,8 +133,8 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     int32_t vadvance = tmp_glyph_info.vert_advance;
 
     if (debug) {
-        app_log << " hadvance = " <<  hadvance <<  "\n";
-        app_log << " vadvance = " <<  vadvance <<  "\n";
+        app_log(-1, " hadvance = %u", hadvance);
+        app_log(-1, " vadvance = %u", vadvance);
     }
 
     // border + cp height + border
@@ -145,14 +144,14 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     dim.c = std::max<int32_t>(number_of_cp_per_line, 1);
 
     if (debug) {
-        app_log <<  " normalized dim.c = " <<  dim.c <<  "\n";
-        app_log <<  " normalized dim.l = " <<  dim.l <<  "\n";
-        app_log <<  " normalized dim.w = " <<  dim.w <<  "\n";
-        app_log <<  " normalized dim.h = " <<  dim.h <<  "\n";
+        app_logln(-1, " normalized dim.c = %u,", dim.c);
+        app_logln(-1, " normalized dim.l = %u",  dim.l);
+	app_logln(-1, " normalized dim.w = %u,", dim.w);
+        app_logln(-1, " normalized dim.h = %u,", dim.h);
     }
 
     if (debug) {
-        app_log <<  " check cache\n";
+        app_logln(-1, " check cache");
     }
 
     // if dim != release preallocated screen
@@ -162,10 +161,10 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         || (real_view->screen_info.dim.h  != dim.h)) {
         editor_view_release_preallocated_screens(view);
 
-        app_log <<  " release previous screens\n";
+        app_logln(-1, " release previous screens");
 
     } else {
-        app_log <<  " reuse previous screens\n";
+        app_logln(-1, " reuse previous screens");
     }
 
     real_view->screen_info.dim = dim;
@@ -198,7 +197,6 @@ bool push_event(struct editor_message_s * msg)
         break;
 
         case EDITOR_BUILD_LAYOUT_EVENT: {
-            app_log << __PRETTY_FUNCTION__ << " EDITOR_BUILD_LAYOUT_EVENT\n";
             check_input_message(msg);
         }
         break;
@@ -208,7 +206,7 @@ bool push_event(struct editor_message_s * msg)
         break;
 
         default: {
-            app_log <<  "core : sending : unhandled event type " <<  (void *)msg->type << "\n";
+            app_log(-1, "core : sending : unhandled event type %p", (void *)msg->type);
             abort();
         }
         break;
@@ -285,7 +283,7 @@ bool save_buffer(struct editor_message_s * msg)
 {
     //auto buffer = get_buffer_by_id(msg->byte_buffer_id);
 
-    app_log << " SAVING buffer...\n";
+    app_logln(-1, " SAVING buffer...");
     uint32_t t0 = ew::core::time::get_ticks();
     assert(0);
     size_t sz = 0;
@@ -293,8 +291,8 @@ bool save_buffer(struct editor_message_s * msg)
     // buffer_write_to_disk(msg->byte_buffer_id, &sz);
 //    buffer->txt_buffer()->save_buffer();
     uint32_t t1 = ew::core::time::get_ticks();
-    app_log << " ok...\n";
-    app_log << " buffer saved in " << (t1 - t0) << "ms\n";
+    app_logln(-1, " ok...");
+    app_logln(-1, " buffer saved in %u ms", (t1 - t0));
 
     return true;
 }
@@ -448,12 +446,11 @@ void register_core_modules_function()
 void main(std::shared_ptr<application> app)
 {
     core_ctx.m_msg_queue = editor_event_queue_new();
-    app_log << "core_ctx.m_msg_queue @" << core_ctx.m_msg_queue << "\n";
 
     {
         std::lock_guard<std::mutex> lock(core_ctx.m_mtx);
         if (core_ctx.core_started == true) {
-            app_log << "core already started !!!\n";
+            abort();
             return;
         }
         core_ctx.core_started = true;
@@ -465,7 +462,7 @@ void main(std::shared_ptr<application> app)
     // from config file -> load-module path/to/file.so ?
     register_core_modules_function();
 
-    app_log << " FIXME: ad other lib*.so (mark/text)";
+    app_log(-1, " FIXME: ad other lib*.so (mark/text)");
     // text_mode_register_modules_function(); // move away : config file
     // mark_mode_register_modules_function(); // move away : config file
 
@@ -480,21 +477,10 @@ void main(std::shared_ptr<application> app)
         auto nr = editor_event_queue_size(core_ctx.m_msg_queue);
         while (nr) {
             struct editor_message_s * msg = nullptr;
-            auto t0 = ew::core::time::get_ticks();
-
-            if (0) {
-                app_log << "["<<t0<<"] queue size (" << editor_event_queue_size(core_ctx.m_msg_queue) << ")\n";
-                app_log << "["<<t0<<"] nr events to process(" << nr << ")\n";
-            }
 
             msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
             process_editor_message(&core_ctx, msg);
-            auto t1 = ew::core::time::get_ticks();
-            if (0) {
-                app_log << "["<<t1<<"] time to process event = " << t1 - t0 << "\n";
-            }
-
             // --nr;
             nr = editor_event_queue_size(core_ctx.m_msg_queue);
         }

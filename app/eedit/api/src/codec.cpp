@@ -24,13 +24,12 @@ struct codec_id_info_s {
 };
 
 
-inline std::ostream & operator<<(std::ostream & stream, const codec_id_info_s & info)
+inline void log_codec_id_info( const codec_id_info_s & info)
 {
-    app_log << "info{id = " << info.id  << ", ";
-    app_log << "name = '" << info.name << "', ";
-    app_log << "type = " << info.type << ", ";
-    app_log << "ops = " << info.ops << "}";
-    return stream;
+    app_log(-1, "info{id = %u, ", info.id);
+    app_log(-1, "name = '%s, ", info.name.c_str());
+    app_log(-1, "type = %u, ", info.type);
+    app_log(-1, "ops = %p}", info.ops);
 }
 
 
@@ -58,8 +57,8 @@ SHOW_SYMBOL codec_id_t codec_register(const char * name, enum editor_codec_type_
     id = next_id++;
     codec_id_info_s info {id,name,type,ops};
 
-    app_log << __PRETTY_FUNCTION__ << " " << info << "\n";
-
+    log_codec_id_info(info);
+    
     // if codec_map.find(ops) -> error
     codec_by_name_map[std::string(name)] = info;
     codec_by_id_map[id] = info;
@@ -78,7 +77,7 @@ SHOW_SYMBOL codec_id_t codec_get_by_name(const char * name)
     }
 
     auto & info = it->second;
-    app_log << __PRETTY_FUNCTION__ << " " << info << "\n";
+    log_codec_id_info(info);
 
     return info.id;
 }

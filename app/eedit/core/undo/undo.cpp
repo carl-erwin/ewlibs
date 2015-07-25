@@ -83,7 +83,7 @@ int buffer_redo(struct editor_message_s * msg)
     buffer_log_get_current_commit(log, &rev, &ci_data);
 
     if (oldrev == rev) {
-        app_log << "nothing to redo\n";
+        app_log(-1, "nothing to redo\n");
         return true;
     }
 

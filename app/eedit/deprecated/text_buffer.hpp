@@ -815,7 +815,8 @@ public:
          */
         bool toBeginningOfLine()
         {
-//            app_log << __PRETTY_FUNCTION__ << "\n";
+//            app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
             // search by indexer info + codec
 
             if (offset() == 0) {

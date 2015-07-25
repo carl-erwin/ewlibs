@@ -34,7 +34,7 @@ public:
         ////////////////////////
 
         if (ew::graphics::gui::init() == false) {
-            app_log << "ew::graphics::gui::init() :: error" << "\n";
+            app_logln(-1, "ew::graphics::gui::init() :: error");
             return false;
         }
 
@@ -48,7 +48,7 @@ public:
         }
 
         if (ew::graphics::rendering::init() == false) {
-            app_log << "ew::graphics::gui::init() :: error" << "\n";
+            app_logln(-1, "ew::graphics::gui::init() :: error");
             return false;
         }
 

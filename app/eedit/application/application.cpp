@@ -138,9 +138,6 @@ public:
 application::application_private::  application_private()
 
 {
-    app_log << __PRETTY_FUNCTION__ << " ENTER\n";
-
-    app_log << __PRETTY_FUNCTION__ << " LEAVE\n";
 }
 
 
@@ -165,7 +162,8 @@ application::application()
     :
     m_priv(std::unique_ptr<application_private>(new application_private))
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 }
 
 
@@ -435,11 +433,11 @@ bool application::application_private::setup_modules()
     // must provide default buildtin modules, ascii/utf8/basic_marks
     char * mod_env = ew::core::program::getenv("EEDIT_MODULES_LIST"); // TODO: add documentation comma separated list
     if (!mod_env) {
-        app_log << "env[EEDIT_MODULES_LIST] is not defined...\n";
+        app_log(-1, "env[EEDIT_MODULES_LIST] is not defined...\n");
         return true;
     }
 
-    app_log << "env[EEDIT_MODULES_LIST] is set to : '" << mod_env << "'\n";
+    app_log(-1, "env[EEDIT_MODULES_LIST] is set to : '%s'", mod_env);
 
     std::vector<std::string> mod_vec = split(mod_env, ',');
 
@@ -452,9 +450,9 @@ bool application::application_private::setup_modules()
     for (auto & libname : mod_vec) {
 
         auto lib = std::unique_ptr<ew::core::dll>(new ew::core::dll(libname.c_str()));
-        app_log << "try to load file '" << libname << "'\n";
+        app_logln(-1, "try to load file '%s", libname.c_str());
         if (lib->load() == false) {
-            app_log << "cannot load file '" << libname << "'\n";
+  	    app_logln(-1, "cannotload file '%s", libname.c_str());
             continue;
         }
 
@@ -465,10 +463,11 @@ bool application::application_private::setup_modules()
         for (auto sym : mandatory_symbols) {
             auto ptr = lib->symbol_by_name(sym);
             if (ptr == nullptr) {
+	        app_logln(-1, "cannot found symbol '%s'", sym);
                 error = true;
                 break;
             }
-            app_log << "found symbol '" << sym << "'\n";
+            app_logln(-1, "found symbol '%s'", sym);
 
         }
 
@@ -476,7 +475,7 @@ bool application::application_private::setup_modules()
             continue;
         }
 
-        app_log << libname << " : all mandatory symbols found\n";
+        app_logln(-1, "%s all mandatory symbols found", libname.c_str());
 
 
         const char * (*modname_fn_ptr)()    = reinterpret_cast<const char * (*)()>(lib->symbol_by_name("module_name"));
@@ -489,13 +488,13 @@ bool application::application_private::setup_modules()
         eedit_module_type_e  modtype = modtype_fn_ptr();
 
 
-        app_log << libname << " : modname    : '" << modname << "'\n";
-        app_log << libname << " : modversion : '" << modversion << "'\n";
-        app_log << libname << " : modtype    : '" << modtype << "'\n";
+        app_logln(-1, " %s : modname    : '%s'", libname.c_str(), modname.c_str());
+        app_logln(-1, " %s : modversion : '%s'", libname.c_str(), modversion.c_str());
+        app_logln(-1, " %s : modtype    : '%u'", libname.c_str(), modtype);
 
         if (modtype == MODULE_TYPE_INVALID) {
             error = true;
-            app_log << libname << " : invliad modtype\n";
+            app_logln(-1, "%s : invalid modtype", libname.c_str());
         }
 
         if (error == false) {
@@ -512,9 +511,9 @@ bool application::application_private::setup_modules()
             eedit_module_init_status_e modinit_ret = modinit_fn_ptr();
             if (modinit_ret != MODULE_INIT_OK) {
                 error = true;
-                app_log << libname << " : modinit error\n";
+                 app_logln(-1, " %s : modinit error", libname.c_str());
             } else {
-                app_log << libname << " : modinit ok\n";
+                 app_logln(-1, " %s : modinit ok", libname.c_str());
             }
         }
 
@@ -552,7 +551,7 @@ bool application::application_private::setup_modules()
     }
 
     for ( const auto & e : module_map) {
-        app_log << e.first << "\n";
+        app_logln(-1, "%s", e.first.c_str());
     }
 
     // TODO: config:
@@ -568,7 +567,7 @@ bool application::application_private::setup_modules()
 bool application::application_private::release_modules()
 {
     for ( const auto & e : module_map) {
-        app_log << __FUNCTION__ << " " << e.first << "\n";
+        app_log(-1, " %s %s", __FUNCTION__, e.first.c_str());;
     }
 
     return true;
@@ -589,7 +588,7 @@ bool application::application_private::setup_buffers()
     // TODO: font-family: normal/bold/italic/italic-bold
     // setup_font()
     // open fonts here
-    app_log << " setup fonts\n";
+    app_log(-1, " setup fonts\n");
 
     // replace : ft = font_family->normal()
     // have ft = ft->italic(1|0)->bold(1|0)
@@ -617,21 +616,23 @@ bool application::application_private::setup_buffers()
         }
 
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
-        app_log << "allocated  bid['"<< filename  <<"'] = " << bid << "\n";
-        app_log << "allocated editor_buffer_id['"<< filename  <<"'] = " << editor_buffer_id << "\n";
+        app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
+	app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
 
         if (editor_buffer_id == 0) {
-            app_log << " cannot prepare buffer for '" << filename << "'\n";
+            app_log(-1, " cannot prepare buffer for '%s'", filename);
             assert(0);
             continue;
         }
 
-        app_log << " prepare buffer for '" << filename << "'\n";
+        app_log(-1, " prepare buffer for '%s'", filename);
         m_buffer_desc_list.emplace_back(editor_buffer_id);
     }
 
     // FIXME:
     // init log/message/scratch
+    
+    
     if (m_buffer_desc_list.size() == 0) {
 
         // TODO: file path check/line/column
@@ -647,18 +648,13 @@ bool application::application_private::setup_buffers()
         }
 
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
-        app_log << "allocated  bid['"<< filename  <<"'] = " << bid << "\n";
-        app_log << "allocated editor_buffer_id['"<< filename  <<"'] = " << editor_buffer_id << "\n";
+        app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
+	app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
 
         if (editor_buffer_id == 0) {
-            app_log << " cannot prepare buffer for '" << filename << "'\n";
-            assert(0);
+	    app_log(-1, " cannot prepare buffer for '%s'", filename);
             return false;
         }
-
-
-
-
 
     }
 

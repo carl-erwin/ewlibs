@@ -142,13 +142,15 @@ public:
     virtual bool on_mouse_button_press(const ew::graphics::gui::events::button_event * ev)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         return false;
     }
 
     virtual bool on_mouse_button_release(const ew::graphics::gui::events::button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         return false;
     }
 

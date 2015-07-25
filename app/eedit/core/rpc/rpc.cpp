@@ -39,7 +39,8 @@ void send_rpc_answer(const struct editor_message_s * ev_in, struct editor_messag
 //
 void get_buffer_id_list(struct editor_message_s * request, int ac,  char * av[])
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
     auto app = get_application();
 
@@ -97,7 +98,7 @@ void set_screen_id_start_offset(struct editor_message_s * request, int ac,  char
         return;
     }
 
-    app_log << " target offset to : " << target_offset << "\n";
+    app_logln(-1, " target offset to : %lu", target_offset);
 
     // auto screen = get_scbuffer_by_id(request->buffer_id);
     // if offset on screen -> return
@@ -136,8 +137,8 @@ bool process_rpc_call_event(struct editor_message_s * msg)
         return true;
     }
 
-    app_log << "rpc function " << f_name << "not found\n";
-    assert(0);
+    app_logln(-1, "rpc function %s",  f_name.c_str());
+    abort();
     return true;
 }
 

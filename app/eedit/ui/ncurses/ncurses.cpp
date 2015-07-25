@@ -142,7 +142,7 @@ bool ncurses_ui_interface::send_rpc_event(const int ac,  const char ** av, edito
     assert(screen_dim.w);
     assert(screen_dim.h);
 
-    app_log << " send_rcp_event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+    app_log(-1, " send_rcp_event : ui -> core @%u", ew::core::time::get_ticks());
 
     eedit::core::push_event(msg);
     return true;
@@ -168,7 +168,7 @@ void sigint_handler(int sig)
     // display current key on console
     editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
 
-    app_log << __PRETTY_FUNCTION__ << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+    app_logln(-1, " send quit app event : ui -> core @%u", ew::core::time::get_ticks());
     eedit::core::push_event(msg);
 }
 
@@ -179,10 +179,10 @@ screen_dimension_t ncurses_ui_interface::get_screen_dimension()
     int col;
     getmaxyx(stdscr, row, col);
 
-    app_log << " screen row = " << row << "\n";
-    app_log << " screen col = " << col << "\n";
-    app_log << " vscreen w = " << col * get_application()->font_width()  << "\n";
-    app_log << " vscreen h = " << row * get_application()->font_height() << "\n";
+    app_logln(-1, " screen row = %u", row);
+    app_logln(-1, " screen col = %u", col);
+    app_logln(-1, " vscreen w  = %u" , col * get_application()->font_width() );
+    app_logln(-1, " vscreen h  = %u" , row * get_application()->font_height());
 
     screen_dimension_t scr_dim {
         uint32_t(row),
@@ -239,11 +239,11 @@ bool ncurses_ui_interface::main_loop()
         if (keycode == ERR)
             continue;
 
-        app_log << " keycode = " << keycode << "\n";
+        app_logln(-1, " keycode = %u", keycode);
 
 
         const char *name = keyname( keycode );
-        app_log << "ncurses : you entered: code(" << keycode << ") -> '" << name <<"'\n";
+        app_logln(-1, "ncurses : you entered: code(%u) -> '%s'", keycode, name);
 
         auto msg              = ncurses_event_to_editor_message(keycode);
         msg->id               = 0; // FIXME: id++
@@ -267,9 +267,9 @@ bool ncurses_ui_interface::main_loop()
         // display current key on console
         editor_input_event_dump(&msg->input.ev, __PRETTY_FUNCTION__);
 
-        app_log << "\n";
+        app_logln(-1, "");
 
-        app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+        app_logln(-1, " send quit app event : ui -> core @%u", ew::core::time::get_ticks());
         eedit::core::push_event(msg);
     }
 #if 0
@@ -614,6 +614,14 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
         }
     }
 
+    // clear remaining screen lines
+    for (int li = limax; li < row; li++) {
+        for (uint32_t c = 0; c < colmax; c++) {
+            mvaddch(li, c, ' ');
+        }
+    }
+    
+
     //refresh();
 
     screen_release(msg->layout.screen);
@@ -623,10 +631,8 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
 // FIXME: pass col,row
 bool ncurses_ui_interface::send_build_layout_event(uint32_t w, uint32_t h) const
 {
-    app_log << __PRETTY_FUNCTION__ << " ui -> core @" << ew::core::time::get_ticks() << "\n";
-
     if (m_cur_ebid ==  0) {
-        app_log << __PRETTY_FUNCTION__ << " no buffer selected found" << "\n";
+        app_logln(-1, " no buffer selected found");
         return false;
     }
 
@@ -652,7 +658,7 @@ bool ncurses_ui_interface::send_build_layout_event(uint32_t w, uint32_t h) const
         uint32_t(row * get_application()->font_height())
     };
 
-    app_log << " send_build_layout_event : ui -> core @" << ew::core::time::get_ticks() << "\n";
+    app_logln(-1, " send_build_layout_event: ui -> core @%u", ew::core::time::get_ticks());
 
     eedit::core::push_event(msg);
     return true;
@@ -661,7 +667,7 @@ bool ncurses_ui_interface::send_build_layout_event(uint32_t w, uint32_t h) const
 
 bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_message_s * msg)
 {
-    app_log << __FUNCTION__ << "  recv " << msg->rpc.av[0] << "\n";
+    app_logln(-1,"  recv rpc'%s'", msg->rpc.av[0]);
 
     if (msg->rpc.ac == 0) {
         assert(0);
@@ -681,7 +687,7 @@ bool ncurses_ui_interface::process_editor_new_rpc_answer_ui_event(struct editor_
 
             assert(m_cur_ebid);
 
-            app_log << __PRETTY_FUNCTION__ << " select buffer_id " <<  m_cur_ebid <<  "\n";
+            app_log(-1, " %s select buffer_id %u", __PRETTY_FUNCTION__, m_cur_ebid);
             send_build_layout_event(0,0);
             ui_state = ui_ready; // FIXME: do this when the first layout is received
         }
@@ -725,7 +731,7 @@ bool ncurses_ui_interface::process_editor_ui_event(struct editor_message_s * msg
     break;
 
     default: {
-        app_log << __PRETTY_FUNCTION__ << " unhandled event msg->type(" << msg->type << ")\n";
+        app_logln(-1, "%s unhandled event msg->type(%d)", __PRETTY_FUNCTION__, msg->type);
         assert(0);
     }
 

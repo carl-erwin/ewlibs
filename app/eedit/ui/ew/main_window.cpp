@@ -164,7 +164,6 @@ bool process_editor_new_layout_ui_event(main_window * win, struct editor_message
     auto view = win->get_text_view();     // the message must contain a private ref to the "view" widget instead of  win->get_text_view2();
 
     if (!msg->layout.screen) {
-        app_log << __PRETTY_FUNCTION__ << " no screen in layout_event\n";
         return true;
     }
 
@@ -178,7 +177,6 @@ bool process_editor_new_layout_ui_event(main_window * win, struct editor_message
     if (view->pending_redraw == 0) {
         view->pending_redraw = 1;
 
-        app_log << "[" << ew::core::time::get_ticks() << "] : " <<  __PRETTY_FUNCTION__ << " PUSH DRAW EVENT\n";
         widget * p = dynamic_cast<ew::graphics::gui::widget *>(win);
         ew::graphics::gui::push_draw_event(static_cast<widget *>(p));
     }
@@ -188,10 +186,8 @@ bool process_editor_new_layout_ui_event(main_window * win, struct editor_message
 
 bool process_editor_new_rpc_answer_ui_event(main_window * win, struct editor_message_s * msg)
 {
-    app_log <<  __PRETTY_FUNCTION__ << "***************\n";
-
     for (auto i = 0; i < msg->rpc.ac; ++i) {
-        app_log <<  __PRETTY_FUNCTION__ << " msg->rpc.av["<< i << "] = " <<  msg->rpc.av[i] << "\n";
+        app_log(-1, "%s  msg->rpc.av[%u] = '%s'", __PRETTY_FUNCTION__, i, msg->rpc.av[i]);
     }
 
     if (msg->rpc.ac ==  0) {
@@ -245,7 +241,7 @@ bool process_editor_ui_event(main_window * win, struct editor_message_s * msg)
     break;
 
     default: {
-        app_log << __PRETTY_FUNCTION__ << " unhandled event msg->type(" << msg->type << ")\n";
+        app_logln(-1, "%s unhandled event msg->type(%u)",__PRETTY_FUNCTION__, msg->type);
         assert(0);
     }
     break;
@@ -281,8 +277,8 @@ void main_window::process_event_queue(void)
 
     auto t1 = ew::core::time::get_ticks();
     if (0) {
-        app_log << "["<<t1<<"] ui time to process event  = " << t1 - t0 << "\n";
-        app_log << "["<<t1<<"] ui event queue size = " << editor_event_queue_size(q) << "\n";
+        app_log(-1, "[%u] ui time to process event = %u", t1, t1 - t0);
+        app_log(-1, "[%u] ui event queue size = %u", t1, editor_event_queue_size(q));
     }
 }
 
@@ -374,7 +370,6 @@ bool main_window::main_window_private::create_buffer_view()
         //   assert(m_buffer_view->m_text_view);
 
         uint32_t line_number_w = 1 + (12 * ft->width_in_pixels()) + 1; // TODO: max 16 digits + @
-        app_log << "line_number_w = " << line_number_w << "\n";
         m_buffer_view->m_line_number->set_width(line_number_w);
         m_buffer_view->m_line_number->set_height(m_owner->height());
         m_buffer_view->m_line_number->horizontal_policy().type() = alignment::fixed;
@@ -419,10 +414,6 @@ bool main_window::main_window_private::create_buffer_view()
 
 bool main_window::on_create(const widget_event * ev)
 {
-    app_log << __FUNCTION__ << " main_window::on_create\n";
-    app_log << __FUNCTION__ << " ev->width  = " << ev->width  << "\n";
-    app_log << __FUNCTION__ << " ev->height = " << ev->height << "\n";
-
     set_width(ev->width);
     set_height(ev->height);
 
@@ -565,7 +556,6 @@ bool main_window::on_close(const widget_event * ev)
     msg->dst.kind  =  EDITOR_ACTOR_CORE;
     msg->view_id =  0;
 
-    app_log << " send quit app event : ui -> core @" << ew::core::time::get_ticks() << "\n";
     eedit::core::push_event(msg);
     return true;
 }
@@ -574,7 +564,7 @@ bool main_window::on_close(const widget_event * ev)
 
 bool main_window::on_mouse_wheel_up(const button_event * ev)
 {
-    app_log << __PRETTY_FUNCTION__ << " : DISABLED !!\n";
+    app_logln(-1, "%s DISABLED !!", __PRETTY_FUNCTION__);
     return true;
 
 //    main_window_priv->m_buffer_view->m_text_view->on_mouse_wheel_up(ev);
@@ -585,7 +575,7 @@ bool main_window::on_mouse_wheel_up(const button_event * ev)
 
 bool main_window::on_mouse_wheel_down(const button_event * ev)
 {
-    app_log << __PRETTY_FUNCTION__ << " : DISABLED !!\n";
+    app_logln(-1, "%s DISABLED !!", __PRETTY_FUNCTION__);
     return true;
 
 //    main_window_priv->m_buffer_view->m_text_view->on_mouse_wheel_down(ev);
@@ -598,7 +588,8 @@ bool main_window::on_mouse_wheel_down(const button_event * ev)
 //
 bool main_window::on_mouse_button_press(const button_event * ev)
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
     return true;
 }
 
@@ -606,7 +597,7 @@ bool main_window::on_mouse_button_press(const button_event * ev)
 
 bool main_window::on_mouse_button_release(const button_event * ev)
 {
-    app_log << __PRETTY_FUNCTION__ << "";
+ app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
     bool ret = true;
 

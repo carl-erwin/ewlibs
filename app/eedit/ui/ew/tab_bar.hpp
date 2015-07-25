@@ -150,7 +150,7 @@ public:
     virtual bool on_key_press(const ew::graphics::gui::events::keyboard_event * ev)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "";
+          app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
         widget * p = dynamic_cast<ew::graphics::gui::widget *>(get_parent());
         if (p) {
@@ -162,7 +162,7 @@ public:
     virtual bool on_key_release(const ew::graphics::gui::events::keyboard_event * ev)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "";
+          app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
 
         widget * p = dynamic_cast<ew::graphics::gui::widget *>(get_parent());
@@ -176,27 +176,27 @@ public:
     virtual bool on_mouse_button_press(const ew::graphics::gui::events::button_event * ev)
     {
 
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
         return false;
     }
 
     virtual bool on_mouse_button_release(const ew::graphics::gui::events::button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         return false;
     }
 
 
     virtual bool set_width(uint32_t w)
     {
-        app_log << __PRETTY_FUNCTION__ << " : w " << w << "\n";
         return widget::set_width(w);
     }
 
     virtual bool set_height(uint32_t h)
     {
-        app_log << __PRETTY_FUNCTION__ << " : h " << h << "\n";
         return widget::set_height(h);
     }
 

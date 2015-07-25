@@ -47,7 +47,6 @@ public:
 
     virtual bool set_width(uint32_t w)
     {
-        app_log << __PRETTY_FUNCTION__ << " : w " << w << "\n";
         assert(w != 0);
         // TODO: compute border
         widget::set_width(w);
@@ -56,8 +55,6 @@ public:
 
     virtual bool set_height(uint32_t h)
     {
-        app_log << __PRETTY_FUNCTION__ << " : h " << h << "\n";
-
         // TODO: compute border
         widget::set_height(h);
         return m_label->set_height(h);
@@ -65,14 +62,16 @@ public:
 
     virtual bool on_mouse_button_press(const ew::graphics::gui::events::button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         return static_cast<widget *>(get_parent())->on_mouse_button_press(ev);
         return false;
     }
 
     virtual bool on_mouse_button_release(const ew::graphics::gui::events::button_event * ev)
     {
-        app_log << __PRETTY_FUNCTION__ << "\n";
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
         return static_cast<widget *>(get_parent())->on_mouse_button_release(ev);
         return false;
     }

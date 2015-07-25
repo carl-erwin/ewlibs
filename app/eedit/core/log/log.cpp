@@ -1,20 +1,47 @@
-#include <fstream>      // std::filebuf
+#include <stdio.h>
+#include <stdarg.h>
 
 #include "log.hpp"
 
-std::filebuf app_fb;
-std::ostream app_log(&app_fb);
+static FILE * _app_log = nullptr;
 
 void app_log_init()
 {
-    app_fb.pubsetbuf(0, 0);
-    app_fb.open("/tmp/eedit.log", std::ios::out|std::ios::app);
-    app_log << "*** log initialized ***\n";
+    _app_log = fopen("/tmp/eedit.log", "a");
+    app_logln(-1, "%s", "*** log initialized ***");
 }
-
 
 
 void app_log_quit()
 {
-    app_fb.close();
+  if (_app_log) {
+   fclose(_app_log);
+    _app_log = nullptr;
+  }
+}
+
+
+void app_log(uint64_t level, const char *format, ...)
+{
+  if (_app_log == nullptr)
+    return ;
+  
+  va_list ap;
+  va_start(ap, format);
+  vfprintf(_app_log, format, ap);
+  va_end(ap);
+  fflush(_app_log);
+}
+
+void app_logln(uint64_t level, const char *format, ...)
+{
+  if (_app_log == nullptr)
+    return ;
+  
+  va_list ap;
+  va_start(ap, format);
+  vfprintf(_app_log, format, ap);
+  va_end(ap);
+  fprintf(_app_log, "\n");
+  fflush(_app_log);
 }

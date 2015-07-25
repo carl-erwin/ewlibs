@@ -54,6 +54,7 @@ bool mark_filter_init(editor_layout_builder_context_t * blayout_ctx, editor_layo
 
     uint64_t last_push = uint64_t(-1);
 
+    // unique
     for (auto m : marks) {
         auto cur_offset = mark_get_offset(m);
         if (cur_offset != last_push) {

@@ -195,13 +195,13 @@ void screen_set_buffer_size(screen_t * scr, uint64_t sz)
 
 void screen_dump(const screen_t * scr, const char * by)
 {
-    app_log << __PRETTY_FUNCTION__ << " by " << by << "\n";
-    app_log << " screen m_max_l = " << scr->m_max_l << "\n";
-    app_log << " screen m_max_c = " << scr->m_max_c << "\n";
-    app_log << " screen m_max_width_px = " << scr->m_max_width_px << "\n";
-    app_log << " screen m_max_height_px = " << scr->m_max_height_px << "\n";
-    app_log << " screen m_line_array.size() = " << scr->m_line_array.size() << "\n";
-    app_log << " screen number_of_used_lines() = " << screen_get_number_of_used_lines(scr) << "\n";
+    app_logln(-1, "%s by %s", __PRETTY_FUNCTION__, by);
+    app_logln(-1, " screen m_max_l = %u", scr->m_max_l);
+    app_logln(-1, " screen m_max_c = %u", scr->m_max_c);
+    app_logln(-1, " screen m_max_width_px = %u", scr->m_max_width_px);
+    app_logln(-1, " screen m_max_height_px = %u", scr->m_max_height_px);
+    app_logln(-1, " screen m_line_array.size() = %u", scr->m_line_array.size());
+    app_logln(-1, " screen number_of_used_lines() = %u", screen_get_number_of_used_lines(scr));
 
     assert(screen_get_number_of_used_lines(scr) <= scr->m_line_array.size());
 }
@@ -457,7 +457,7 @@ int screen_set_start_offset(screen_t * scr, uint64_t start_offset)
 
 int screen_get_codepoint_by_coords(screen_t * scr, int32_t x, int32_t y, const struct codepoint_info_s ** out_cpi)
 {
-    app_log << __PRETTY_FUNCTION__ << " : x = " << x << " y " << y << "\n";
+    app_log(-1, " : x = %u, y= %u", x, y);
 
     *out_cpi = nullptr;
 
@@ -497,38 +497,37 @@ int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 
     if (scr->first_cpinfo.used == 0) {
         if (debug)
-            app_log << __PRETTY_FUNCTION__ << " first_cpinfo == nullptr\n";
+            app_logln(-1, " first_cpinfo == nullptr");
         assert(0);
         return 0;
     }
 
     if (scr->last_cpinfo.used == 0) {
         if (debug)
-            app_log << __PRETTY_FUNCTION__ << " last_cpinfo == nullptr\n";
+            app_logln(-1, " last_cpinfo == nullptr");
         assert(0);
         return 0;
     }
 
     if (debug) {
-        app_log << __PRETTY_FUNCTION__
-                << " : offset("<<offset<<") , "
-                << " first_cpinfo->offset("<< scr->first_cpinfo.offset <<"), "
-                << " last_cpinfo->offset ("<< scr->last_cpinfo.offset <<")\n";
+        app_log(-1, " : offset(%lu)", offset),
+        app_log(-1, ", first_cpinfo->offset(%lu)", scr->first_cpinfo.offset);
+        app_log(-1, ", last_cpinfo->offset (%lu)", scr->last_cpinfo.offset);
     }
 
     if (offset > scr->last_cpinfo.offset) {
         if (debug)
-            app_log << __PRETTY_FUNCTION__ << " : offset("<<offset<<") > "<< "last_cpinfo.offset ("<<scr->last_cpinfo.offset<<")\n";
+            app_logln(-1, " offset(%lu) last_cpinfo.offset (%lu)", offset, scr->last_cpinfo.offset);
         return 0;
     }
 
     if (offset < scr->first_cpinfo.offset) {
         if (debug)
-            app_log << __PRETTY_FUNCTION__ << " : offset("<<offset<<") < "<< "first_cpinfo.offset ("<<scr->first_cpinfo.offset<<") \n";
+            app_logln(-1, " offset(%lu) first_cpinfo.offset (%lu)", offset, scr->first_cpinfo.offset);
         return 0;
     }
 
-    app_log << __PRETTY_FUNCTION__ << " found : offset("<<offset<<") on screen\n";
+    app_log(-1, " found : offset(%lu) on screen", offset);
 
     return 1;
 }
@@ -537,26 +536,14 @@ int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 EDITOR_EXPORT
 int screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const screen_line_t ** l, size_t * scr_line_index, size_t * scr_col_index)
 {
-    static int debug = 0;
-
     *l = nullptr;
+    *scr_line_index = 0;
 
     if (!screen_contains_offset(scr, offset)) {
         return 0;
     }
 
-    if (debug) {
-        // for each ? dichotomy
-        app_log << __PRETTY_FUNCTION__
-                << " : offset("<<offset<<") , "
-                << " number_of_used_lines() " << screen_get_number_of_used_lines(scr) << "\n";
-    }
-
     for (*scr_line_index = 0; *scr_line_index < (size_t)screen_get_number_of_used_lines(scr); ++(*scr_line_index)) {
-
-        if (debug) {
-            app_log << __PRETTY_FUNCTION__ << " : CHECKING line_index("<<*scr_line_index<<") / " << (size_t)screen_get_number_of_used_lines(scr) << "\n";
-        }
 
         // screen_get_line(scr, *scr_line_index, &l, no_bundary_check);
         *l = &scr->m_line_array[*scr_line_index];
@@ -565,41 +552,14 @@ int screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const
         size_t last_col_index;
         screen_line_get_last_cpinfo((*l), &cpi, &last_col_index);
 
-        if (debug) {
-            app_log << __PRETTY_FUNCTION__ << " : scr_line_index("<<*scr_line_index<<") , " << " cpi->offset() " <<  cpi->offset << "\n";
-        }
-
         if (offset > cpi->offset) { // this line ?
-            if (debug) {
-                app_log << __PRETTY_FUNCTION__ << " offset("<<offset<<") > line_index("<<*scr_line_index<<").last_cpi->offset("<< cpi->offset << ")\n";
-            }
             continue;
-        }
-
-        if (debug) {
-            app_log << __PRETTY_FUNCTION__ << " offset("<<offset<<") <= line_index("<<*scr_line_index<<").last_cpi->offset("<< cpi->offset << ")\n";
-        }
-
-        if (debug) {
-            app_log << __PRETTY_FUNCTION__
-                    << " : offset("<<offset<<") , "
-                    << " last_col_index " << last_col_index << "\n";
         }
 
         for (*scr_col_index = 0; *scr_col_index < (last_col_index + 1); ++(*scr_col_index)) {
             screen_line_get_cpinfo(*l, *scr_col_index, &cpi, screen_line_hint_no_column_fix);
 
-            if (debug) {
-                app_log << __PRETTY_FUNCTION__
-                        << " : scr_col_index("<<scr_col_index<<") , "
-                        << " cpi->offset() " <<  cpi->offset << "\n";
-            }
-
             if (cpi->offset == offset) {
-
-                if (debug) {
-                    app_log << __PRETTY_FUNCTION__ << " : found offset at column_index " << *scr_col_index << "\n";
-                }
                 return 1;
             }
         }
@@ -607,12 +567,6 @@ int screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const
     }
 
     *l = nullptr;
-
-    if (debug) {
-        app_log << __PRETTY_FUNCTION__
-                << " : offset("<<offset<<") , "
-                << " not found after lookup\n";
-    }
 
     return 0;
 }

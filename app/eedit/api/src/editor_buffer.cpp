@@ -102,7 +102,7 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
     font_file_name(font_file_name_)
 
 {
-    app_log << __PRETTY_FUNCTION__ << " " << bid << " " << file_name <<  " " << buffer_name << " " << font_file_name << "\n";
+    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name, buffer_name, font_file_name);
 
     m_font  = std::make_shared<ew::graphics::fonts::font>(eedit::get_application()->font_file_name().c_str(),
               eedit::get_application()->font_width(),
@@ -116,13 +116,10 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
 
     return;
 
-    m = mark_new(10000, "");
-    moving_marks.push_back(m);
 
-    app_log << __PRETTY_FUNCTION__ << " FIXME: move mark init to proper module\n";
     size_t max_size;
     byte_buffer_size(bid, &max_size);
-    for (uint64_t i = 0; i < 50; i += 2) {
+    for (uint64_t i = 0; i < 10000; i += 5) {
         auto m = mark_new(std::min<uint64_t>(i + 10, max_size), "");
         moving_marks.push_back(m);
     }
@@ -131,21 +128,18 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
 
 editor_buffer_s::~editor_buffer_s()
 {
-    app_log << __PRETTY_FUNCTION__ << " ENTER\n";
-    app_log << __PRETTY_FUNCTION__ << " bid(" << bid << ") filename(" << file_name <<  ") buffer_name(" << buffer_name << ") font_file_name(" << font_file_name << ")\n";
+    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name, buffer_name, font_file_name);
 
-    app_log << __PRETTY_FUNCTION__ << " number of view to delete " << view.size() << "\n";
-// replace by unique_ptr ?
-    int count = 0;
+    app_logln(-1, " number of view to delete %u", view.size());
+
+    // replace by unique_ptr ?
     for (auto it = view.begin(); it != view.end(); ) {
-        app_log << __PRETTY_FUNCTION__ << " : count = " << count << " : deleting  view("<< *it <<")\n";
         editor_view_close(*it);
         // delete it->second;
         ++it;
     }
 
     byte_buffer_close(bid);
-    app_log << __PRETTY_FUNCTION__ << " LEAVE\n";
 }
 
 
@@ -189,8 +183,8 @@ extern "C" {
 
         edbuf->editor_buffer_id = editor_buffer_id;
 
-        app_log << __PRETTY_FUNCTION__ << " allocated bid    = " << bid << "\n";
-        app_log << __PRETTY_FUNCTION__ << " allocated editor_buffer_id   = " << editor_buffer_id << "\n";
+        app_log(-1, " allocated bid              = %lu", bid);
+        app_log(-1, " allocated editor_buffer_id = %lu", editor_buffer_id);
         return editor_buffer_id;
     }
 
@@ -219,13 +213,14 @@ extern "C" {
 
         auto ret = edbuf->view.find(view);
         if (ret != edbuf->view.end()) {
-            app_log << " found already binded editor_view[edbuf("<<editor_buffer_id<<")] = " << view << "\n";
+            app_log(-1, " found already binded editor_view[edbuf(%lu)] = %p",  editor_buffer_id,  view);
             return 0;
         }
 
         edbuf->view.insert(view);
-        app_log << " bind editor_view[edbuf("<<editor_buffer_id<<")] = " << view << "\n";
+	app_log(-1, " bind editor_view[edbuf(%lu)] = %p",  editor_buffer_id,  view);
 
+	// FIXME: call per view mode/filter contructor here
         editor_view_bind(view, editor_buffer_id);
         return 0;
     }

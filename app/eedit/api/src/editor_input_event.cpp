@@ -113,35 +113,31 @@ const char * editor_input_event_key_to_string(editor_key_e key)
 
 void editor_input_event_dump(const struct editor_input_event_s * ev, const char * name)
 {
-    app_log << "ev name (" << name << ") ";
+    app_log(-1, "ev name (%s) ", name);
+    app_log(-1, "type(%u) ", ev->type);
 
-    app_log << "type(" << ev->type << ") ";
-
-
-
-    if (ev->ctrl) app_log << "ctrl + ";
-    if (ev->altL) app_log << "alt + ";
-    if (ev->altR) app_log << "altR + ";
-    if (ev->oskey) app_log << "oskey + ";
+    if (ev->ctrl) app_log(-1, "ctrl + ");
+    if (ev->altL) app_log(-1, "alt + ");
+    if (ev->altR) app_log(-1, "altR + ");
+    if (ev->oskey) app_log(-1, "oskey + ");
     if (ev->is_range) {
-        app_log << "[ ";
+        app_log(-1, "[ ");
     }
 
-    app_log << "key(" << editor_input_event_key_to_string(ev->key) << ") ";
+    app_log(-1, "key(%s) ", editor_input_event_key_to_string(ev->key));
 
     if (ev->is_range) {
-        app_log << "start_value("   << ev->start_value << ") ";
-        app_log << "<=> end_value(" << ev->end_value << ") ]";
+        app_log(-1, "start_value(%u) <=> end_value(%u) ]", ev->start_value, ev->end_value);
+        app_log(-1, " ]");
     } else {
-        app_log << "unicode_value(" << ev->start_value << ", '" << (char)ev->start_value << "') ";
+        app_log(-1, "unicode_value(%u), char('%c')", ev->start_value,(char)ev->start_value);
     }
 
     if (ev->button_press_mask) {
-        app_log << "button_press_mask(" << std::hex << ev->button_press_mask << ")" << std::dec;
+        app_log(-1, "button_press_mask(%x)", ev->button_press_mask);
     }
 
-    app_log << "\n";
-
+    app_log(-1, "\n");
 }
 
 
@@ -198,19 +194,15 @@ bool editor_input_event_is_equal(const editor_input_event_s * a, const editor_in
         if ((a->is_range ) && (a->end_value != b->end_value)) return false;
 
         if (a->ctrl        != b->ctrl)        {
-            app_log << "case 5\n";
             return false;
         }
         if (a->altL        != b->altL)        {
-            app_log << "case 6\n";
             return false;
         }
         if (a->altR        != b->altR)        {
-            app_log << "case 7\n";
             return false;
         }
         if (a->oskey       != b->oskey)       {
-            app_log << "case 8\n";
             return false;
         }
 

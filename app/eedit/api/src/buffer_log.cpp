@@ -68,7 +68,7 @@ extern "C" {
 
     int buffer_log_dump(buffer_log_id_t id)
     {
-        app_log << __PRETTY_FUNCTION__ << " : id " << id << "\n";
+        app_log(-1, "%s : id = %u", __PRETTY_FUNCTION__, id);
         auto log = get_log_pointer(id);
         if (!log)
             return -1;
@@ -79,13 +79,11 @@ extern "C" {
         }
 
         for (; ci != nullptr; ci = ci->next) {
-            app_log << "rev[" << ci->rev << "] ,"
-                    << "op(" << ci->op << "), "
-                    << "offset(" << ci->offset << "), ";
+            app_log(-1, "rev[%u] , op(%u), offset(%lu)", ci->rev, ci->op, ci->offset);
             if (ci->data) {
-                app_log << "data["<<ci->size <<"]('" << (char*)ci->data << "')";
+                app_log(-1, "data[%u] = ('%s')", ci->size, (char*)ci->data);
             }
-            app_log << "\n";
+            app_log(-1, "\n");
         }
 
         return 0;
@@ -107,7 +105,7 @@ extern "C" {
         // init first commit
         log->first = log->cur = log->last  = new buffer_commit;
 
-        app_log << __PRETTY_FUNCTION__ << " : new buffer_log_id " << *allocated_id << "\n";
+        app_logln(-1, " new buffer_log_id %u", *allocated_id);
 
         return 0;
     }
@@ -150,7 +148,7 @@ extern "C" {
         log->cur  = ci;
         log->last = ci;
 
-        app_log << __FUNCTION__ << " op " << op << ", @" << offset << " '" << (char *)ci->data << "' size = " << size << ": rev = " << *rev << "\n";
+        app_log(-1, "%s op , @%lu '%s', size %u, : rev = %u", __FUNCTION__ , op, offset, (char *)ci->data, size, *rev);
 
         return 0;
     }
@@ -164,7 +162,7 @@ extern "C" {
             return 0;
         }
 
-        app_log << __FUNCTION__ << "\n";
+        app_logln(-1, "%s", __FUNCTION__);
 
         // build list of commits from last to cur while inverting the op
         auto b = log->last;

@@ -44,9 +44,6 @@ bool byte_mode_buffer_init(editor_layout_builder_context_t * blayout_ctx, editor
     if (ret != 0)
         return false;
 
-    app_log << __PRETTY_FUNCTION__ << " cur_offset = " << ctx->cur_offset << "\n";
-    app_log << __PRETTY_FUNCTION__ << " buf_size   = " << ctx->buf_size   << "\n";
-
     return true;
 }
 
@@ -60,9 +57,6 @@ bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_lay
     uint8_t byte_value;
     size_t to_read = 1;
     size_t nb_read = 0;
-
-
-//    app_log << __PRETTY_FUNCTION__ << " read @ cur_offset = " << ctx->cur_offset << "\n";
 
     int ret = byte_buffer_read(ctx->bid, ctx->cur_offset,  &byte_value, to_read, &nb_read);
     if (ret == 0) {
@@ -100,8 +94,6 @@ bool byte_mode_buffer_filter(editor_layout_builder_context_t * blctx, editor_lay
 bool byte_mode_buffer_finish(editor_layout_builder_context_t * blctx, editor_layout_filter_context_t * ctx_)
 {
     byte_mode_context_t * ctx = static_cast<byte_mode_context_t *>(ctx_);
-
-    app_log << __PRETTY_FUNCTION__ << " total_read = " << ctx->total_read << "\n";
 
     delete ctx;
     return true;

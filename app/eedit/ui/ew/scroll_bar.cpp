@@ -168,23 +168,22 @@ bool vertical_scroll_bar::render()
 
     // info
     if (0) {
-        app_log << "---------------------------\n";
-        app_log << "m_click_y_pos       = " << m_click_y_pos << "\n";
-        app_log << "scroll_bar x()      = " << x() << "\n";
-        app_log << "scroll_bar y()      = " << y() << "\n";
-        app_log << "scroll_bar width()  = " << width() << "\n";
-        app_log << "scroll_bar height() = " << height() << "\n";
-        app_log << "m_begin_ratio       = " << m_begin_ratio << "\n";
-        app_log << "m_end_ratio         = " << m_end_ratio << "\n";
-        app_log << "m_scroll_X          = " << m_scroll_X << "\n";
-        app_log << "m_scroll_Y          = " << m_scroll_Y << "\n";
-
-        app_log << "minH                = " << minH << "\n";
-        app_log << "maxH                = " << maxH << "\n";
-        app_log << "X                   = " << X << "\n";
-        app_log << "Y                   = " << Y << "\n";
-        app_log << "W                   = " << W << "\n";
-        app_log << "H                   = " << H << "\n";
+        app_logln(-1, "---------------------------");
+        app_logln(-1, "m_click_y_pos       = %u", m_click_y_pos);
+        app_logln(-1, "scroll_bar x()      = %u", x());
+        app_logln(-1, "scroll_bar y()      = %u", y());
+        app_logln(-1, "scroll_bar width()  = %u", width());
+        app_logln(-1, "scroll_bar height() = %u", height());
+        app_logln(-1, "m_begin_ratio       = %u", m_begin_ratio);
+        app_logln(-1, "m_end_ratio         = %u", m_end_ratio);
+        app_logln(-1, "m_scroll_X          = %u", m_scroll_X);
+        app_logln(-1, "m_scroll_Y          = %u", m_scroll_Y);
+        app_logln(-1, "minH                = %u", minH);
+        app_logln(-1, "maxH                = %u", maxH);
+        app_logln(-1, "X                   = %u", X);
+        app_logln(-1, "Y                   = %u", Y);
+        app_logln(-1, "W                   = %u", W);
+        app_logln(-1, "H                   = %u", H);
     }
 
     // bg : d6 d2 d0
@@ -269,25 +268,25 @@ bool vertical_scroll_bar::on_focus_out(const widget_event * ev)
 // TODO: remember the click offset for move
 bool vertical_scroll_bar::on_mouse_button_press(const ew::graphics::gui::events::button_event * ev)
 {
-    app_log << __PRETTY_FUNCTION__ << "\n";
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
+
 
     m_click_y_pos = ev->y;
 
-    app_log << "ev->x = " << ev->x << "\n";
-    app_log << "ev->y = " << ev->y << "\n";
-
-    app_log << "m_scroll_X = " << m_scroll_X << "\n";
-    app_log << "m_scroll_Y = " << m_scroll_Y << "\n";
-    app_log << "m_scroll_W = " << m_scroll_W << "\n";
-    app_log << "m_scroll_H = " << m_scroll_H << "\n";
+    app_logln(-1, "ev->x = %u", ev->x);
+    app_logln(-1, "ev->y = %u", ev->y);
+    app_logln(-1, "m_scroll_X = %u", m_scroll_X);
+    app_logln(-1, "m_scroll_Y = %u", m_scroll_Y);
+    app_logln(-1, "m_scroll_W = %u", m_scroll_W);
+    app_logln(-1, "m_scroll_H = %u", m_scroll_H);
 
     if ((m_click_y_pos >= m_scroll_Y)
         && (m_click_y_pos <= (m_scroll_Y + m_scroll_H))) {
 
         m_is_pressed = true;
         m_click_offset = ev->y - m_scroll_Y;
-        app_log << " m_click_offset = " << m_click_offset << "\n";
-        app_log << " m_is_pressed   = " << m_is_pressed << "\n";
+        app_log(-1, " m_click_offset = %u", m_click_offset);
+        app_log(-1, " m_is_pressed   = %u", m_is_pressed);
     }
 
     return true;
