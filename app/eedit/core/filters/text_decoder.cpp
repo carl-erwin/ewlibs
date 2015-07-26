@@ -159,7 +159,8 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
         out.real_cp      = ctx->iovc[i].cp;
         out.valid        = true;
         out.is_selected  = is_selected;
-        assert(ctx->iovc[i].offset <= buf_sz);
+
+        // assert(ctx->iovc[i].offset <= buf_sz);
 
 
         out.cp_index    = ctx->cur_cp_index;
