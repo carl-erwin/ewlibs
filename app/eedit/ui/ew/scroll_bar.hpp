@@ -521,7 +521,7 @@ public:
     virtual bool resize(uint32_t w, uint32_t h)
     {
 
-              app_logln(-1, "%s w = %u h = %u", __PRETTY_FUNCTION__, w, h);
+        app_logln(-1, "%s w = %u h = %u", __PRETTY_FUNCTION__, w, h);
 
 
         bool ret = widget::resize(w, h);
@@ -557,7 +557,7 @@ public:
         break;
 
         case scroll_down: {
-	    app_logln(-1, "%s   auto scroll down", __PRETTY_FUNCTION__);
+            app_logln(-1, "%s   auto scroll down", __PRETTY_FUNCTION__);
 
             assert(0);
 //            auto txtv = get_textview();

@@ -150,7 +150,7 @@ public:
     virtual bool on_key_press(const ew::graphics::gui::events::keyboard_event * ev)
     {
 
-          app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
         widget * p = dynamic_cast<ew::graphics::gui::widget *>(get_parent());
         if (p) {
@@ -162,7 +162,7 @@ public:
     virtual bool on_key_release(const ew::graphics::gui::events::keyboard_event * ev)
     {
 
-          app_logln(-1, "%s", __PRETTY_FUNCTION__);
+        app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
 
         widget * p = dynamic_cast<ew::graphics::gui::widget *>(get_parent());

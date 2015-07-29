@@ -271,7 +271,7 @@ bool build_layout(editor_layout_builder_context_t & ctx)
                     // count nr restart , max process time ?
                     if (DEBUG_PIPELINE)
                         app_log(-1, " ... RESTART\n\n");
-		    
+
                     break;
                 }
 

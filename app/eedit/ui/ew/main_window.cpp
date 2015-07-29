@@ -597,7 +597,7 @@ bool main_window::on_mouse_button_press(const button_event * ev)
 
 bool main_window::on_mouse_button_release(const button_event * ev)
 {
- app_logln(-1, "%s", __PRETTY_FUNCTION__);
+    app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
     bool ret = true;
 

@@ -516,7 +516,7 @@ public:
 
         auto t1 = ew::core::time::get_ticks();
         app_logln(-1, " TIME TO RENDER SCREEN (ft_index == %u) : %u", ft_index, (t1 - t0));
-	
+
 
         pending_redraw = false;
         return true;
@@ -525,7 +525,7 @@ public:
     bool send_build_layout_event(uint32_t w, uint32_t h) const
     {
         if (m_have_buffer_id ==  false) {
-             return false;
+            return false;
         }
 
         // ask for new layout
@@ -553,9 +553,9 @@ public:
     bool resize(uint32_t w, uint32_t h)
     {
         app_logln(-1, "%s: width(%u) height(%u)",
-		  __PRETTY_FUNCTION__,
-		  width(),
-		  height());
+                  __PRETTY_FUNCTION__,
+                  width(),
+                  height());
 
         set_width(w);
         set_height(h);
@@ -644,8 +644,8 @@ public:
     {
         app_logln(-1, "%s", __PRETTY_FUNCTION__);
         app_logln(-1, "ev->x %u", ev->x);
-	app_logln(-1, "ev->y %u", ev->y);
-	app_logln(-1, "ev->button %u", ev->button);
+        app_logln(-1, "ev->y %u", ev->y);
+        app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_PRESS_EVENT;
@@ -665,8 +665,8 @@ public:
     {
         app_logln(-1, "%s", __PRETTY_FUNCTION__);
         app_logln(-1, "ev->x %u", ev->x);
-	app_logln(-1, "ev->y %u", ev->y);
-	app_logln(-1, "ev->button %u", ev->button);
+        app_logln(-1, "ev->y %u", ev->y);
+        app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_BUTTON_RELEASE_EVENT; // FIXME: EDITOR_INPUT_EVENT
@@ -686,8 +686,8 @@ public:
     {
         app_logln(-1, "%s", __PRETTY_FUNCTION__);
         app_logln(-1, "ev->x %u", ev->x);
-	app_logln(-1, "ev->y %u", ev->y);
-	app_logln(-1, "ev->button %u", ev->button);
+        app_logln(-1, "ev->y %u", ev->y);
+        app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_UP;
@@ -707,8 +707,8 @@ public:
     {
         app_logln(-1, "%s", __PRETTY_FUNCTION__);
         app_logln(-1, "ev->x %u", ev->x);
-	app_logln(-1, "ev->y %u", ev->y);
-	app_logln(-1, "ev->button %u", ev->button);
+        app_logln(-1, "ev->y %u", ev->y);
+        app_logln(-1, "ev->button %u", ev->button);
 
         struct editor_message_s  * msg = editor_event_alloc();
         msg->type = EDITOR_POINTER_WHEEL_DOWN;
@@ -729,7 +729,7 @@ public:
     bool set_start_offset_by_ratio(float ratio)
     {
         if (this->m_ebuffer_id == 0) {
-	    app_logln(-1, "%s this->m_ebuffer_id == 0", __PRETTY_FUNCTION__);
+            app_logln(-1, "%s this->m_ebuffer_id == 0", __PRETTY_FUNCTION__);
 
             return false;
         }

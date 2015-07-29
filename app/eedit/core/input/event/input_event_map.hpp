@@ -1184,7 +1184,7 @@ inline bool parse_input_map_config(const u8 * start, const u8 * pend, std::map<s
 
     app_logln(-1, " FINAL : ctx.current_keymap->entries.size() = %u", ctx.current_input_map->entries.size());
     app_logln(-1, "");
-    
+
     ctx.current_input_map->dump();
 
     input_event_table.insert(std::pair<std::string, editor_input_event_map *>(std::string("default"), ctx.current_input_map));

@@ -620,7 +620,7 @@ bool ncurses_ui_interface::process_editor_new_layout_ui_event(struct editor_mess
             mvaddch(li, c, ' ');
         }
     }
-    
+
 
     //refresh();
 

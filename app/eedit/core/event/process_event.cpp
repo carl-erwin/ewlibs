@@ -180,7 +180,7 @@ bool eval_input_event(struct editor_message_s * msg)
         app_logln(-1, "'%s' is defined", match_found->action->fn_name);
         app_logln(-1, "BEGIN '%s'", match_found->action->fn_name);
         fn(msg);
-	app_logln(-1, "END '%s'", match_found->action->fn_name);
+        app_logln(-1, "END '%s'", match_found->action->fn_name);
     } else {
         app_logln(-1, "'%s' is not defined", match_found->action->fn_name);
     }

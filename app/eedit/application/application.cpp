@@ -452,7 +452,7 @@ bool application::application_private::setup_modules()
         auto lib = std::unique_ptr<ew::core::dll>(new ew::core::dll(libname.c_str()));
         app_logln(-1, "try to load file '%s", libname.c_str());
         if (lib->load() == false) {
-  	    app_logln(-1, "cannotload file '%s", libname.c_str());
+            app_logln(-1, "cannotload file '%s", libname.c_str());
             continue;
         }
 
@@ -463,7 +463,7 @@ bool application::application_private::setup_modules()
         for (auto sym : mandatory_symbols) {
             auto ptr = lib->symbol_by_name(sym);
             if (ptr == nullptr) {
-	        app_logln(-1, "cannot found symbol '%s'", sym);
+                app_logln(-1, "cannot found symbol '%s'", sym);
                 error = true;
                 break;
             }
@@ -511,9 +511,9 @@ bool application::application_private::setup_modules()
             eedit_module_init_status_e modinit_ret = modinit_fn_ptr();
             if (modinit_ret != MODULE_INIT_OK) {
                 error = true;
-                 app_logln(-1, " %s : modinit error", libname.c_str());
+                app_logln(-1, " %s : modinit error", libname.c_str());
             } else {
-                 app_logln(-1, " %s : modinit ok", libname.c_str());
+                app_logln(-1, " %s : modinit ok", libname.c_str());
             }
         }
 
@@ -617,7 +617,7 @@ bool application::application_private::setup_buffers()
 
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
         app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
-	app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
+        app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
 
         if (editor_buffer_id == 0) {
             app_log(-1, " cannot prepare buffer for '%s'", filename);
@@ -631,8 +631,8 @@ bool application::application_private::setup_buffers()
 
     // FIXME:
     // init log/message/scratch
-    
-    
+
+
     if (m_buffer_desc_list.size() == 0) {
 
         // TODO: file path check/line/column
@@ -649,10 +649,10 @@ bool application::application_private::setup_buffers()
 
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
         app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
-	app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
+        app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
 
         if (editor_buffer_id == 0) {
-	    app_log(-1, " cannot prepare buffer for '%s'", filename);
+            app_log(-1, " cannot prepare buffer for '%s'", filename);
             return false;
         }
 

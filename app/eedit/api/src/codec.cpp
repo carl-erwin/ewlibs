@@ -58,7 +58,7 @@ SHOW_SYMBOL codec_id_t codec_register(const char * name, enum editor_codec_type_
     codec_id_info_s info {id,name,type,ops};
 
     log_codec_id_info(info);
-    
+
     // if codec_map.find(ops) -> error
     codec_by_name_map[std::string(name)] = info;
     codec_by_id_map[id] = info;

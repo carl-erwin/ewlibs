@@ -218,9 +218,9 @@ extern "C" {
         }
 
         edbuf->view.insert(view);
-	app_log(-1, " bind editor_view[edbuf(%lu)] = %p",  editor_buffer_id,  view);
+        app_log(-1, " bind editor_view[edbuf(%lu)] = %p",  editor_buffer_id,  view);
 
-	// FIXME: call per view mode/filter contructor here
+        // FIXME: call per view mode/filter contructor here
         editor_view_bind(view, editor_buffer_id);
         return 0;
     }

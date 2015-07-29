@@ -92,7 +92,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
         app_log(-1, " dim.h = %u,", dim.h);
         app_log(-1, " dim.c = %u,", dim.c);
         app_log(-1, " dim.l = %u",  dim.l);
-	app_logln(-1, "");
+        app_logln(-1, "");
     }
 
     auto buffer = editor_buffer_check_id(editor_buffer_id);
@@ -146,7 +146,7 @@ bool  setup_screen_by_id(editor_buffer_id_t editor_buffer_id, byte_buffer_id_t b
     if (debug) {
         app_logln(-1, " normalized dim.c = %u,", dim.c);
         app_logln(-1, " normalized dim.l = %u",  dim.l);
-	app_logln(-1, " normalized dim.w = %u,", dim.w);
+        app_logln(-1, " normalized dim.w = %u,", dim.w);
         app_logln(-1, " normalized dim.h = %u,", dim.h);
     }
 

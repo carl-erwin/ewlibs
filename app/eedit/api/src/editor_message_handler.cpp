@@ -28,7 +28,7 @@ int register_module_function(const char * name, editor_message_handler_t fn)
     if (ret != modfunc_table.end()) {
         return *ret->second;
     }
-    
+
     app_logln(-1, "function '%s' not found ", name);
 
     return nullptr;

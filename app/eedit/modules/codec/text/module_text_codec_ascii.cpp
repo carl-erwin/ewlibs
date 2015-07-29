@@ -60,8 +60,8 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
     while (i < (int)iocnt) {
 
         size_t nb_read = 0;
-	size_t to_read = std::min<size_t>(iocnt, buff_size);
-	
+        size_t to_read = std::min<size_t>(iocnt, buff_size);
+
         int res = byte_buffer_read(io_ctx->bid, offset,  buff,  to_read, &nb_read);
         if (res != 0) {
             /* */

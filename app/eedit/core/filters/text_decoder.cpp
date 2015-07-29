@@ -143,7 +143,7 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
 
 
     int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
-    
+
     if (ret <= 0) {
         // error : log, auto eof
         index = 0;

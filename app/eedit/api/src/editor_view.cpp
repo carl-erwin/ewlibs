@@ -77,13 +77,13 @@ extern "C" {
 
         } else 	if (it->first) {
             vptr = it->second;
-	    app_log(-1, " reuse view   = %p",  vptr);
+            app_log(-1, " reuse view   = %p",  vptr);
         }
 
         vptr->editor_buffer_id = editor_buffer_id; // bind
 
 // TODO: hook on_new_view(bid, vid)
-// TODO: view evetns : view_created, view_destroyed, buffer_open, buffer_close, etc .. 
+// TODO: view evetns : view_created, view_destroyed, buffer_open, buffer_close, etc ..
 #if 1
         // setup view main mark
         mark_t m = nullptr;

@@ -511,7 +511,7 @@ int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 
     if (debug) {
         app_log(-1, " : offset(%lu)", offset),
-        app_log(-1, ", first_cpinfo->offset(%lu)", scr->first_cpinfo.offset);
+                app_log(-1, ", first_cpinfo->offset(%lu)", scr->first_cpinfo.offset);
         app_log(-1, ", last_cpinfo->offset (%lu)", scr->last_cpinfo.offset);
     }
 

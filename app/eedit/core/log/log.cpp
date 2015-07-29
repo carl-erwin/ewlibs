@@ -14,34 +14,34 @@ void app_log_init()
 
 void app_log_quit()
 {
-  if (_app_log) {
-   fclose(_app_log);
-    _app_log = nullptr;
-  }
+    if (_app_log) {
+        fclose(_app_log);
+        _app_log = nullptr;
+    }
 }
 
 
 void app_log(uint64_t level, const char *format, ...)
 {
-  if (_app_log == nullptr)
-    return ;
-  
-  va_list ap;
-  va_start(ap, format);
-  vfprintf(_app_log, format, ap);
-  va_end(ap);
-  fflush(_app_log);
+    if (_app_log == nullptr)
+        return ;
+
+    va_list ap;
+    va_start(ap, format);
+    vfprintf(_app_log, format, ap);
+    va_end(ap);
+    fflush(_app_log);
 }
 
 void app_logln(uint64_t level, const char *format, ...)
 {
-  if (_app_log == nullptr)
-    return ;
-  
-  va_list ap;
-  va_start(ap, format);
-  vfprintf(_app_log, format, ap);
-  va_end(ap);
-  fprintf(_app_log, "\n");
-  fflush(_app_log);
+    if (_app_log == nullptr)
+        return ;
+
+    va_list ap;
+    va_start(ap, format);
+    vfprintf(_app_log, format, ap);
+    va_end(ap);
+    fprintf(_app_log, "\n");
+    fflush(_app_log);
 }
