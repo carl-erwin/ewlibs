@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <cstring>
 #include <list>
-
+#include <iostream>
 #include <mutex>
 #include <thread>
 
@@ -21,7 +21,6 @@
 #include <ew/graphics/gui/display/display.hpp>
 #include <ew/graphics/gui/widget/window/window.hpp>
 #include <ew/graphics/gui/event/event.hpp>
-#include <ew/console/console.hpp>
 
 #include <ew/core/program/environment.hpp>
 
@@ -50,7 +49,7 @@ using namespace ew::core;
 using namespace ew::core::types;
 using namespace ew::graphics::gui::events;
 
-using ew::console::dbg;
+using std::cerr;
 using ew::graphics::gui::widget;
 using ew::graphics::gui::window;
 
@@ -186,8 +185,8 @@ bool display::open()
     if (multithreadEventPollingIsEnabled() == true) {
 
         if (XInitThreads() == 0) {
-            dbg << "X11::Server::open() : XInitthreads() : error " << "\n";
-            dbg << " there is no support for multi threading\n" << "\n";
+            cerr << "X11::Server::open() : XInitthreads() : error " << "\n";
+            cerr << " there is no support for multi threading\n" << "\n";
             return false;
         }
     }
@@ -195,7 +194,7 @@ bool display::open()
     char * display_env_str = ew::core::program::getenv("DISPLAY");
     d->_x11_dpy = XOpenDisplay(display_env_str);
     if (!d->_x11_dpy) {
-        dbg << "X11::Server::open() : XOpenDisplay : error : cannot connect to" << display_env_str << "\n";
+        cerr << "X11::Server::open() : XOpenDisplay : error : cannot connect to" << display_env_str << "\n";
         return false;
     }
 
@@ -218,25 +217,25 @@ bool display::open()
     // { const char * name , atom }
     d->_WM_CLIENT_LEADER = XInternAtom(d->_x11_dpy, const_cast<char *>("WM_CLIENT_LEADER"), False);
     if (d->_WM_CLIENT_LEADER == None) {
-        dbg << "Can't set WM_CLIENT_LEADER Atom\n";
+        cerr << "Can't set WM_CLIENT_LEADER Atom\n";
         throw "error";
     }
 
     d->_WM_DELETE_WINDOW = XInternAtom(d->_x11_dpy, const_cast<char *>("WM_DELETE_WINDOW"), False);
     if (d->_WM_DELETE_WINDOW == None) {
-        dbg << "Can't set WM_DELETE_WINDOW Atom\n";
+        cerr << "Can't set WM_DELETE_WINDOW Atom\n";
         throw "error";
     }
 
     d->_NET_WM_WINDOW_TYPE = XInternAtom(d->_x11_dpy, const_cast<char *>("_NET_WM_WINDOW_TYPE"), False);
     if (d->_NET_WM_WINDOW_TYPE == None) {
-        dbg << "Can't set _NET_WM_WINDOW_TYPE Atom\n";
+        cerr << "Can't set _NET_WM_WINDOW_TYPE Atom\n";
         throw "error";
     }
 
     d->_NET_WM_WINDOW_TYPE_MENU = XInternAtom(d->_x11_dpy, const_cast<char *>("_NET_WM_WINDOW_TYPE_MENU"), False);
     if (d->_NET_WM_WINDOW_TYPE_MENU == None) {
-        dbg << "Can't set _NET_WM_WINDOW_TYPE_MENU Atom\n";
+        cerr << "Can't set _NET_WM_WINDOW_TYPE_MENU Atom\n";
         throw "error";
     }
 
@@ -265,7 +264,7 @@ bool display::close()
     // stop event thread
     if (singlethreadEventPollingIsEnabled() == false) {
         if (d->_is_running == false) {
-            dbg << "X11::Server::close() : server is not running" << "\n";
+            cerr << "X11::Server::close() : server is not running" << "\n";
             return false;
         }
         d->set_running(false);
@@ -279,7 +278,7 @@ bool display::close()
 
     // close x11 connection
     if (XCloseDisplay(d->_x11_dpy) == BadGC) {
-        dbg << "X11::Server::close() : error : XCloseDisplay(_x11_dpy)\n";
+        cerr << "X11::Server::close() : error : XCloseDisplay(_x11_dpy)\n";
         return false;
     }
 

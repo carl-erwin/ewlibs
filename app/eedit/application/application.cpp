@@ -1,6 +1,7 @@
 #include <thread>
 #include <mutex>
 
+#include <iostream>
 #include <map>
 #include <functional>
 #include <getopt.h>
@@ -46,8 +47,8 @@ using namespace ew::filesystem;
 #include "../ui/debug/ui.h"
 #include "../ui/ncurses/ui.h"
 
-#include <ew/console/console.hpp>
-using namespace ew::console; // for dbg
+
+using std::cerr;
 
 
 namespace eedit
@@ -702,7 +703,7 @@ bool init_ui(application * app)
         app->ui( std::unique_ptr<user_interface>(eedit::new_debug_ui()));
         bool ret = app->ui()->setup(app);
         if (ret == false) {
-            dbg << "debug ui  init() :: error" << "\n";
+            cerr << "debug ui  init() :: error" << "\n";
             return false;
         }
 
@@ -713,7 +714,7 @@ bool init_ui(application * app)
         app->ui( std::unique_ptr<user_interface>(eedit::new_ncurses_ui()));
         bool ret = app->ui()->setup(app);
         if (ret == false) {
-            dbg << "ncurses ui  init() :: error" << "\n";
+            cerr << "ncurses ui  init() :: error" << "\n";
             return false;
         }
 
@@ -725,7 +726,7 @@ bool init_ui(application * app)
     app->ui(std::unique_ptr<user_interface>(eedit::new_ew_ui()));
     bool ret = app->ui()->setup(app);
     if (ret == false) {
-        dbg << "ew ui  init() :: error" << "\n";
+        cerr << "ew ui  init() :: error" << "\n";
         return false;
     }
 
@@ -735,18 +736,18 @@ bool init_ui(application * app)
 bool init_subsystems(application * app)
 {
     if (ew::core::time::init() == false) {
-        dbg << "ew::core::time::init() :: error" << "\n";
+        cerr << "ew::core::time::init() :: error" << "\n";
         exit(1);
     }
 
     // init ui
     if (init_ui(app) == false) {
-        dbg << "cannot ew::graphics::gui::init() :: error" << "\n";
+        cerr << "cannot ew::graphics::gui::init() :: error" << "\n";
         exit(1);
     }
 
     if (ew::graphics::fonts::init() == false) {
-        dbg << "ew::graphics::fonts::init() :: error" << "\n";
+        cerr << "ew::graphics::fonts::init() :: error" << "\n";
         exit(1);
     }
 
@@ -766,17 +767,17 @@ bool  quit_subsystems(application * app)
     quit_ui(app);
 
     if (ew::graphics::fonts::quit() == false) {
-        dbg << "ew::graphics::fonts::quit() :: error" << "\n";
+        cerr << "ew::graphics::fonts::quit() :: error" << "\n";
         return false;
     }
 
     if (ew::graphics::rendering::quit() == false) {
-        dbg << "ew::graphics::gui::quit() :: error" << "\n";
+        cerr << "ew::graphics::gui::quit() :: error" << "\n";
         return false;
     }
 
     if (ew::core::time::quit() == false) {
-        dbg << "ew::core::time::quit() :: error" << "\n";
+        cerr << "ew::core::time::quit() :: error" << "\n";
         return false;
     }
 

@@ -185,7 +185,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
 
     case ButtonPress:
     case ButtonRelease: {
-        EW_DEBUG(dbg << "[event] ButtonPress or ButtonRelease\n";)
+        EW_DEBUG(cerr << "[event] ButtonPress or ButtonRelease\n";)
 
         assert(widget != 0);
 
@@ -232,7 +232,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
         // pass the new size/dim to user class
         // build ew resize/move events
 
-        EW_DEBUG(dbg << "[event] ConfigureNotify\n";)
+        EW_DEBUG(cerr << "[event] ConfigureNotify\n";)
 
         if (! widget)
             return 0;
@@ -243,7 +243,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
         bool update_dimension = false;
         bool update_pos = false;
 
-        //  dbg << "ConfigureNotify + widget ptr\n";
+        //  cerr << "ConfigureNotify + widget ptr\n";
         if (((u32)xevent->xconfigure.width != widget->d->_properties.width) ||
             ((u32)xevent->xconfigure.height != widget->d->_properties.height)) {
             update_dimension = true;
@@ -298,7 +298,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
 
     /*  */
     case ClientMessage: {
-        dbg << "[ event ] ClientMessage\n";
+        cerr << "[ event ] ClientMessage\n";
 
         if (! widget)
             return 0;
@@ -310,7 +310,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
             //       if ( ( u32 ) ( xevent->xclient.data.l[ 0 ] ) == ( u32 ) guiDpy->d->X11_ATOMS._WM_DELETE_WINDOW )
 
             if ((u32)(xevent->xclient.data.l[ 0 ]) == (u32) guiDpy->d->_WM_DELETE_WINDOW) {
-                //    dbg << " ClientMessage :: WM_DELETE_WINDOW\n";
+                //    cerr << " ClientMessage :: WM_DELETE_WINDOW\n";
 
                 struct widget_event * ev = new widget_event();
                 ev->display = guiDpy;
@@ -326,7 +326,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case MotionNotify: {
-        EW_DEBUG(dbg << "[ event ] MotionNotify\n";)
+        EW_DEBUG(cerr << "[ event ] MotionNotify\n";)
 
         if (! widget)
             return 0;
@@ -356,9 +356,9 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
 
         EW_DEBUG(
         if (xevent->type == EnterNotify) {
-        dbg << "[event] EnterNotify\n";
+        cerr << "[event] EnterNotify\n";
     } else {
-        dbg << "[event] LeaveNotify\n";
+        cerr << "[event] LeaveNotify\n";
     }
     )
 
@@ -386,7 +386,7 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
         // ev->x_root = ((XEnterWindowEvent *)xevent)->x_root;
         // ev->y_root = ((XEnterWindowEvent *)xevent)->y_root;
 
-        // dbg << "enter/leave : mouse (X , Y) = (" << ((XMotion_event *)xevent)->x << " , "<< ((XMotionEvent *)xevent)->y << ")" << "\n";
+        // cerr << "enter/leave : mouse (X , Y) = (" << ((XMotion_event *)xevent)->x << " , "<< ((XMotionEvent *)xevent)->y << ")" << "\n";
 
         event_vec[lastPushedEvent++] = ev;
         return true;
@@ -397,9 +397,9 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     case FocusOut: {
         EW_DEBUG(
         if (xevent->type == FocusIn) {
-        dbg << "[event] FocusIn\n";
+        cerr << "[event] FocusIn\n";
     } else {
-        dbg << "[event] FocusOut\n";
+        cerr << "[event] FocusOut\n";
     }
     )
 
@@ -423,12 +423,12 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case KeymapNotify: {
-        EW_DEBUG(dbg << "[event] KeymapNotify\n";)
+        EW_DEBUG(cerr << "[event] KeymapNotify\n";)
     }
     break ;
 
     case Expose: {
-        EW_DEBUG(dbg << "[event] Expose\n";)
+        EW_DEBUG(cerr << "[event] Expose\n";)
 
         if (! widget)
             return 0;
@@ -448,32 +448,32 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case GraphicsExpose: {
-        EW_DEBUG(dbg << "[event] GraphicsExpose\n";)
+        EW_DEBUG(cerr << "[event] GraphicsExpose\n";)
     }
     break ;
 
     case NoExpose: {
-        // dbg << "[event] NoExpose\n";
+        // cerr << "[event] NoExpose\n";
     }
     break ;
 
     case VisibilityNotify: {
-        dbg << "[event] VisibilityNotify\n";
+        cerr << "[event] VisibilityNotify\n";
     }
     break ;
 
     case CreateNotify: {
-        dbg << "[event] CreateNotify\n";
+        cerr << "[event] CreateNotify\n";
     }
     break ;
 
     case DestroyNotify: {
-        dbg << "[event] DestroyNotify\n";
+        cerr << "[event] DestroyNotify\n";
 
         if (! widget)
             return 0;
 
-        dbg << " remove widget from list\n";
+        cerr << " remove widget from list\n";
         // TODO : must send  new struct widget_event();
         // ev->type = WidgetDestroyEvent;
         // ev->widget = widget;
@@ -487,12 +487,12 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case UnmapNotify: {
-        dbg << "[event] UnmapNotify\n";
+        cerr << "[event] UnmapNotify\n";
     }
     break ;
 
     case MapNotify: {
-        dbg << "[event] MapNotify\n";
+        cerr << "[event] MapNotify\n";
 
         struct widget_event * ev =  new struct widget_event();
         ev->type = WidgetMapEvent;
@@ -506,12 +506,12 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case MapRequest: {
-        dbg << "[event] MapRequest\n";
+        cerr << "[event] MapRequest\n";
     }
     break ;
 
     case ReparentNotify: {
-        dbg << "[event] ReparentNotify\n";
+        cerr << "[event] ReparentNotify\n";
 
         struct widget_event * ev = new struct widget_event();
         ev->display = guiDpy;
@@ -525,62 +525,62 @@ bool display::private_data::X11::translate_gui_event(ew::graphics::gui::display 
     break ;
 
     case ConfigureRequest: {
-        dbg << "[event] ConfigureRequest\n";
+        cerr << "[event] ConfigureRequest\n";
     }
     break ;
 
     case GravityNotify: {
-        dbg << "[event] GravityNotify\n";
+        cerr << "[event] GravityNotify\n";
     }
     break ;
 
     case ResizeRequest: {
-        dbg << "[event] ResizeRequest\n";
+        cerr << "[event] ResizeRequest\n";
     }
     break ;
 
     case CirculateNotify: {
-        dbg << "[event] CirculateNotify\n";
+        cerr << "[event] CirculateNotify\n";
     }
     break ;
 
     case CirculateRequest: {
-        dbg << "[event] CirculateRequest\n";
+        cerr << "[event] CirculateRequest\n";
     }
     break ;
 
     case PropertyNotify: {
-        dbg << "[event] PropertyNotify\n";
+        cerr << "[event] PropertyNotify\n";
     }
     break ;
 
     case SelectionClear: {
-        dbg << "[event] SelectionClear\n";
+        cerr << "[event] SelectionClear\n";
     }
     break ;
 
     case SelectionRequest: {
-        dbg << "[event] SelectionRequest\n";
+        cerr << "[event] SelectionRequest\n";
     }
     break ;
 
     case SelectionNotify: {
-        dbg << "[event] SelectionNotify\n";
+        cerr << "[event] SelectionNotify\n";
     }
     break ;
 
     case ColormapNotify: {
-        dbg << "[event] ColormapNotify\n";
+        cerr << "[event] ColormapNotify\n";
     }
     break ;
 
     case MappingNotify: {
-        dbg << "[event] MappingNotify\n";
+        cerr << "[event] MappingNotify\n";
     }
     break ;
 
     default: {
-        dbg << "[event] unhandled xevent type ??? " << (int) xevent->type << "\n";
+        cerr << "[event] unhandled xevent type ??? " << (int) xevent->type << "\n";
     }
     }
 

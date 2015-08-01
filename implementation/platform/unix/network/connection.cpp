@@ -22,8 +22,8 @@
 #include "../../unix/core/syscall/syscall.hpp"
 #include "ew/network/connection.hpp"
 #include "ew/utils/utils.hpp"
-#include "ew/console/console.hpp"
-using ew::console::cerr;
+
+using std::cerr;
 
 namespace ew
 {

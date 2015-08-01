@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include <ew/console/console.hpp>
+
 #include <ew/core/object/object.hpp>
 
 using namespace std;

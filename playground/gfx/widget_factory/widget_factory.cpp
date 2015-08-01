@@ -1,10 +1,10 @@
+#include <iostream>
 #include <exception>
 #include <assert.h>
 #include <cstdlib>
 #include <list>
 #include <vector>
 
-#include <ew/Console.hpp>
 #include <ew/graphics/Gui.hpp>
 #include <ew/graphics/color.hpp>
 
@@ -22,12 +22,12 @@
 
 using namespace ew::core;
 using namespace ew::core::types;
-using namespace ew::console;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 using namespace ew::implementation::graphics::rendering::opengl;
 using namespace ew::graphics::fonts;
 
+using std::cerr;
 
 /*
 TODO:

@@ -71,9 +71,9 @@ ${EW_PROJECT_ROOT}/app/eedit/core/undo/undo.cpp
 TARGET_LINK_LIBRARIES(${EW_APP_NAME}.exe
 ew.core.exception
 ew.core.system
+ew.core.program
 ew.core.object
 ew.core.time
-ew.console
 ew.core.maths
 ew.graphics
 ew.filesystem

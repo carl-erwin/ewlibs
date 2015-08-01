@@ -9,11 +9,8 @@
 #include <ew/core/object/object_locker.hpp>
 
 
-
 #include <ew/core/time/time.hpp>
 
-
-#include <ew/console/console.hpp>
 
 // base of gui objects
 #include <ew/graphics/gui/widget/widget.hpp>
@@ -37,7 +34,7 @@ namespace events
 using namespace ew::core::types;
 using namespace ew::core::objects;
 
-using ew::console::cerr;
+using std::cerr;
 
 ew::graphics::gui::events::event * pump_event(ew::graphics::gui::display * dpy)
 {

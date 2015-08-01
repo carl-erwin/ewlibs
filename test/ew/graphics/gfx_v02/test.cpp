@@ -1,5 +1,5 @@
+#include <iostream>
 #include <stdlib.h>
-
 #include <cstdlib>
 #include <cstdio>
 
@@ -24,8 +24,6 @@
 #include <ew/graphics/gui/event/push.hpp>
 
 
-#include <ew/console/console.hpp>
-
 #include <ew/core/application/simple_application.hpp>
 
 #include "../implementation/common/graphics/renderer/opengl/renderer.hpp"
@@ -43,7 +41,7 @@ using namespace ew::core::objects;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 
-using ew::console::cerr;
+using std::cerr;
 
 
 using namespace ew::implementation::graphics::rendering::opengl;

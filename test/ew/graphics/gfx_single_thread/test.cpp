@@ -1,7 +1,8 @@
+#include <iostream>
 #include <cstdlib>
 #include <list>
 
-#include <ew/Console.hpp>
+
 #include <ew/graphics/Gui.hpp>
 #include <ew/core/Time.hpp>
 
@@ -15,10 +16,11 @@
 
 using namespace ew::core;
 using namespace ew::core::types;
-using namespace ew::console;
 using namespace ew::graphics::gui;
 using namespace ew::graphics::gui::events;
 using namespace ew::implementation::graphics::rendering::opengl;
+
+using std::cerr;
 
 namespace ew
 {

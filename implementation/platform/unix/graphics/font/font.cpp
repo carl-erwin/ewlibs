@@ -1,11 +1,10 @@
 #include <assert.h>
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <map>
 #include <vector>
-
-#include <ew/Console.hpp>
 
 #include <ew/system/system.hpp>
 
@@ -32,10 +31,9 @@ namespace fonts
 {
 
 using namespace ew::implementation::graphics::rendering::opengl;
-using namespace ew::console;
 
-using ew::console::cerr;
-using ew::console::dbg;
+using std::cerr;
+
 
 
 // freetype variables
@@ -59,7 +57,7 @@ EW_GRAPHICS_EXPORT bool init()
         }
 
         FT_Library_Version(alibrary, &amajor, &aminor, &apatch);
-        dbg << "Freetype version : " << amajor << "." << aminor << "." << apatch << "\n";
+        cerr << "Freetype version : " << amajor << "." << aminor << "." << apatch << "\n";
     }
 
     ++freeTypeinit;
@@ -419,8 +417,8 @@ bool font::private_data::renderGlyphOffscreen(s32 c, font_grid * ft_grid, s32 x_
         ftData->_bitmap_width  = bitmap.width;
         ftData->_bitmap_height = bitmap.rows;
 
-        dbg << CONSOLE_LEVEL0 << "texture W " << width << "\n" ;
-        dbg << CONSOLE_LEVEL0 << "texture H " << height << "\n" ;
+        cerr << "texture W " << width << "\n" ;
+        cerr << "texture H " << height << "\n" ;
 
         // prepare texture data
         GLubyte * expanded_data = new GLubyte[ 2 * sizeof(GLubyte) * width * height ];
@@ -428,33 +426,33 @@ bool font::private_data::renderGlyphOffscreen(s32 c, font_grid * ft_grid, s32 x_
 
         // map bitmap.buffer -> texture
         for (decltype(height) j = 0; j < height; ++j) {
-            dbg << "\n|";
+            cerr << "\n|";
             for (decltype(width) i = 0; i < width; ++i) {
                 GLubyte val = (i >= bitmap.width || j >= bitmap.rows) ? 0 : bitmap.buffer[ i + bitmap.width * j ];
                 expanded_data[ 2 * (i + j * width) + 0 ] = val;
                 expanded_data[ 2 * (i + j * width) + 1 ] = val;
 
-                dbg << (int)val << " ";
+                cerr << (int)val << " ";
             }
         }
 
-        dbg << "\n";
+        cerr << "\n";
 
         // TODO: replace 16 by av computed var
 
-        dbg << "allocating subtexture index " << data->nr_subtex << "\n";
-        dbg << "data->font_texWidth " << data->font_texWidth << "\n";
-        dbg << "data->font_texHeight " << data->font_texHeight << "\n";
+        cerr << "allocating subtexture index " << data->nr_subtex << "\n";
+        cerr << "data->font_texWidth " << data->font_texWidth << "\n";
+        cerr << "data->font_texHeight " << data->font_texHeight << "\n";
 
         assert(data->nr_subtex < data->max_subtex);
 
         GLint xoffset = ((data->nr_subtex) % data->subtex_W) * data->subtex_W;
         GLint yoffset = ((data->nr_subtex) / data->subtex_H) * data->subtex_H;
 
-        dbg << "char c = " << (char)c << " " << " font xoff " << xoffset << " font yoff " << yoffset << "\n";
+        cerr << "char c = " << (char)c << " " << " font xoff " << xoffset << " font yoff " << yoffset << "\n";
 
-        dbg << " bitmap_glyph->left = " <<  bitmap_glyph->left << "\n";
-        dbg << " bitmap_glyph->top  = " <<  bitmap_glyph->top  << "\n";
+        cerr << " bitmap_glyph->left = " <<  bitmap_glyph->left << "\n";
+        cerr << " bitmap_glyph->top  = " <<  bitmap_glyph->top  << "\n";
 
         assert((float)xoffset < data->font_texWidth);
         assert((float)yoffset < data->font_texHeight);
@@ -535,8 +533,8 @@ bool font::private_data::renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 
         ftData->_bitmap_width = bitmap.width;
         ftData->_bitmap_height = bitmap.rows;
 
-        dbg << CONSOLE_LEVEL0 << "texture W " << width << "\n" ;
-        dbg << CONSOLE_LEVEL0 << "texture H " << height << "\n" ;
+        cerr << "texture W " << width << "\n" ;
+        cerr << "texture H " << height << "\n" ;
 
         // prepare texture data
         GLubyte * expanded_data = new GLubyte[ 2 * sizeof(GLubyte) * width * height ];
@@ -544,33 +542,33 @@ bool font::private_data::renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 
 
         // map bitmap.buffer -> texture
         for (decltype(height) j = 0; j < height; ++j) {
-            dbg << "\n|";
+            cerr << "\n|";
             for (decltype(width) i = 0; i < width; ++i) {
                 GLubyte val = (i >= bitmap.width || j >= bitmap.rows) ? 0 : bitmap.buffer[ i + bitmap.width * j ];
                 expanded_data[ 2 * (i + j * width) + 0 ] = val;
                 expanded_data[ 2 * (i + j * width) + 1 ] = val;
 
-                dbg << (int)val << " ";
+                cerr << (int)val << " ";
             }
         }
 
-        dbg << "\n";
+        cerr << "\n";
 
         // TODO: replace 16 by av computed var
 
-        dbg << "allocating subtexture index " << data->nr_subtex << "\n";
-        dbg << "data->font_texWidth " << data->font_texWidth << "\n";
-        dbg << "data->font_texHeight " << data->font_texHeight << "\n";
+        cerr << "allocating subtexture index " << data->nr_subtex << "\n";
+        cerr << "data->font_texWidth " << data->font_texWidth << "\n";
+        cerr << "data->font_texHeight " << data->font_texHeight << "\n";
 
         assert(data->nr_subtex < data->max_subtex);
 
         GLint xoffset = ((data->nr_subtex) % data->subtex_W) * data->subtex_W;
         GLint yoffset = ((data->nr_subtex) / data->subtex_H) * data->subtex_H;
 
-        dbg << "char c = " << (char)c << " " << " font xoff " << xoffset << " font yoff " << yoffset << "\n";
+        cerr << "char c = " << (char)c << " " << " font xoff " << xoffset << " font yoff " << yoffset << "\n";
 
-        dbg << " bitmap_glyph->left = " <<  bitmap_glyph->left << "\n";
-        dbg << " bitmap_glyph->top  = " <<  bitmap_glyph->top  << "\n";
+        cerr << " bitmap_glyph->left = " <<  bitmap_glyph->left << "\n";
+        cerr << " bitmap_glyph->top  = " <<  bitmap_glyph->top  << "\n";
 
         assert((float)xoffset < data->font_texWidth);
         assert((float)yoffset < data->font_texHeight);
@@ -585,10 +583,10 @@ bool font::private_data::renderGlyph(s32 c, font_grid * ft_grid, s32 x_pos, s32 
         ftData->tex_t1 = ftData->tex_t0 + t1;
 
         // the texture corners
-        dbg << "tex_s0  = " << ftData->tex_s0 << "\n";
-        dbg << "tex_t0  = " << ftData->tex_t0 << "\n";
-        dbg << "tex_s1  = " << ftData->tex_s1 << "\n";
-        dbg << "tex_t1  = " << ftData->tex_t1 << "\n";
+        cerr << "tex_s0  = " << ftData->tex_s0 << "\n";
+        cerr << "tex_t0  = " << ftData->tex_t0 << "\n";
+        cerr << "tex_s1  = " << ftData->tex_s1 << "\n";
+        cerr << "tex_t1  = " << ftData->tex_t1 << "\n";
 
         assert(ftData->tex_s0 <= 1.0f);
         assert(ftData->tex_t0 <= 1.0f);

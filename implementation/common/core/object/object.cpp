@@ -4,8 +4,6 @@
 #include <ew/core/object/object.hpp>
 
 
-// for DEBUG
-#include <ew/console/console.hpp>
 
 #include <vector>
 #include <ew/core/container/simple_array.hpp>
@@ -21,8 +19,6 @@ namespace core
 {
 
 using namespace ew::core::types;
-
-using ew::console::cerr;
 
 class object::private_data : public std::mutex
 {

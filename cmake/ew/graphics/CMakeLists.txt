@@ -42,10 +42,10 @@ ${FREETYPE_INCLUDE_DIRS}
 TARGET_LINK_LIBRARIES(ew.graphics
 ew.core.exception
 ew.core.system
+ew.core.program
 ew.core.dll
 ew.core.device
 ew.core.object
-ew.console
 ew.codecs.text.unicode.utf8
 )
 

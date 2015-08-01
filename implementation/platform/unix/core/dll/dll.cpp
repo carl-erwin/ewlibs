@@ -11,14 +11,12 @@
 #include <ew/utils/utils.hpp>
 
 
-#include <ew/console/console.hpp>
-
 namespace ew
 {
 namespace core
 {
 
-using ew::console::cerr;
+  using std::cerr;
 
 // -----------------------------------------------------
 

@@ -25,8 +25,6 @@
 
 #include <ew/core/time/time.hpp>
 
-#include <ew/console/console.hpp>
-
 
 #include "../implementation/common/graphics/renderer/opengl/renderer.hpp"
 #include "../implementation/common/graphics/renderer/opengl/libGL.hpp"
@@ -48,7 +46,7 @@ namespace graphics
 {
 
 
-using ew::console::cerr;
+using std::cerr;
 
 
 std::mutex nrRuningthreads_mtx;

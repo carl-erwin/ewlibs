@@ -9,7 +9,6 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES(ew.core.object
 ew.core.exception
 ew.core.syscall
-ew.console
 )
 ENDIF(UNIX)
 
@@ -17,7 +16,6 @@ IF(WIN32)
 
 TARGET_LINK_LIBRARIES(ew.core.object
 ew.core.exception
-ew.console
 )
 
 ENDIF(WIN32)

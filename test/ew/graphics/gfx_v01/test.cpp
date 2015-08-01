@@ -17,8 +17,8 @@
 #include <ew/graphics/graphics.hpp>
 #include <ew/graphics/gui/event/event.hpp>
 #include <ew/graphics/gui/event/push.hpp>
-#include <ew/console/console.hpp>
-using ew::console::cerr;
+
+using std::cerr;
 
 #include "../implementation/common/graphics/renderer/opengl/renderer.hpp"
 #include "../implementation/common/graphics/renderer/opengl/libGL.hpp"

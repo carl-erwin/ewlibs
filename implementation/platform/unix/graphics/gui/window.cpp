@@ -1,7 +1,8 @@
 #include <assert.h>
 #include <thread>
+#include <iostream>
 
-// rename this
+
 #include <cstdio>
 #include <cstring>
 
@@ -35,7 +36,6 @@
 
 #include <ew/graphics/gui/event/event.hpp>
 
-#include <ew/console/console.hpp>
 
 // implementation details
 #include "../renderer/rendering_context_private_data.hpp"
@@ -86,7 +86,7 @@ extern "C" char * __progname;
 using namespace ew::core::objects;
 using namespace ew::graphics::gui::events;
 using namespace ew::implementation::graphics::rendering::opengl;
-using ew::console::cerr;
+using std::cerr;
 
 // move this to lib_X11.*
 void display_X11_return_value(int ret)

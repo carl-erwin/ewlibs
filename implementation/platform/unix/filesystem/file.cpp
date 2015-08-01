@@ -14,8 +14,7 @@
 #include <ew/utils/utils.hpp>
 #include <ew/filesystem/file.hpp>
 
-#include <ew/console/console.hpp>
-using ew::console::cerr;
+using std::cerr;
 
 #include "../core/syscall/syscall.hpp"
 

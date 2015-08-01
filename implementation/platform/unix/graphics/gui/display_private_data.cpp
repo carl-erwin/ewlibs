@@ -23,7 +23,7 @@ int display::private_data::X11::display_error_handler(::Display * dpy, ::XErrorE
     // TODO: check ret code
     XGetErrorText(dpy, code, (char *) errorMsg, 512);
 
-    dbg << " X11 ERROR MSG : " << errorMsg << "\n";
+    cerr << " X11 ERROR MSG : " << errorMsg << "\n";
 
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <windows.h>
 #endif
 
+#include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -25,8 +26,7 @@ using namespace ew::core::types;
 using namespace ew::maths;
 
 
-#include <ew/console/console.hpp>
-using ew::console::cerr;
+using std::cerr;
 
 #include <ew/graphics/graphics.hpp>
 

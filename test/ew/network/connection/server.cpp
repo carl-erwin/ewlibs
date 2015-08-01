@@ -10,7 +10,6 @@
 
 #include <ew/core/Types.hpp>
 #include <ew/core/Time.hpp>
-#include <ew/Console.hpp>
 #include <ew/Network.hpp>
 
 
@@ -18,10 +17,10 @@ namespace test
 {
 namespace network
 {
-
+using std::cerr;
 using std::size_t;
 using namespace ew::network;
-using ew::console::cerr;
+
 
 u32 nr_client;
 std::mutex nr_client_mtx;

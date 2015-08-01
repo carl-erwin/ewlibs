@@ -1,8 +1,8 @@
+#include <iostream>
 #include <cstdlib>
 
 #include <ew/core/time/time.hpp>
 #include <ew/core/exception/exception.hpp>
-#include <ew/Console.hpp>
 
 namespace test
 {
@@ -14,7 +14,8 @@ namespace time
 using namespace ew::core::exceptions;
 using namespace ew::core::time;
 using namespace ew::core::types;
-using namespace ew::console;
+
+using std::cerr;
 
 
 u32 cstring_to_u32(const char * str)

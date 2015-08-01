@@ -1,4 +1,4 @@
-#include <ew/console/console.hpp>
+#include <iostream>
 #include <ew/core/exception/exception.hpp>
 
 #define EW_DEFINE_WRAPPER_FUNC_POINTER // !! do not remove this !!
@@ -15,7 +15,7 @@ namespace gui
 
 using namespace ew::core::exceptions;
 using ew::core::dll;
-using ew::console::cerr;
+using std::cerr;
 
 static dll * _libGLX;
 

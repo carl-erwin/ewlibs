@@ -7,9 +7,4 @@ ew.core.exception
 ew.core.object
 ew.core.time
 ew.core.system
-ew.console
-
-#ew.core.dll
-#ew.core.maths
-#ew.graphics
 )

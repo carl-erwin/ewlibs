@@ -1,7 +1,7 @@
 #include <cstring>
+#include <iostream>
 
 #include <ew/core/Exception.hpp>
-#include <ew/Console.hpp>
 #include <ew/Filesystem.hpp>
 
 #include <string>
@@ -15,7 +15,8 @@ using namespace ew::core::types;
 using namespace ew::core::objects;
 using namespace ew::core::objects::stream;
 using namespace ew::core::exceptions;
-using namespace ew::console;
+
+using std::cerr;
 
 using namespace ew::filesystem;
 

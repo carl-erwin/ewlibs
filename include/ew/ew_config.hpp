@@ -300,13 +300,6 @@
 # define EW_PLATFORM_EXPORT EW_IMPORT_SYM
 #endif
 
-// ew.console
-#ifdef DO_EW_CONSOLE_EXPORT
-# define EW_CONSOLE_EXPORT EW_EXPORT_SYM
-#else
-# define EW_CONSOLE_EXPORT EW_IMPORT_SYM
-#endif
-
 // ew.core.system
 #ifdef DO_EW_SYSTEM_EXPORT
 # define EW_SYSTEM_EXPORT EW_EXPORT_SYM

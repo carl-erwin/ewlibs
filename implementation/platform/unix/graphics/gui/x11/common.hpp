@@ -6,8 +6,8 @@
 #include <thread>
 
 
-#include <ew/console/console.hpp>
-using ew::console::dbg;
+#include <iostream>
+using std::cerr;
 
 #include <ew/codecs/text/unicode/utf8/utf8.hpp>
 

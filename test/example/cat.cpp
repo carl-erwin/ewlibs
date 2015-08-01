@@ -1,4 +1,4 @@
-#include <ew/console/console.hpp>
+#include <iostream>
 #include <ew/core/exception/exception.hpp>
 
 #include <ew/filesystem/file.hpp>
@@ -11,10 +11,11 @@ namespace example
 using namespace ew::core::objects;
 using namespace ew::core::objects::stream;
 using namespace ew::core::exceptions;
-using namespace ew::console;
+using namespace ew::filesystem; 
 
-using namespace ew::filesystem;
-
+using std::cerr;
+using std::cout;
+  
 void usage(char * binName)
 {
     cerr << "usage : " << binName << " file ...\n";

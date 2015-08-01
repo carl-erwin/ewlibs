@@ -11,5 +11,4 @@ ${FREETYPE_INCLUDE_DIRS}
 TARGET_LINK_LIBRARIES(time_test
 ew.core.exception
 ew.core.time
-ew.console
 )

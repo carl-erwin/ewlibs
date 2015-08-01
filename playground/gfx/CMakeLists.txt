@@ -12,7 +12,6 @@ ew.core.exception
 ew.core.dll
 ew.core.time
 ew.core.system
-ew.console
 ew.core.maths
 ew.graphics
 ew.codecs.text.unicode.utf8

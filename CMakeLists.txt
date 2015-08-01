@@ -368,7 +368,6 @@ ADD_SUBDIRECTORY(cmake/ew/maths)
 ADD_SUBDIRECTORY(cmake/ew/system)
 ADD_SUBDIRECTORY(cmake/ew/filesystem)
 ADD_SUBDIRECTORY(cmake/ew/network)
-ADD_SUBDIRECTORY(cmake/ew/console)
 ADD_SUBDIRECTORY(cmake/ew/audio)
 ADD_SUBDIRECTORY(cmake/ew/codecs/text/unicode/utf8)
 
