@@ -30,7 +30,10 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
 
     struct text_codec_io_s * iovc = nullptr;
 
-    int iocnt = 1024 * 4;
+    int max_iocnt = 1024 * 1024;
+
+    int iocnt = 1024;
+    int pass_count = 0;
 
     uint32_t split_count;
     uint32_t split_flag;
@@ -63,8 +66,10 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     mode_ctx->end_of_buffer.valid        = true;
 
 
-    mode_ctx->iocnt = 1024 * 4;
-    mode_ctx->iovc  = new text_codec_io_s[mode_ctx->iocnt];
+    mode_ctx->pass_count = 0;
+    mode_ctx->max_iocnt = 1024 * 1024;
+    mode_ctx->iocnt = 1024;
+    mode_ctx->iovc  = new text_codec_io_s[mode_ctx->max_iocnt];
 
     mode_ctx->split_count  = 0;
     mode_ctx->split_flag   = 0;
@@ -141,6 +146,12 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
 
     auto & out = ctx->tmp_io;
 
+
+    ctx->pass_count++;
+    ctx->iocnt += 1024 * (1 << ctx->pass_count);
+    ctx->iocnt = ctx->iocnt > ctx->max_iocnt ? ctx->max_iocnt : ctx->iocnt;
+
+    app_logln(-1, "%s : PASS %d, iocnt %d, maxio %d", __PRETTY_FUNCTION__, ctx->pass_count, ctx->iocnt, ctx->max_iocnt);
 
     int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
 

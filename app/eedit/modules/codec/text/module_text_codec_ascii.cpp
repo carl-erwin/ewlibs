@@ -53,8 +53,13 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 {
     // read up to iocnt codepont
     int64_t offset = iovc->offset;
-    size_t buff_size = 16 * 1024;
-    uint8_t * buff = (uint8_t *)alloca(buff_size); // buff[16 * 1024]; // codec ctx // move this to codec ctx // and adapt
+    size_t buff_size = iocnt;
+
+    std::vector<uint8_t> buff;
+    buff.reserve(iocnt);
+
+    // std::cerr << __PRETTY_FUNCTION__ << "@ " << offset << " iocnt = " << iocnt << "\n";
+
 
     int i = 0;
     while (i < (int)iocnt) {
@@ -62,7 +67,7 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
         size_t nb_read = 0;
         size_t to_read = std::min<size_t>(iocnt, buff_size);
 
-        int res = byte_buffer_read(io_ctx->bid, offset,  buff,  to_read, &nb_read);
+        int res = byte_buffer_read(io_ctx->bid, offset,  &buff[0],  to_read, &nb_read);
         if (res != 0) {
             /* */
             return -1;
@@ -74,7 +79,8 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
         }
 
         for (size_t j = 0; j < nb_read; j++) {
-            iovc[i + j].cp = buff[j];
+
+            iovc[i + j].cp = buff[j] > 127 ? 0xfffd: buff[j];
             iovc[i + j].offset = offset + j;
             iovc[i + j].size   = 1;
         }
@@ -84,9 +90,12 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 
         // always true
         if (nb_read <= buff_size) {
+            // std::cerr << __PRETTY_FUNCTION__ << "nb_read("<< nb_read << ") <= buff_size\n";
             break;
         }
     }
+
+    // std::cerr << __PRETTY_FUNCTION__ << " return total read = " << i << "\n";
 
     return i;
 }
@@ -239,36 +248,43 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
     // direction < 0)
     // read_pos = near_offset;
 
-    size_t READ_SIZE = 32 * 1024;
-    struct text_codec_io_s iovec[READ_SIZE]; // BIGGER ?
+    size_t READ_SIZE = 1024 * 1024;
+
+    std::vector<text_codec_io_s> iovec;
+    iovec.reserve(READ_SIZE);
 
     size_t loop = 0;
+    size_t maxio = 1024;
     while (true) {
 
         ++loop;
-        //std::cerr << __PRETTY_FUNCTION__ << " loop " << loop << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " loop " << loop << "\n";
 
 
         // fetch
         uint64_t start;
 
-        size_t maxio = READ_SIZE;
-        if (read_pos <= READ_SIZE) {
+        maxio += 1024 * (1 << loop);
+        maxio = maxio > READ_SIZE ? READ_SIZE : maxio;
+        // std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
+
+        if (read_pos <= maxio) {
             start = 0;
             maxio = read_pos;
         } else {
-            start = read_pos - READ_SIZE;
+            start = read_pos - maxio;
         }
 
         if (0) {
-            std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
-            std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
-            std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+            // std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
+            // std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
+            // std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
         }
 
 
         iovec[0].offset = start;
-        int ret = ascii_read_forward(io_ctx, iovec, maxio);
+        int ret = ascii_read_forward(io_ctx, &iovec[0], maxio);
         if (ret < 0) {
             // FIXME:
             return -1;
@@ -279,24 +295,24 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
             return cp_count;
         }
 
-        //std::cerr << __PRETTY_FUNCTION__ << " ret = " << ret << "\n";
+        // std::cerr << __PRETTY_FUNCTION__ << " ret = " << ret << "\n";
 
         read_pos -= ret;
 
         struct text_codec_io_s * iovc;
 
-        for (iovc = iovec + ret; ; ) {
+        for (iovc = &iovec[0] + ret; ; ) {
 
             --iovc;
-            if (iovc < iovec) {
+            if (iovc < &iovec[0]) {
                 break;
             }
 
             if (0) {
-                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->cp = " << iovc->cp << "\n";
-                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->offset = " << iovc->offset << "\n";
-                std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->size  = " << iovc->size << "\n";
-                std::cerr << __PRETTY_FUNCTION__ << " prev_cp  = " << prev_cp << "\n";
+                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->cp = " << iovc->cp << "\n";
+                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->offset = " << iovc->offset << "\n";
+                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->size  = " << iovc->size << "\n";
+                // std::cerr << __PRETTY_FUNCTION__ << " prev_cp  = " << prev_cp << "\n";
             }
 
             ++cp_count;
