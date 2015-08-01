@@ -180,14 +180,14 @@ IF (CXX_HAVE_OPT_pipe)
 ENDIF(CXX_HAVE_OPT_pipe)
 
 
-# check c++11 support
+# check c++14 support
 CHECK_CXX_COMPILER_FLAG(-std=c++11 CXX_HAVE_OPT_stdcplusplus14)
 IF (CXX_HAVE_OPT_stdcplusplus14)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   ADD_DEFINITIONS(-D_EW_STD_CPP=2014)
   SET(EW_STD_CPP 2014)
 ELSE(CXX_HAVE_OPT_stdcplusplus14)
-  MESSAGE(FATAL_ERROR "your compiler must support c++11")
+  MESSAGE(FATAL_ERROR "your compiler must support c++14")
 ENDIF(CXX_HAVE_OPT_stdcplusplus14)
 
 
