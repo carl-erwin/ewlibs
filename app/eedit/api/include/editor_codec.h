@@ -41,7 +41,7 @@ struct codec_io_ctx_s {
     editor_buffer_id_t editor_buffer_id;      // editor_buffer.h
     byte_buffer_id_t   bid;       // buffer id see byte_buffer.h
     codec_id_t         codec_id;
-    codec_context_id_t codec_ctx; //
+    codec_context_id_t codec_ctx; // remove this ?
 };
 
 

@@ -197,7 +197,7 @@ bool build_layout(editor_layout_builder_context_t & ctx)
     filter_list.push_back(&tab_expansion_mode);
 #endif
 
-    filter_list.push_back(&mark_filter); // LAST LAYOUT FILTER  is the screen
+    filter_list.push_back(&mark_filter);
 
     filter_list.push_back(&screen_mode); // LAST LAYOUT FILTER  is the screen
 

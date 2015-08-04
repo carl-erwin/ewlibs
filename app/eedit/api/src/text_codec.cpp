@@ -10,9 +10,9 @@
 
 
 extern "C"
-SHOW_SYMBOL int text_codec_read(struct codec_io_ctx_s * io_ctx, int direction, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_read(struct text_codec_io_ctx_s * io_ctx, int direction, struct text_codec_io_s * iovc, size_t iocnt)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 
@@ -26,9 +26,9 @@ SHOW_SYMBOL int text_codec_read(struct codec_io_ctx_s * io_ctx, int direction, s
 
 
 extern "C"
-SHOW_SYMBOL int text_codec_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 
@@ -36,9 +36,9 @@ SHOW_SYMBOL int text_codec_read_forward(struct codec_io_ctx_s * io_ctx, struct t
 }
 
 extern "C"
-SHOW_SYMBOL int text_codec_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_read_backward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 
@@ -46,9 +46,9 @@ SHOW_SYMBOL int text_codec_read_backward(struct codec_io_ctx_s * io_ctx, struct 
 }
 
 extern "C"
-SHOW_SYMBOL int text_codec_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+SHOW_SYMBOL int text_codec_write(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 
@@ -56,9 +56,9 @@ SHOW_SYMBOL int text_codec_write(struct codec_io_ctx_s * io_ctx, struct text_cod
 }
 
 extern "C"
-SHOW_SYMBOL int text_codec_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
+SHOW_SYMBOL int text_codec_sync_codepoint(struct text_codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 
@@ -66,9 +66,9 @@ SHOW_SYMBOL int text_codec_sync_codepoint(struct codec_io_ctx_s * io_ctx, const 
 }
 
 extern "C"
-SHOW_SYMBOL int64_t text_codec_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
+SHOW_SYMBOL int64_t text_codec_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
-    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->codec_id));
+    text_codec_ops_s * ops = static_cast<text_codec_ops_s *>(codec_get_ops(io_ctx->parent_ctx.codec_id));
     if (ops == nullptr)
         return -1;
 

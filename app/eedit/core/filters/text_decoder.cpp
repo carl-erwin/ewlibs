@@ -38,6 +38,9 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
     uint32_t split_count;
     uint32_t split_flag;
     uint64_t cur_cp_index; // used for correct codepoint expansion, and column count :-)
+
+
+    std::vector<uint8_t> cache;
 };
 
 
@@ -66,6 +69,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     mode_ctx->end_of_buffer.valid        = true;
 
 
+    mode_ctx->cache.resize(1024*1024);
     mode_ctx->pass_count = 0;
     mode_ctx->max_iocnt = 1024 * 1024;
     mode_ctx->iocnt = 1024;
@@ -100,6 +104,30 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
         abort();
 
 
+    //index: SLOW in debug mode, too many allocations
+    if (1) {
+        editor_buffer_id_t editor_buffer_id      = mode_ctx->blayout_ctx->editor_buffer_id;
+        byte_buffer_id_t   bid       = mode_ctx->blayout_ctx->bid;
+        codec_id_t         codec_id  = mode_ctx->blayout_ctx->codec_id;
+        codec_context_id_t codec_ctx = 0;
+
+        struct text_codec_io_ctx_s io_ctx {
+            { editor_buffer_id, bid, codec_id, codec_ctx },
+            0, // &mode_ctx->cache[0],
+            0, // mode_ctx->cache.capacity(),
+        };
+
+        mode_ctx->iocnt = 1024 * 1024;
+
+        uint64_t offset = 0;
+        while (offset < mode_ctx->buffer_size) {
+            mode_ctx->iovc[0].offset = offset;
+            int ret = text_codec_read_forward(&io_ctx, mode_ctx->iovc, mode_ctx->iocnt);
+            std::cerr << " read @ " << offset << " " << ret << "bytes\n";
+            offset += ret;
+        }
+    }
+
     return true;
 }
 
@@ -132,8 +160,10 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     codec_id_t         codec_id  = ctx->blayout_ctx->codec_id;
     codec_context_id_t codec_ctx = 0;
 
-    struct codec_io_ctx_s io_ctx {
-        editor_buffer_id, bid, codec_id, codec_ctx
+    struct text_codec_io_ctx_s io_ctx {
+        { editor_buffer_id, bid, codec_id, codec_ctx },
+        &ctx->cache[0],
+        ctx->cache.capacity(),
     };
 
 
@@ -152,6 +182,7 @@ bool text_decoder_filter(editor_layout_builder_context_t * blctx,
     ctx->iocnt = ctx->iocnt > ctx->max_iocnt ? ctx->max_iocnt : ctx->iocnt;
 
     app_logln(-1, "%s : PASS %d, iocnt %d, maxio %d", __PRETTY_FUNCTION__, ctx->pass_count, ctx->iocnt, ctx->max_iocnt);
+
 
     int ret = text_codec_read_forward(&io_ctx, ctx->iovc, ctx->iocnt);
 

@@ -177,11 +177,15 @@ int mark_operation(struct editor_message_s * msg, int op_mask, int32_t codepoint
     });
 
     // build text codec context :
-    codec_io_ctx_s codec_io_ctx = {
-        .editor_buffer_id = msg->editor_buffer_id,
-        .bid              = msg->byte_buffer_id,
-        .codec_id         = codec_id,
-        .codec_ctx        = codec_ctx,
+    text_codec_io_ctx_s codec_io_ctx = {
+        {
+            .editor_buffer_id = msg->editor_buffer_id,
+            .bid              = msg->byte_buffer_id,
+            .codec_id         = codec_id,
+            .codec_ctx        = codec_ctx
+        },
+        0,
+        0,
     };
 
     for (auto & cur_mark : marks) {
@@ -315,7 +319,7 @@ int mark_move_to_screen_line(struct editor_message_s * msg, enum mark_move_direc
 
 */
 
-int sync_to_start_of_previous_line(codec_io_ctx_s & io_ctx, const uint64_t offset, uint64_t & sync_offset)
+int sync_to_start_of_previous_line(text_codec_io_ctx_s & io_ctx, const uint64_t offset, uint64_t & sync_offset)
 {
     uint64_t start_offset = offset;
     sync_offset   = start_offset;
@@ -402,11 +406,15 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
     // get first offset
     uint64_t start_offset = mark_get_offset(marks[0]);
     // resync to beginning of line
-    codec_io_ctx_s io_ctx {
-        ebid,
-        editor_buffer_get_byte_buffer_id(ebid),
-        editor_view_get_codec_id(view),
-        0 /* codex ctx */
+    text_codec_io_ctx_s io_ctx {
+        {
+            ebid,
+            editor_buffer_get_byte_buffer_id(ebid),
+            editor_view_get_codec_id(view),
+            0 /* codex ctx */
+        },
+        0,
+        0
     };
 
     const codepoint_info_t * lcp = nullptr;
@@ -466,7 +474,7 @@ int mark_move_to_previous_screen_line(struct editor_message_s * msg)
 
             do {
                 // FIXME:   define editor_log() like printf // app_log << " XXX Build screen list loop("<<count<<") offset(" << editor_view_get_start_offset( ed_view ) <<")\n";
-                build_screen_layout(&io_ctx, view, &start_cpi, tmp_scr);
+                build_screen_layout((codec_io_ctx_s *)&io_ctx, view, &start_cpi, tmp_scr);
 
                 screen_get_first_cpinfo(tmp_scr, &fcp);
                 const screen_line_t * l = nullptr;
@@ -590,11 +598,15 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
 //  }
 
     // resync to beginning of line
-    codec_io_ctx_s io_ctx {
-        ebid,
-        editor_buffer_get_byte_buffer_id(ebid),
-        editor_view_get_codec_id(view),
-        0 /* codex ctx */
+    text_codec_io_ctx_s io_ctx {
+        {
+            ebid,
+            editor_buffer_get_byte_buffer_id(ebid),
+            editor_view_get_codec_id(view),
+            0 /* codex ctx */
+        },
+        0,
+        0
     };
 
 
@@ -682,7 +694,7 @@ int mark_move_to_next_screen_line(struct editor_message_s * msg)
 
             start_offset = start_cpi.offset;
 
-            build_screen_layout(&io_ctx, view, &start_cpi, tmp_scr);
+            build_screen_layout((codec_io_ctx_s *)&io_ctx, view, &start_cpi, tmp_scr);
             screen_get_first_cpinfo(tmp_scr, &fcp);
             const screen_line_t * last_line = nullptr;
 

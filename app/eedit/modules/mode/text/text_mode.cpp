@@ -267,11 +267,15 @@ int rewind_and_resync_offset(editor_buffer_id_t ed_buffer,
         // FIXME:   define editor_log() like printf // app_log << "hints & resync_screen\n";
 
         // TODO: need resync here: but we don't know the used codec
-        codec_io_ctx_s io_ctx {
-            ed_buffer,
-            editor_buffer_get_byte_buffer_id(ed_buffer),
-            editor_view_get_codec_id(ed_view),
-            0 /* codex ctx */
+        text_codec_io_ctx_s io_ctx {
+            {
+                ed_buffer,
+                editor_buffer_get_byte_buffer_id(ed_buffer),
+                editor_view_get_codec_id(ed_view),
+                0 /* codex ctx */
+            },
+            0,
+            0
         };
         int ret = text_codec_sync_line(&io_ctx, near_offset, -1, resynced_offset);
         if (ret == -1) {
@@ -562,11 +566,16 @@ int scroll_up_N_lines(struct editor_message_s * msg, uint64_t N)
         screen_dimension_t scr_dim = screen_get_dimension(screen);
 
         // resync here
-        codec_io_ctx_s io_ctx {
-            msg->editor_buffer_id,
-            editor_buffer_get_byte_buffer_id(msg->editor_buffer_id),
-            editor_view_get_codec_id(msg->view_id),
-            0 /* codex ctx */
+        text_codec_io_ctx_s io_ctx {
+            {
+                msg->editor_buffer_id,
+                editor_buffer_get_byte_buffer_id(msg->editor_buffer_id),
+                editor_view_get_codec_id(msg->view_id),
+                0 /* codex ctx */
+            },
+            0,
+            0
+
         };
 
         for (size_t n = 0; n < N; ++n) {

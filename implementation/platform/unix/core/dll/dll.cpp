@@ -16,7 +16,7 @@ namespace ew
 namespace core
 {
 
-  using std::cerr;
+using std::cerr;
 
 // -----------------------------------------------------
 

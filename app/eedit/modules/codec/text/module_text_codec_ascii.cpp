@@ -49,17 +49,31 @@ int ascii_get_name(char buffer[], size_t buffer_size)
 
 
 extern "C"
-int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
+    uint8_t * buff   = nullptr;
+    size_t buff_size = 0;
+    std::vector<uint8_t> vec;
+
+    if (io_ctx->cache) {
+        std::cerr << __PRETTY_FUNCTION__ << " using cache " << io_ctx->cache_size << "\n";
+
+        buff      = io_ctx->cache;
+        buff_size = io_ctx->cache_size;
+    } else {
+        vec.reserve(iocnt);
+        buff      = &vec[0];
+        buff_size = iocnt;
+        std::cerr << __PRETTY_FUNCTION__ << " allocatin cache " << iocnt << "\n";
+    }
+
+
+    std::cerr << __PRETTY_FUNCTION__ << " reading " << iocnt << " bytes\n";
+
     // read up to iocnt codepont
     int64_t offset = iovc->offset;
-    size_t buff_size = iocnt;
-
-    std::vector<uint8_t> buff;
-    buff.reserve(iocnt);
 
     // std::cerr << __PRETTY_FUNCTION__ << "@ " << offset << " iocnt = " << iocnt << "\n";
-
 
     int i = 0;
     while (i < (int)iocnt) {
@@ -67,7 +81,11 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
         size_t nb_read = 0;
         size_t to_read = std::min<size_t>(iocnt, buff_size);
 
-        int res = byte_buffer_read(io_ctx->bid, offset,  &buff[0],  to_read, &nb_read);
+        int res = byte_buffer_read(io_ctx->parent_ctx.bid, offset,  &buff[0], to_read, &nb_read);
+
+        std::cerr << " byte_buffer_read @" << offset << " to_read = " << to_read << " nb_read " << nb_read << "\n";
+
+
         if (res != 0) {
             /* */
             return -1;
@@ -90,12 +108,9 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 
         // always true
         if (nb_read <= buff_size) {
-            // std::cerr << __PRETTY_FUNCTION__ << "nb_read("<< nb_read << ") <= buff_size\n";
             break;
         }
     }
-
-    // std::cerr << __PRETTY_FUNCTION__ << " return total read = " << i << "\n";
 
     return i;
 }
@@ -108,7 +123,7 @@ int ascii_read_forward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * 
 */
 
 extern "C"
-int ascii_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_read_backward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
     // start of buffer ?
     if (iovc->offset == 0)
@@ -130,7 +145,7 @@ int ascii_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s *
 
         size_t max_read = std::min<size_t>(sizeof (buff), first_offset - last_offset);
         size_t nb_read  = 0;
-        int res = byte_buffer_read(io_ctx->bid, (first_offset - max_read), buff, max_read, &nb_read);
+        int res = byte_buffer_read(io_ctx->parent_ctx.bid, (first_offset - max_read), buff, max_read, &nb_read);
         if (res != 0) {
             return -1;
         }
@@ -149,7 +164,7 @@ int ascii_read_backward(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s *
 }
 
 extern "C"
-int ascii_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
+int ascii_write(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, size_t iocnt)
 {
     auto start_offset = iovc[0].offset;
     std::vector<uint8_t> vec;
@@ -165,7 +180,7 @@ int ascii_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, s
     }
 
     size_t nb_written = 0;
-    byte_buffer_write(io_ctx->bid, start_offset, &vec[0], vec.size(), &nb_written);
+    byte_buffer_write(io_ctx->parent_ctx.bid, start_offset, &vec[0], vec.size(), &nb_written);
     int res = nb_written;
 
     // fix size / offset
@@ -178,7 +193,7 @@ int ascii_write(struct codec_io_ctx_s * io_ctx, struct text_codec_io_s * iovc, s
 }
 
 extern "C"
-int ascii_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
+int ascii_sync_codepoint(struct text_codec_io_ctx_s * io_ctx, const uint64_t offset, const int direction, uint64_t * synced_offset)
 {
     abort();
     return 0;
@@ -187,7 +202,7 @@ int ascii_sync_codepoint(struct codec_io_ctx_s * io_ctx, const uint64_t offset, 
 
 // TODO: improve forward direction
 extern "C"
-int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offset, const int direction, uint64_t * synced_offset)
+int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near_offset, const int direction, uint64_t * synced_offset)
 {
     int64_t cp_count = 0;
 
@@ -258,7 +273,6 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
     while (true) {
 
         ++loop;
-        // std::cerr << __PRETTY_FUNCTION__ << " loop " << loop << "\n";
 
 
         // fetch
@@ -266,8 +280,6 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
 
         maxio += 1024 * (1 << loop);
         maxio = maxio > READ_SIZE ? READ_SIZE : maxio;
-        // std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
-        // std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
 
         if (read_pos <= maxio) {
             start = 0;
@@ -295,7 +307,6 @@ int64_t ascii_sync_line(struct codec_io_ctx_s * io_ctx, const uint64_t near_offs
             return cp_count;
         }
 
-        // std::cerr << __PRETTY_FUNCTION__ << " ret = " << ret << "\n";
 
         read_pos -= ret;
 
