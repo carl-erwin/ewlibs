@@ -55,31 +55,6 @@ namespace ew
                     _offset = offset;
                 }
 
-                /*
-                  -1 left
-                  +1 right
-                   0 found
-                 */
-                virtual inline int search_offset(const u64 off, u32 * pg_offset) const {
-
-                    if (off < _offset)
-                        return -1;
-
-                    if (off >= (_offset + simple_array<T>::size())) {
-                        return 1;
-                    }
-
-                    if (pg_offset) {
-                        *pg_offset = off - this->_offset;
-                    }
-
-                    return 0;
-                }
-
-                virtual inline bool have_offset(const u64 off, u32 * pg_offset) const {
-                    return search_offset(off, pg_offset) == 0;
-                }
-
                 inline u32  read(u32 pg_offset, T * items, u32 nr_items) {
 
                     if (pg_offset + nr_items > simple_array<T>::size())
@@ -119,7 +94,7 @@ namespace ew
                 }
 
                 virtual inline void  dump_page(const char * pgname = 0) const {
-                }                
+                }
 
             };
 
