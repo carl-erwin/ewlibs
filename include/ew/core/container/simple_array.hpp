@@ -39,6 +39,7 @@ struct simple_array_base {
 
 };
 
+// TODO: assert start <= end
 template <typename InputIterator>
 inline size_t get_distance(InputIterator start, InputIterator end)
 {
