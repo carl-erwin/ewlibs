@@ -9,6 +9,8 @@
 
 // RENAME in text decoder
 
+static size_t MAX_IOCNT = 32 * 1024;
+
 namespace eedit
 {
 namespace core
@@ -30,7 +32,7 @@ struct text_decoder_context_t : public editor_layout_filter_context_t {
 
     struct text_codec_io_s * iovc = nullptr;
 
-    int max_iocnt = 1024 * 1024;
+    int max_iocnt = MAX_IOCNT;
 
     int iocnt = 1024;
     int pass_count = 0;
@@ -69,9 +71,9 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
     mode_ctx->end_of_buffer.valid        = true;
 
 
-    mode_ctx->cache.resize(1024*1024);
+    mode_ctx->cache.resize(MAX_IOCNT);
     mode_ctx->pass_count = 0;
-    mode_ctx->max_iocnt = 1024 * 1024;
+    mode_ctx->max_iocnt = MAX_IOCNT;
     mode_ctx->iocnt = 1024;
     mode_ctx->iovc  = new text_codec_io_s[mode_ctx->max_iocnt];
 
@@ -105,7 +107,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
 
 
     //index: SLOW in debug mode, too many allocations
-    if (1) {
+    if (0) {
         editor_buffer_id_t editor_buffer_id      = mode_ctx->blayout_ctx->editor_buffer_id;
         byte_buffer_id_t   bid       = mode_ctx->blayout_ctx->bid;
         codec_id_t         codec_id  = mode_ctx->blayout_ctx->codec_id;
@@ -117,7 +119,7 @@ bool text_decoder_init(editor_layout_builder_context_t * blayout_ctx, editor_lay
             0, // mode_ctx->cache.capacity(),
         };
 
-        mode_ctx->iocnt = 1024 * 1024;
+        mode_ctx->iocnt = MAX_IOCNT;
 
         uint64_t offset = 0;
         while (offset < mode_ctx->buffer_size) {
