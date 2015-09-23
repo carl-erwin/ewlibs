@@ -4,7 +4,8 @@ genLines :: Int -> Int -> Int -> IO ()
 genLines startLineNum lastLine numChar =
     do
     let a  = (take numChar $ repeat 'x')
-    putStrLn $ (show startLineNum) ++ " " ++ (show a)
+    putStrLn $ (show startLineNum) ++ " " ++ a
+
     if startLineNum < lastLine
     then genLines (startLineNum + 1) lastLine numChar
     else return ()
@@ -17,7 +18,7 @@ main = do
     let numChar      = rInt (argList !! 2)
     if length argList == 3
     then genLines startLineNum lastLine numChar
-    else putStrLn $ "usage : " ++ (show progName) ++ " startLineNum numLine numChar"
+    else putStrLn $ "usage : " ++ (progName) ++ " startLineNum numLine numChar"
 
 rInt :: String -> Int
 rInt a = read a
