@@ -29,7 +29,6 @@ int screen_dimension_reset(screen_dimension_t * sd)
 struct screen_line_s {
     std::vector<codepoint_info_s> m_cpinfo_array;
     int m_used;
-
 };
 
 struct screen_s {
