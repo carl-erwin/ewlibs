@@ -82,6 +82,9 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
 
 
     if (view) {
+
+        codepoint_info_reset(&start_cpi_ref);
+
         editor_view_get_start_cpi(view, &start_cpi_ref);
         if (start_cpi_ref.used) {
             start_cpi = &start_cpi_ref;
