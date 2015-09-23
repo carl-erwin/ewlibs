@@ -8,7 +8,7 @@
 template <class T>
 struct handle_index_allocator {
 
-    // TODO: use std::forward to construct ad the same time
+    // TODO: use std::forward to construct at the same time
 
     handle_index_allocator()
         :
@@ -90,5 +90,4 @@ private:
     std::vector<T *> table;
     size_t last_idx = 0;
     size_t used = 0;
-
 };
