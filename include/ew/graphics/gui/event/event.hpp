@@ -118,6 +118,8 @@ inline const char * event_type_to_c_string(event_type type)
 
 
 struct event {
+    virtual ~event() {}
+
     event_type type; // we can cast by reading this
     ew::graphics::gui::widget  *  widget;
     ew::graphics::gui::display  *  display;
