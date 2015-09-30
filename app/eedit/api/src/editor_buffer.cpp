@@ -102,7 +102,7 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
     font_file_name(font_file_name_)
 
 {
-    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name, buffer_name, font_file_name);
+    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name.c_str(), buffer_name.c_str(), font_file_name.c_str());
 
     m_font  = std::make_shared<ew::graphics::fonts::font>(eedit::get_application()->font_file_name().c_str(),
               eedit::get_application()->font_width(),
@@ -128,7 +128,7 @@ editor_buffer_s::editor_buffer_s(byte_buffer_id_t bid_,
 
 editor_buffer_s::~editor_buffer_s()
 {
-    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name, buffer_name, font_file_name);
+    app_logln(-1, "%s: %lu, %s, %s, %s", __PRETTY_FUNCTION__, bid, file_name.c_str(), buffer_name.c_str(), font_file_name.c_str());
 
     app_logln(-1, " number of view to delete %u", view.size());
 

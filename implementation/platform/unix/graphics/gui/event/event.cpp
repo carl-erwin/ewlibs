@@ -41,7 +41,7 @@ ew::graphics::gui::events::event * pump_event(ew::graphics::gui::display * dpy)
     return dpy->pump_event();
 }
 
-bool destroyEvent(event * event)
+  bool destroyEvent(ew::graphics::gui::events::event * event)
 {
     if (event)
         delete event;

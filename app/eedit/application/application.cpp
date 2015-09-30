@@ -419,7 +419,7 @@ std::vector<std::string> split(std::string str, const char c)
         start = end + 1;
     }
 
-    return std::move(res);
+    return res;
 }
 
 
@@ -617,16 +617,16 @@ bool application::application_private::setup_buffers()
         }
 
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
-        app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
-        app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
+        app_logln(-1, "allocated  bid['%s'] = %lu", filename.c_str(), bid);
+        app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename.c_str(), editor_buffer_id);
 
         if (editor_buffer_id == 0) {
-            app_log(-1, " cannot prepare buffer for '%s'", filename);
+            app_log(-1, " cannot prepare buffer for '%s'", filename.c_str());
             assert(0);
             continue;
         }
 
-        app_log(-1, " prepare buffer for '%s'", filename);
+        app_log(-1, " prepare buffer for '%s'", filename.c_str());
         m_buffer_desc_list.emplace_back(editor_buffer_id);
     }
 
@@ -639,7 +639,7 @@ bool application::application_private::setup_buffers()
         // TODO: file path check/line/column
 
         // move this to editor_buffer_info ctor
-        auto filename = "dev/null";
+        auto filename = "/dev/null";
         auto buffer_name = "dummy";
 
         editor_buffer_id_t editor_buffer_id = editor_buffer_open(filename, buffer_name); // TODO "basename - [N]"
@@ -651,11 +651,6 @@ bool application::application_private::setup_buffers()
         auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
         app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
         app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
-
-        if (editor_buffer_id == 0) {
-            app_log(-1, " cannot prepare buffer for '%s'", filename);
-            return false;
-        }
 
     }
 
