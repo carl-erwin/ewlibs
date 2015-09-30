@@ -190,6 +190,18 @@ extern "C" {
 
 
     SHOW_SYMBOL
+    int editor_buffer_close(editor_buffer_id_t ebid)
+    {
+        auto edbuf = table.get(ebid);
+        if (edbuf == nullptr)
+            return -1;
+
+        table.destroy(edbuf->editor_buffer_id); // TODO font handling
+        return 0;
+    }
+
+
+    SHOW_SYMBOL
     editor_view_id_t editor_buffer_check_view_id(editor_buffer_id_t editor_buffer_id, editor_view_id_t view)
     {
         auto edbuf = table.get(editor_buffer_id);

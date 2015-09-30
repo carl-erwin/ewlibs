@@ -47,6 +47,7 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
 editor_view::~editor_view()
 {
     eedit::release_input_map(input.event_map);
+    delete font.ft;
     ew::graphics::fonts::quit();
 }
 
@@ -100,7 +101,12 @@ extern "C" {
     SHOW_SYMBOL
     int editor_view_close(editor_view_id_t view_id)
     {
-        assert(0);
+        auto e = table.find(view_id);
+        if (e == table.end())
+            return -1;
+
+        delete e->second;
+        table.erase(e);
         return 0;
     }
 

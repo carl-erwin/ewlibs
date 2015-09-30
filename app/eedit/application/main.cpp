@@ -8,15 +8,6 @@
 
 #include "core/log/log.hpp"
 
-namespace eedit
-{
-
-// move to application.cpp
-auto create_application() -> std::shared_ptr<application> {
-    auto app = std::make_shared<application>();
-    set_application(app);
-    return app;
-}
 
 int main(int ac, char ** av)
 {
@@ -27,7 +18,7 @@ int main(int ac, char ** av)
 
     app_log_init();
 
-    auto app = create_application();
+    auto app = eedit::create_application();
     ret = app->run(ac, av);
     if (ret != true) {
         assert(0);
@@ -36,14 +27,3 @@ int main(int ac, char ** av)
 
     return status;
 }
-
-} // ! namespace eedit
-
-/////////////////////////////////////////////////////////////////////
-
-int main(int ac, char ** av)
-{
-    return eedit::main(ac, av);
-}
-
-/////////////////////////////////////////////////////////////////////

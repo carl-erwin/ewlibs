@@ -98,8 +98,6 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
 
     notify_buffer_changes(msg, start_cpi, true);
 
-    release_event(msg);
-
     return ret;
 }
 

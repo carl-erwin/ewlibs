@@ -146,6 +146,14 @@ application::application_private::  application_private()
 
 std::shared_ptr<application> app;
 
+// move to application.cpp
+std::shared_ptr<application> create_application() {
+    auto new_app = std::make_shared<application>();
+    set_application(new_app);
+    return new_app;
+}
+
+
 std::shared_ptr<application> get_application()
 {
     return app;
@@ -161,7 +169,7 @@ void set_application(std::shared_ptr<application> app_)
 
 application::application()
     :
-    m_priv(std::unique_ptr<application_private>(new application_private))
+    m_priv(std::make_unique<application_private>())
 {
     app_logln(-1, "%s", __PRETTY_FUNCTION__);
 
@@ -450,7 +458,7 @@ bool application::application_private::setup_modules()
 
     for (auto & libname : mod_vec) {
 
-        auto lib = std::unique_ptr<ew::core::dll>(new ew::core::dll(libname.c_str()));
+        auto lib = std::make_unique<ew::core::dll>(libname.c_str());
         app_logln(-1, "try to load file '%s", libname.c_str());
         if (lib->load() == false) {
             app_logln(-1, "cannotload file '%s", libname.c_str());
@@ -525,7 +533,7 @@ bool application::application_private::setup_modules()
 
             std::string prefix;
 
-            auto modinfo = std::unique_ptr<module_info_s>(new module_info_s);
+            auto modinfo = std::make_unique<module_info_s>();
 
             modinfo->lib = std::move(lib);
 
@@ -568,7 +576,7 @@ bool application::application_private::setup_modules()
 bool application::application_private::release_modules()
 {
     for ( const auto & e : module_map) {
-        app_log(-1, " %s %s", __FUNCTION__, e.first.c_str());;
+        app_logln(-1, " %s %s", __FUNCTION__, e.first.c_str());;
     }
 
     return true;
@@ -603,6 +611,18 @@ bool application::application_private::setup_buffers()
         return false;
     }
 
+
+     // FIXME:
+    // init log/message/scratch
+
+
+    // augment file list
+    // with flags like src:memory|filesystem
+    // push src_name like '*scratch*' '*messages*' etc ..
+    if (m_files_list.size() == 0) {
+        m_files_list.push_back("/dev/null");
+    }
+
     // setup buffers
     for (const auto & filename : m_files_list) {
 
@@ -630,35 +650,16 @@ bool application::application_private::setup_buffers()
         m_buffer_desc_list.emplace_back(editor_buffer_id);
     }
 
-    // FIXME:
-    // init log/message/scratch
-
-
-    if (m_buffer_desc_list.size() == 0) {
-
-        // TODO: file path check/line/column
-
-        // move this to editor_buffer_info ctor
-        auto filename = "/dev/null";
-        auto buffer_name = "dummy";
-
-        editor_buffer_id_t editor_buffer_id = editor_buffer_open(filename, buffer_name); // TODO "basename - [N]"
-        if (editor_buffer_id == INVALID_EDITOR_BUFFER_ID) {
-            assert(0);
-            return false;
-        }
-
-        auto bid = editor_buffer_get_byte_buffer_id(editor_buffer_id);
-        app_logln(-1, "allocated  bid['%s'] = %lu", filename, bid);
-        app_logln(-1, "allocated  editor_buffer_id['%s'] = %lu", filename, editor_buffer_id);
-
-    }
-
     return true;
 }
 
 bool application::application_private::release_buffers()
 {
+    for (auto ebid : m_buffer_desc_list) {
+        app_logln(-1, "release  ebid['%d']", ebid);
+        editor_buffer_close(ebid);
+    }
+
     return true;
 }
 
@@ -818,7 +819,7 @@ bool application::run(int ac, char ** av)
     ret = m_priv->setup_buffers();
 
     // start core thread
-    m_priv->core_thread = std::unique_ptr<std::thread>(new std::thread(eedit::core::main, app));
+    m_priv->core_thread = std::make_unique<std::thread>(eedit::core::main, app);
 
     // ui main loop
     ret = m_priv->main_loop();

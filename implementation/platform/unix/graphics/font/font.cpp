@@ -60,7 +60,7 @@ EW_GRAPHICS_EXPORT bool init()
         cerr << "Freetype version : " << amajor << "." << aminor << "." << apatch << "\n";
     }
 
-    ++freeTypeinit;
+    ++freeTypeinit; // TODO: atomic
 
     return true;
 }
@@ -71,7 +71,7 @@ EW_GRAPHICS_EXPORT  bool quit()
         return false;
     }
 
-    --freeTypeinit;
+    --freeTypeinit;  // TODO: atomic
     if (freeTypeinit == 0) {
         FT_Done_FreeType(alibrary);
         unload_libfreetype2_dll();

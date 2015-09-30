@@ -70,7 +70,9 @@ public:
 
 };
 
+std::shared_ptr<application> create_application();
 std::shared_ptr<application> get_application();
 void          set_application(std::shared_ptr<application> app);
+
 
 } // ! namespace eedit

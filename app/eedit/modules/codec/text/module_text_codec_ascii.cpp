@@ -64,7 +64,7 @@ int ascii_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io
         vec.reserve(iocnt);
         buff      = &vec[0];
         buff_size = iocnt;
-        std::cerr << __PRETTY_FUNCTION__ << " allocatin cache " << iocnt << "\n";
+        std::cerr << __PRETTY_FUNCTION__ << " allocating cache " << iocnt << "\n";
     }
 
 
@@ -269,7 +269,7 @@ int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near
     iovec.reserve(READ_SIZE);
 
     size_t loop = 0;
-    size_t maxio = 1024;
+    size_t maxio = 0;
     while (true) {
 
         ++loop;
@@ -288,15 +288,23 @@ int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near
             start = read_pos - maxio;
         }
 
-        if (0) {
-            // std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
-            // std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
-            // std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+        if (1) {
+            std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
+            std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
+            std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+        }
+
+
+        if (maxio == 0) {
+            *synced_offset = 0;
+            return cp_count;
         }
 
 
         iovec[0].offset = start;
         int ret = ascii_read_forward(io_ctx, &iovec[0], maxio);
+	std::cerr << __PRETTY_FUNCTION__ << " ascii_read_forward ->  " << ret << "\n";
+
         if (ret < 0) {
             // FIXME:
             return -1;

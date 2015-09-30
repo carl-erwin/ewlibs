@@ -62,8 +62,8 @@ extern "C" {
             return 0;
         }
 
-        app_logln(-1, " allocated fd   = %u", fd  );
-        app_logln(-1, " allocated fd   = %u", bid );
+        app_logln(-1, " allocated fd   = %p", fd  );
+        app_logln(-1, " allocated bid  = %u", bid );
         app_logln(-1, " allocated file = %u", file);
         return bid;
     }

@@ -70,7 +70,7 @@ struct editor_message_s * editor_rpc_answer_new(struct editor_message_s * reques
 extern "C"
 void editor_event_free(struct editor_message_s * ev)
 {
-    if (!ev)
+    if (ev == nullptr)
         return;
 
     switch (ev->type) {
@@ -82,6 +82,5 @@ void editor_event_free(struct editor_message_s * ev)
         break;
     }
 
-
-    if (ev) ::operator delete ((void *)ev);
+    ::operator delete ((void *)ev);
 }

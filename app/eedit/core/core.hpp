@@ -79,7 +79,6 @@ int quit_editor(struct editor_message_s * msg);
 
 bool eval_input_event(struct editor_message_s * base_msg);
 bool process_input_event(struct editor_message_s * msg);
-bool release_event(struct editor_message_s * msg);
 
 bool notify_buffer_changes(struct editor_message_s * msg, codepoint_info_s * start_cpi, bool send_screen);
 

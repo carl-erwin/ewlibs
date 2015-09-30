@@ -24,6 +24,8 @@ uint64_t editor_number_of_byte_buffer(); // TODO: remove rpc
 int      editor_get_byte_buffer_ids(uint64_t max_number_of_buffer, byte_buffer_id_t * ids);
 
 editor_buffer_id_t editor_buffer_open(const char * file_name, const char * buffer_name);
+int                editor_buffer_close(editor_buffer_id_t ebid);
+
 editor_buffer_id_t editor_buffer_check_id(editor_buffer_id_t editor_buffer_id);
 
 int editor_buffer_close(editor_buffer_id_t editor_buffer_id);

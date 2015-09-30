@@ -308,15 +308,6 @@ int dump_buffer_log(struct editor_message_s * msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool release_event(struct editor_message_s * msg)
-{
-    delete msg;
-    return true;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
 // remove/rename this
 bool build_screen_layout_from_event(struct editor_message_s * msg, const codepoint_info_s * start_cpi, screen_t * scr)
 {
@@ -462,7 +453,7 @@ void main(std::shared_ptr<application> app)
     // from config file -> load-module path/to/file.so ?
     register_core_modules_function();
 
-    app_log(-1, " FIXME: ad other lib*.so (mark/text)");
+    app_log(-1, " FIXME: add other lib*.so (mark/text)");
     // text_mode_register_modules_function(); // move away : config file
     // mark_mode_register_modules_function(); // move away : config file
 
@@ -481,6 +472,7 @@ void main(std::shared_ptr<application> app)
             msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
             process_editor_message(&core_ctx, msg);
+	    editor_event_free(msg);
             // --nr;
             nr = editor_event_queue_size(core_ctx.m_msg_queue);
         }
