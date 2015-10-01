@@ -53,12 +53,18 @@ static u8 * utf8_mask_table = nullptr;
 
 // TODO: state values use 4bits -> compress
 struct utf8_state_t {
+    utf8_state_t(const utf8_state_t & ) = delete;
+    utf8_state_t & operator= (const utf8_state_t & ) = delete;
+
     utf8_state_t(size_t nr_state)
+        :
+        _val(new u8[nr_state]),
+        _nr_state(nr_state),
+        _size(nr_state)
     {
-        _nr_state = nr_state;
-        _size = nr_state;
-        utf8_mask_table = new u8[256];
-        _val  = new u8[_size];
+        if (utf8_mask_table == nullptr) {
+            utf8_mask_table = new u8[256];
+        }
     }
 
     ~utf8_state_t()
@@ -78,7 +84,6 @@ struct utf8_state_t {
         return true;
     }
 
-private:
 public:
     u8  *  _val;
     size_t _nr_state;
@@ -798,25 +803,24 @@ struct utf8_search_func_object_t {
                               u64 * _nr_cp,
                               u64 * _nr_ok,
                               u64 * _nr_err)
+        :
+        ret(0),
+        n(_n),
+        nr_cp(_nr_cp),
+        nr_ok(_nr_ok),
+        nr_err(_nr_err),
+        search_cp(_search_cp),
+        tmp_offset(start_offset),
+        last_start_offset(start_offset),
+        pfound_offset(nullptr),
+        s(S0),
+        unic(0),
+        n_cp(0),
+        n_err(0),
+        n_ok(0),
+        out(nullptr),
+        next(nullptr)
     {
-        ret = 0;
-        search_cp = _search_cp;
-        n      = _n;
-        nr_cp  = _nr_cp;
-        nr_ok  = _nr_ok;
-        nr_err = _nr_err;
-
-
-        pfound_offset = nullptr;
-
-        s = S0;
-        unic = 0;
-        n_cp = 0;
-        n_err = 0;
-        n_ok = 0;
-
-        tmp_offset    =  start_offset;
-        last_start_offset =  tmp_offset;
     }
 
 

@@ -83,9 +83,15 @@ struct input_action {
 
 // keymap/entry.hpp
 
+// TODO move to plain C
 struct input_map_entry {
 
+    struct editor_input_event_s * ev_ptr;
     struct editor_input_event_s ev;
+
+
+    input_map_entry(const input_map_entry &) = delete;
+    input_map_entry & operator = (const input_map_entry &) = delete;
 
     input_map_entry(editor_input_event_type_e type,
                     editor_key_e kt = (editor_key_e)0,
@@ -93,7 +99,10 @@ struct input_map_entry {
                     uint32_t mod_mask = 0,
                     uint32_t start_val = 0,
                     uint32_t end_val = 0)
+        : ev_ptr(new editor_input_event_s),
+          ev(*ev_ptr)
     {
+#if 1
         ev.type        = type;
         ev.key         = kt;
         ev.is_range    = rt ==  simple_range ? true : false;
@@ -103,6 +112,7 @@ struct input_map_entry {
         ev.altL        = mod_mask & mod_altL;
         ev.altR        = mod_mask & mod_altR;
         ev.oskey       = mod_mask & mod_oskey;
+#endif
     }
 
     ~input_map_entry()

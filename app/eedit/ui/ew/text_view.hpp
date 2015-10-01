@@ -61,10 +61,15 @@ namespace  eedit
 class text_view : public ew::graphics::gui::widget
 {
 public:
+    text_view(const text_view &) = delete;
+    text_view & operator = (const text_view &) = delete;
 
     text_view(ew::graphics::gui::widget * parent)
+        :
+        ft_grid_array(),
+        m_parent(parent),
+        m_screen_dim()
     {
-        m_parent = parent;
         set_name("text_view");
         m_screen_id = (uint64_t)this;
     }

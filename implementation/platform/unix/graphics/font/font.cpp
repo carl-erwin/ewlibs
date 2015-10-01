@@ -97,8 +97,13 @@ class font::private_data
 {
 public:
 
+    private_data(const private_data&) = delete;
+    private_data & operator = (const private_data&) = delete;
+
     private_data()
-        : last_found(0)
+        :
+        cp_font_cache(),
+        last_found(0)
     {
         last_found = 0; // valgrind ?
         font_texID = 0;
@@ -121,30 +126,36 @@ public:
         FT_Done_Face(aface);
     }
 
-    std::string _filename;
-    FT_Face aface;
-    FT_Long face_index;
+    std::string _filename = "";
+    FT_Face aface = nullptr;
+    FT_Long face_index = -1;
 
     // font
-    u32 _width_in_px;
-    u32 _height_in_px;
+    u32 _width_in_px = 0;
+    u32 _height_in_px = 0;
 
     // move to texture manager
     // must recycle texture based on last time used
     // TODO: class texture
     bool   texture_init = false;
-    GLuint font_texID;
-    u32    font_texWidth;
-    u32    font_texHeight;
-    u32    nr_subtex;
-    u32    max_subtex;
-    u32    subtex_W;
-    u32    subtex_H;
+    GLuint font_texID = -1;
+    u32    font_texWidth = 0;
+    u32    font_texHeight = 0;
+    u32    nr_subtex = 0;
+    u32    max_subtex = 0;
+    u32    subtex_W = 0;
+    u32    subtex_H = 0;
 
     //
     struct freetypeData {
 
+        freetypeData(const freetypeData &) = delete;
+        freetypeData & operator = (const freetypeData &) = delete;
+
+
         freetypeData()
+            :
+            glyph_info()
         {
         }
 
@@ -158,30 +169,30 @@ public:
         // remove
 
         // tex coords
-        float tex_s0;
-        float tex_t0;
-        float tex_s1;
-        float tex_t1;
+        float tex_s0 = 0.0f;
+        float tex_t0 = 0.0f;
+        float tex_s1 = 0.0f;
+        float tex_t1 = 0.0f;
 
-        FT_Glyph ft_glyph;
+        FT_Glyph ft_glyph = nullptr;
 
-        s32 _advX;
-        s32 _advY;
+        s32 _advX = 0;
+        s32 _advY = 0;
 
-        s32 _offsetX;
-        s32 _offsetY;
+        s32 _offsetX = 0;
+        s32 _offsetY = 0;
 
-        s32 _width;
-        s32 _height;
+        s32 _width = 0;
+        s32 _height = 0;
 
-        s32 _bitmap_top;
-        s32 _bitmap_bottom;
+        s32 _bitmap_top = 0;
+        s32 _bitmap_bottom = 0;
 
-        s32 _bitmap_left;
-        s32 _bitmap_right;
+        s32 _bitmap_left = 0;
+        s32 _bitmap_right = 0;
 
-        s32 _bitmap_width;
-        s32 _bitmap_height;
+        s32 _bitmap_width = 0;
+        s32 _bitmap_height = 0;
 
         font_glyph_info  glyph_info;
 
@@ -1158,7 +1169,7 @@ font::~font()
 {
     //std::cerr << __PRETTY_FUNCTION__ << " this = " << this << "\n";
     // unload all textures
-    //delete data;
+    delete data;
     //data = 0;
 }
 

@@ -23,6 +23,9 @@ using std::cerr;
 class dll::private_data
 {
 public:
+    private_data(const private_data &) = delete;
+    private_data & operator = (const private_data &) = delete;
+
     private_data(const char * name)
     {
         _fileName = ew::utils::c_string_dup(name);

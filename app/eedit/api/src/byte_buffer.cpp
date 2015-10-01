@@ -1,3 +1,4 @@
+#include <memory>
 #include <stdio.h>
 #include <string>
 #include <array>
@@ -25,7 +26,7 @@ struct byte_buffer_s {
     }
 
 // handler
-    file_t * fd = nullptr;
+    std::unique_ptr<file_t> fd;
 
 // properties
     std::string file_name_path; // abs path to filename
@@ -84,7 +85,7 @@ extern "C" {
             return 0;
 
         if (sz) {
-            assert(file->fd);
+            assert(file->fd.get());
             *sz = file->fd->size();
         }
         return 0;

@@ -46,6 +46,9 @@ using namespace ew::graphics::rendering;
 class EW_GRAPHICS_EXPORT window : public ew::graphics::gui::widget
 {
 public:
+    window(const window & ) = delete;
+    window & operator = (const window & ) = delete;
+
     window(ew::graphics::gui::display * dpy, ew::graphics::gui::window * parent, ew::graphics::gui::window_properties & properties);
     virtual ~window();
 
@@ -64,8 +67,8 @@ public:
 
     // renderring context
     virtual bool trylockDrawingContext();
-    virtual bool lockDrawingContext();
-    virtual bool unlockDrawingContext();
+    virtual void lockDrawingContext();
+    virtual void unlockDrawingContext();
     virtual bool swapBuffers();
 
     // position

@@ -41,7 +41,7 @@ ew::graphics::gui::events::event * pump_event(ew::graphics::gui::display * dpy)
     return dpy->pump_event();
 }
 
-  bool destroyEvent(ew::graphics::gui::events::event * event)
+bool destroyEvent(ew::graphics::gui::events::event * event)
 {
     if (event)
         delete event;
@@ -53,12 +53,16 @@ static const size_t __nr_events = 32;
 class event_dispatcher::private_data
 {
 public:
+    private_data(const private_data &) = delete;
+    private_data & operator = (const private_data &) = delete;
 
     private_data()
         :
-        event_list_mutex(0),
-        timeout(100),
-        dpy(0)
+        event_list_mutex(new std::mutex()),
+        event_list(),
+        have_event_cond(),
+        timeout(0),
+        dpy(nullptr)
     {
         event_list_mutex = new std::mutex();
 
@@ -80,7 +84,7 @@ public:
 
     std::condition_variable  have_event_cond;
     u32 timeout;
-    display * dpy;
+    display * dpy = nullptr;
 };
 
 event_dispatcher::event_dispatcher(display * dpy)
@@ -285,7 +289,7 @@ bool event_dispatcher::dispatch_event(event * event)
         return false;
     }
 
-    std::lock_guard<std::mutex> widget_lock(* window);
+    object_locker<ew::graphics::gui::widget> widget_lock(*window);
 
     if (! window->isAvailable()) {
         // TODO: set unavailable widget flag

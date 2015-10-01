@@ -139,6 +139,14 @@ editor_buffer_s::~editor_buffer_s()
         ++it;
     }
 
+    for (auto m : moving_marks) {
+        mark_release(m);
+    }
+
+    for (auto m : fixed_marks) {
+        mark_release(m);
+    }
+
     byte_buffer_close(bid);
 }
 

@@ -303,15 +303,16 @@ public:
 
 
 class EW_GRAPHICS_EXPORT widget :
-    public std::mutex,
     public ew::core::object,
-//	public ew::core::objects::lock_interface, // FIXME remove this
     public widget_event_callbacks,
     public positionable_2d_object,
     public resizeable_2d_object
 {
 public:
     //
+    widget(const widget &) = delete;
+    widget & operator = (const widget &) = delete;
+
     widget();
     virtual ~widget();
 
@@ -351,13 +352,11 @@ public:
     {
         return false;
     }
-    virtual bool lockDrawingContext()
+    virtual void lockDrawingContext()
     {
-        return false;
     }
-    virtual bool unlockDrawingContext()
+    virtual void unlockDrawingContext()
     {
-        return false;
     }
 
     virtual bool swapBuffers()
@@ -454,7 +453,7 @@ public:
 
 
 private:
-    class private_data;
+    struct private_data;
     private_data * d = nullptr;
 };
 

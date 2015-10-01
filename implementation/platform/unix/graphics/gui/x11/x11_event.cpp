@@ -57,7 +57,7 @@ u32 display::private_data::X11::poll_events(ew::graphics::gui::display * dpy , b
     auto evdispatch = dpy->get_event_dispatcher();
     auto pending = evdispatch->get_queue_size();
 
-    u32 nr_pending_x11_events; // nr_pending_x11_events
+    u32 nr_pending_x11_events = 0; // nr_pending_x11_events
     X11::get_event_queue_size(dpy, &nr_pending_x11_events);
 
     // poll the 2 queue in mono thread
@@ -97,6 +97,7 @@ u32 display::private_data::X11::poll_events(ew::graphics::gui::display * dpy , b
         } while (block);
     }
 
+    nr_pending_x11_events = 0;
     X11::get_event_queue_size(dpy, &nr_pending_x11_events);
     if (nr_pending_x11_events) {
         ::XEvent * xevent_vec = new ::XEvent [nr_pending_x11_events];

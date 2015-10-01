@@ -71,6 +71,16 @@ struct font_vertex_info { // GL_T2F_C4F_N3F_V3F,
 
 struct font_grid {
 public:
+    font_grid()
+        :
+        v0(),
+        v1(),
+        v2(),
+        v3()
+    {
+
+    }
+
     font_vertex_info v0;
     font_vertex_info v1;
     font_vertex_info v2;
@@ -80,6 +90,9 @@ public:
 class EW_GRAPHICS_EXPORT font
 {
 public:
+    font(const font &) = delete;
+    font & operator = (const font &) = delete;
+
     font(const char * filename , u32 pxWidth = 12, u32 pxHeight = 12);
     virtual ~font();
 

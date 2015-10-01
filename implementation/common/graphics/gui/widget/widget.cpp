@@ -63,40 +63,43 @@ using namespace ew::graphics::gui::events;
 class widget;
 
 struct event_context {
-    widget * selected_child;
-    widget * focused_child;
+    widget * selected_child = nullptr;
+    widget * focused_child = nullptr;
 
-    widget * wid;
-    widget_event wid_ev;
+    widget * wid = nullptr;
+    widget_event wid_ev = widget_event();
 
     bool need_redraw = false;
 };
 
-class widget::private_data
-{
+struct widget::private_data {
 public:
-    ~private_data()
+    private_data(const private_data &) = delete;
+    private_data & operator = (const private_data &) = delete;
+
+
+    private_data()
     {
     }
-public:
+
     bool m_enable = true;
-    s32 _x;
-    s32 _y;
-    u32 _w;
-    u32 _h;
+    s32 _x = 0;
+    s32 _y = 0;
+    u32 _w = 0;
+    u32 _h = 0;
 
     //
     layout * m_layout = nullptr;
 
-    alignment::policy m_horizontal_policy;
-    alignment::policy m_vertical_policy;
+    alignment::policy m_horizontal_policy = alignment::policy();
+    alignment::policy m_vertical_policy   = alignment::policy();
 
     //
     widget * last_selected_child = nullptr;
     widget * last_focused_child  = nullptr;
 
     //
-    std::shared_ptr<ew::graphics::fonts::font> m_ft;
+    std::shared_ptr<ew::graphics::fonts::font> m_ft = nullptr;
 
 //helpers
     bool on_event(ew::graphics::gui::widget * self, ew::graphics::gui::events::event * event);
@@ -110,15 +113,16 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 widget::widget()
+    :
+    d(new widget::private_data())
 {
-    d = new widget::private_data();
 }
 
 widget::~widget()
 {
-    assert(d);
     delete d;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool widget::add_widget(widget * w)

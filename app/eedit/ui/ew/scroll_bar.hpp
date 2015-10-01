@@ -18,6 +18,9 @@ class text_view;
 class vertical_scroll_bar : public ew::graphics::gui::widget
 {
 public:
+
+
+
     ew::graphics::gui::widget * m_parent;
     bool m_is_over = false;
     bool m_is_pressed = false;
@@ -42,9 +45,13 @@ public:
 
     text_view * m_txt_view = nullptr;
 public:
+    vertical_scroll_bar(const vertical_scroll_bar &) = delete;
+    vertical_scroll_bar & operator = (const vertical_scroll_bar &) = delete;
+
     vertical_scroll_bar(ew::graphics::gui::widget * parent)
+        :
+        m_parent(parent)
     {
-        m_parent = parent;
         set_name("vertical scroll bar");
     }
 
@@ -53,22 +60,22 @@ public:
 
     }
 
-    void set_textview(text_view * txt_view)
+    virtual void set_textview(text_view * txt_view)
     {
         m_txt_view = txt_view;
     }
 
-    text_view * get_textview() const
+    virtual text_view * get_textview() const
     {
         return m_txt_view;
     }
 
     // TODO: transform in ratio set_ratio(float value)
     virtual bool set_begin_ratio(float ratio);
-    float get_begin_ratio() const;
+    virtual float get_begin_ratio() const;
 
     virtual bool set_end_ratio(float ratio);
-    float get_end_ratio() const;
+    virtual float get_end_ratio() const;
 
     // object
     virtual const char * class_name() const
@@ -114,12 +121,12 @@ public:
 
     virtual bool render();
 
-    void set_changed_flag(bool flag)
+    virtual void set_changed_flag(bool flag)
     {
         m_has_changed = flag;
     }
 
-    bool has_changed()
+    virtual bool has_changed()
     {
         return m_has_changed;
     }
@@ -130,9 +137,16 @@ public:
 class vscroll_bar_button1 : public ew::graphics::gui::widget
 {
 public:
+
+    vscroll_bar_button1(const vscroll_bar_button1 &) = delete;
+    vscroll_bar_button1 & operator = (const vscroll_bar_button1 &) = delete;
+
     vscroll_bar_button1(ew::graphics::gui::widget * parent)
+        :
+        m_parent(parent),
+        border_color(),
+        bg()
     {
-        m_parent = parent;
         init_border_color();
         set_focus_out_color();
 
@@ -296,9 +310,13 @@ private:
 class vscroll_bar_button2 : public ew::graphics::gui::widget
 {
 public:
+    vscroll_bar_button2(const vscroll_bar_button2 &) = delete;
+    vscroll_bar_button2 & operator = (const vscroll_bar_button2 &) = delete;
+
     vscroll_bar_button2(ew::graphics::gui::widget * parent)
+        :
+        m_parent(parent)
     {
-        m_parent = parent;
         // init_border_color();
         // set_focus_out_color();
 
@@ -389,14 +407,17 @@ public:
     bool m_new_anim = false;
     enum { scroll_none, scroll_up, scroll_down } scroll_dir = scroll_none;
 public:
-    scroll_area(ew::graphics::gui::widget * parent)
-    {
-        m_parent = parent;
-        set_name("vertical scroll area");
+    scroll_area(const scroll_area & ) = delete;
+    scroll_area & operator = (const scroll_area & ) = delete;
 
-        m_button1    = new vscroll_bar_button1(this);
-        m_button2    = new vscroll_bar_button2(this);
-        m_scroll_bar = new vertical_scroll_bar(this);
+    scroll_area(ew::graphics::gui::widget * parent)
+        :
+        m_parent(parent),
+        m_button1    ( new vscroll_bar_button1(this) ),
+        m_button2    ( new vscroll_bar_button2(this) ),
+        m_scroll_bar ( new vertical_scroll_bar(this) )
+    {
+        set_name("vertical scroll area");
     }
 
     virtual ~scroll_area()
@@ -457,7 +478,7 @@ public:
         return false;
     }
 
-    float get_begin_ratio() const
+    virtual float get_begin_ratio() const
     {
         if (m_scroll_bar) {
             return m_scroll_bar->get_begin_ratio();
@@ -473,7 +494,7 @@ public:
         return false;
     }
 
-    float get_end_ratio() const
+    virtual float get_end_ratio() const
     {
         if (m_scroll_bar) {
             return m_scroll_bar->get_end_ratio();
@@ -482,7 +503,7 @@ public:
     }
 
 
-    void set_changed_flag(bool flag)
+    virtual void set_changed_flag(bool flag)
     {
 
         if (m_scroll_bar) {
@@ -490,7 +511,7 @@ public:
         }
     }
 
-    bool has_changed()
+    virtual bool has_changed()
     {
 
         if (m_scroll_bar) {
@@ -501,14 +522,14 @@ public:
     }
 
 
-    void set_textview(text_view * txt_view)
+    virtual void set_textview(text_view * txt_view)
     {
         if (m_scroll_bar) {
             m_scroll_bar->set_textview(txt_view);
         }
     }
 
-    text_view * get_textview() const
+    virtual text_view * get_textview() const
     {
         if (m_scroll_bar == nullptr) {
             return nullptr;

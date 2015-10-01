@@ -8,6 +8,9 @@
 #include "editor_module.h"
 #include "editor_codec.h"
 
+#include "core/log/log.hpp"
+
+
 #include <cstdio>
 
 /////////////////////////////
@@ -56,7 +59,7 @@ int ascii_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io
     std::vector<uint8_t> vec;
 
     if (io_ctx->cache) {
-        std::cerr << __PRETTY_FUNCTION__ << " using cache " << io_ctx->cache_size << "\n";
+        app_logln(-1, "%s using cache size %d", __FUNCTION__, io_ctx->cache_size);
 
         buff      = io_ctx->cache;
         buff_size = io_ctx->cache_size;
@@ -64,11 +67,10 @@ int ascii_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io
         vec.reserve(iocnt);
         buff      = &vec[0];
         buff_size = iocnt;
-        std::cerr << __PRETTY_FUNCTION__ << " allocating cache " << iocnt << "\n";
+        app_logln(-1, "%s allocating cache size %d", __FUNCTION__, iocnt);
     }
 
-
-    std::cerr << __PRETTY_FUNCTION__ << " reading " << iocnt << " bytes\n";
+    app_logln(-1, "%s : reading  %d bytes", __FUNCTION__, iocnt);
 
     // read up to iocnt codepont
     int64_t offset = iovc->offset;
@@ -83,7 +85,7 @@ int ascii_read_forward(struct text_codec_io_ctx_s * io_ctx, struct text_codec_io
 
         int res = byte_buffer_read(io_ctx->parent_ctx.bid, offset,  &buff[0], to_read, &nb_read);
 
-        std::cerr << " byte_buffer_read @" << offset << " to_read = " << to_read << " nb_read " << nb_read << "\n";
+        app_logln(-1, " byte_buffer_read @%lu to_read = %u, nb_read %d", offset, nb_read);
 
 
         if (res != 0) {
@@ -289,9 +291,9 @@ int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near
         }
 
         if (1) {
-            std::cerr << __PRETTY_FUNCTION__ << " start " << start << "\n";
-            std::cerr << __PRETTY_FUNCTION__ << " read_pos " << read_pos << "\n";
-            std::cerr << __PRETTY_FUNCTION__ << " maxio " << maxio << "\n";
+            app_logln(-1, " start    %lu", start);
+            app_logln(-1, " read_pos %lu", read_pos);
+            app_logln(-1, " maxio    %lu", maxio);
         }
 
 
@@ -303,7 +305,7 @@ int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near
 
         iovec[0].offset = start;
         int ret = ascii_read_forward(io_ctx, &iovec[0], maxio);
-	std::cerr << __PRETTY_FUNCTION__ << " ascii_read_forward ->  " << ret << "\n";
+        app_logln(-1, "%s : ascii_read_forward -> %d", __PRETTY_FUNCTION__, ret);
 
         if (ret < 0) {
             // FIXME:
@@ -328,10 +330,10 @@ int64_t ascii_sync_line(struct text_codec_io_ctx_s * io_ctx, const uint64_t near
             }
 
             if (0) {
-                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->cp = " << iovc->cp << "\n";
-                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->offset = " << iovc->offset << "\n";
-                // std::cerr << __PRETTY_FUNCTION__ << "iovc[" << cp_count << "]->size  = " << iovc->size << "\n";
-                // std::cerr << __PRETTY_FUNCTION__ << " prev_cp  = " << prev_cp << "\n";
+                app_logln(-1, "%s : iovc[%d].cp     = %d",  __FUNCTION__, cp_count, iovc->cp);
+                app_logln(-1, "%s : iovc[%d].offset = %lu", __FUNCTION__, cp_count, iovc->offset);
+                app_logln(-1, "%s : iovc[%d].size   = %lu", __FUNCTION__, cp_count, iovc->size);
+                app_logln(-1, "%s : prev_cp         = %d",  __FUNCTION__, prev_cp);
             }
 
             ++cp_count;

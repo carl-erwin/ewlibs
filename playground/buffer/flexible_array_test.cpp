@@ -491,11 +491,11 @@ void test_array_properties(flexarray_file * flex_array)
     u32 min_time = (u32) - 1;
     u32 max_time = 0;
 
-    u8 val;
     for (u64 i = 0; i < flex_array->size(); ++i) {
         u32 l_t0 = ew::core::time::get_nanoseconds_since_startup();
 
-        val = (*flex_array)[i];
+        u8 val = (*flex_array)[i];
+        (void)val;
 //        std::cerr << "op[" << i << "] = '" << val << " , int = " << (int)val << "'\n";
 
         u32 l_t1 = ew::core::time::get_nanoseconds_since_startup();
@@ -506,9 +506,6 @@ void test_array_properties(flexarray_file * flex_array)
 
     std::cerr << "op[] min time  : " << min_time << " ns\n";
     std::cerr << "op[] max time  : " << max_time << " ns\n";
-    if (val) {
-    }
-
 }
 
 #define STR_SIZE (1024)

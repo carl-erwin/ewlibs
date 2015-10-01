@@ -46,6 +46,11 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
 
 editor_view::~editor_view()
 {
+
+    for (auto s : screen_pool) {
+        screen_release(s);
+    }
+
     eedit::release_input_map(input.event_map);
     delete font.ft;
     ew::graphics::fonts::quit();
@@ -80,6 +85,9 @@ extern "C" {
             vptr = it->second;
             app_log(-1, " reuse view   = %p",  vptr);
         }
+
+        if (vptr == nullptr)
+            return -1;
 
         vptr->editor_buffer_id = editor_buffer_id; // bind
 

@@ -31,11 +31,11 @@ private:
 
 public:
     private_data() {}
-    ew::graphics::gui::window * _owner;
+    ew::graphics::gui::window * _owner = nullptr;
 
-    ::Pixmap _x11_pixmap;
-    ::GLXPixmap _glx_pixmap;
-    bool was_init;
+    ::Pixmap _x11_pixmap = 0;
+    ::GLXPixmap _glx_pixmap = 0;
+    bool was_init = false;
 };
 
 }

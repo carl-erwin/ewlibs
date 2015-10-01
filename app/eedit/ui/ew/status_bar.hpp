@@ -13,6 +13,9 @@ namespace  eedit
 class status_bar : public ew::graphics::gui::widget
 {
 public:
+    status_bar(const status_bar &) = delete;
+    status_bar & operator = (const status_bar &) = delete;
+
     status_bar(ew::graphics::gui::widget * parent);
 
     virtual ~status_bar();

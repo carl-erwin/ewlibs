@@ -25,6 +25,9 @@ class window;
 class EW_GRAPHICS_EXPORT pixmap   /* : public ew::graphics::gui::Widget */
 {
 public:
+    pixmap(const pixmap &) = delete;
+    pixmap & operator = (const pixmap &) = delete;
+
     pixmap(ew::graphics::gui::window * window);
     virtual ~pixmap();
 

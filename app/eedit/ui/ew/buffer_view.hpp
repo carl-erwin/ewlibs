@@ -10,6 +10,9 @@ namespace  eedit
 class buffer_view : public ew::graphics::gui::widget
 {
 public:
+    buffer_view(const buffer_view &) = delete;
+    buffer_view & operator = (const buffer_view &) = delete;
+
     buffer_view(ew::graphics::gui::widget * parent)
     {
         set_name("buffer_view");

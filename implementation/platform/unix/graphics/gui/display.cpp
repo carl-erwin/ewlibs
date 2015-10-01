@@ -150,23 +150,21 @@ void display::release_user_input_interface(user_input_interface * iuser_input_in
 
 }
 
-bool display::lock()
+void display::lock()
 {
-    d->lock();
+    static_cast<ew::core::object *>(this)->lock();
     assert(d->_dpy_owner != std::this_thread::get_id());
     d->_dpy_owner = std::this_thread::get_id();
     XLockDisplay(d->_x11_dpy);
-    return true;
 }
 
-bool display::unlock()
+void display::unlock()
 {
     assert(d->_dpy_owner == std::this_thread::get_id());
     XUnlockDisplay(d->_x11_dpy);
 
     d->_dpy_owner = std::thread::id();
-    d->unlock();
-    return true;
+    static_cast<ew::core::object *>(this)->unlock();
 }
 
 std::thread::id display::is_locked_by()

@@ -18,6 +18,13 @@ namespace eedit
 class ew_ui_interface : public user_interface
 {
 public:
+    ew_ui_interface(const ew_ui_interface &) = delete;
+    ew_ui_interface & operator = (const ew_ui_interface &) = delete;
+
+    ew_ui_interface()
+    {
+    }
+
     ew::graphics::gui::display * get_display()
     {
         return gui_dpy;
@@ -67,24 +74,17 @@ public:
         properties.use_offscreen_buffer = app->offscreen_buffer_flag();
         properties.clear_color = ew::graphics::color4ub(0xe9, 0xe9, 0xe9);
 
-        bool ret = gui_dpy->lock();
-        assert(ret);
-        if (ret == false) {
-            // ...
+        gui_dpy->lock();
+        {
+            m_main_window = new main_window(gui_dpy, properties);
+
+            // setup core event queue : the core send event here
+            auto q = editor_event_queue_new();
+
+            m_main_window->set_event_queue(q);
+
         }
-
-        m_main_window = new main_window(gui_dpy, properties);
-
-        // setup core event queue : the core send event here
-        auto q = editor_event_queue_new();
-
-        m_main_window->set_event_queue(q);
-
-        ret = gui_dpy->unlock();
-        assert(ret);
-        if (ret == false) {
-            // ...
-        }
+        gui_dpy->unlock();
 
         return true;
     }
@@ -132,7 +132,7 @@ public:
 private:
     ew::graphics::gui::display * gui_dpy = nullptr;
 
-    class main_window * m_main_window;
+    class main_window * m_main_window = nullptr;
 
     // move to user configuration: init file
     uint32_t app_width  = 1024;

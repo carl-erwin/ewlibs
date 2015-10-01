@@ -78,7 +78,7 @@ rendering_context::~rendering_context()
 
 // ______________________________________________________________
 
-bool rendering_context::lock()
+void rendering_context::lock()
 {
     d->lock();
     assert(d->window != 0);
@@ -98,13 +98,11 @@ bool rendering_context::lock()
     }
 
     d->_th_owner = std::this_thread::get_id();
-
-    return true;
 }
 
 // ________________________________________________________________
 
-bool rendering_context::unlock()
+void rendering_context::unlock()
 {
     assert(d->window != 0);
 
@@ -116,7 +114,6 @@ bool rendering_context::unlock()
 
     d->_th_owner = std::thread::id();
     d->unlock();
-    return true;
 }
 
 // ________________________________________________________________

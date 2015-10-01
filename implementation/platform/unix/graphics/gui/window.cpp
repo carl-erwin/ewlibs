@@ -140,6 +140,8 @@ window::window_private_data::window_private_data(window * parent)
     _x11_colorMap(0),
     _x11_visualInfo(0),
     _rdr_ctx(0),
+    pfd(),
+    _properties(),
     _guiDpy(0),
     _lastResize_time(0)
 {
@@ -846,12 +848,12 @@ bool window::trylockDrawingContext()
     return d->_rdr_ctx->trylock();
 }
 
-bool window::lockDrawingContext()
+void window::lockDrawingContext()
 {
     return d->_rdr_ctx->lock();
 }
 
-bool window::unlockDrawingContext()
+void window::unlockDrawingContext()
 {
     return d->_rdr_ctx->unlock();
 }

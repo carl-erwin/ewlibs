@@ -18,6 +18,9 @@ using namespace ew::core::types;
 class EW_CORE_OBJECT_EXPORT object
 {
 public:
+    object(const object & obj) = delete;                   /* not allowed */  // use deleted ?
+    object & operator=(const object & obj) = delete;       /* not allowed */
+
     object();                                     /** do nothing  particularly */
     virtual ~object();                            /** destroy children recursively */
 
@@ -34,11 +37,12 @@ public:
     // add object & name(const char *) // setter
 
 private:
-    /** \brief we do not allow object copy */
-    object(const object & obj);                   /* not allowed */  // use deleted ?
-    object & operator=(const object & obj);       /* not allowed */
 
 public:
+    virtual void lock();
+    virtual bool try_lock();
+    virtual void unlock();
+
     virtual object * get_parent()          const;
     virtual bool     set_parent(object *);
 

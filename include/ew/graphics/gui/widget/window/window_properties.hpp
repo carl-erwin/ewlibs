@@ -20,7 +20,7 @@ using namespace ew::core::types;
 class EW_GRAPHICS_EXPORT window_properties : public widget_properties
 {
 public:
-    window_properties() : is_fullscreen(false), have_decoration(true)
+    window_properties() : is_fullscreen(false), have_decoration(true), clear_color(color4ub())
     {
 
     }

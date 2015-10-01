@@ -49,9 +49,11 @@ using namespace ew::core::objects;
 using ew::graphics::gui::display;
 using ew::graphics::gui::window;
 
-class display::private_data : public std::mutex
+class display::private_data
 {
 public:
+    private_data(const private_data &) = delete;
+    private_data & operator = (const private_data &) = delete;
 
     private_data()
         :
@@ -63,7 +65,8 @@ public:
         _is_running(false),
         _event_poller_thread(0),
         _default_event_dispatcher(0),
-        _widget_list(0)
+        _widget_list(0),
+        _widget_list_mtx()
     {
     }
 
@@ -100,7 +103,7 @@ public:
         int get_version();
     };
 
-    X11 * x11_drv;
+    X11 * x11_drv = nullptr;
 
     // class EVENT {
     // public:
@@ -134,8 +137,8 @@ public:
     // d->x11()->rootWindow
     // d->x11()->running
 
-    ::Display * _x11_dpy;
-    int         _dpy_fd;
+    ::Display * _x11_dpy = nullptr;
+    int         _dpy_fd = -1;
     ::Window    _root_window;     // make a pointer to Window * that holds all informations of the root window
     bool        _is_running;      // replace by isAvailable()
 
@@ -163,16 +166,16 @@ public:
     // common to all display ?
     /* to catch close event from window manager */
     //  X11_Atoms []
-    Atom _WM_CLIENT_LEADER;
-    Atom _WM_DELETE_WINDOW;
-    Atom _NET_WM_WINDOW_TYPE;
-    Atom _NET_WM_WINDOW_TYPE_MENU;
-    Atom _NET_WM_WINDOW_TYPE_NORMAL;
-    Atom _NET_WM_WINDOW_TYPE_DOCK;
-    Atom _NET_WM_WINDOW_TYPE_TOOLBAR;
-    Atom _NET_WM_WINDOW_TYPE_UTILITY;
-    Atom _NET_WM_WINDOW_TYPE_SPLASH;
-    Atom _NET_WM_WINDOW_TYPE_DIALOG;
+    Atom _WM_CLIENT_LEADER = 0;
+    Atom _WM_DELETE_WINDOW = 0;
+    Atom _NET_WM_WINDOW_TYPE = 0;
+    Atom _NET_WM_WINDOW_TYPE_MENU = 0;
+    Atom _NET_WM_WINDOW_TYPE_NORMAL = 0;
+    Atom _NET_WM_WINDOW_TYPE_DOCK = 0;
+    Atom _NET_WM_WINDOW_TYPE_TOOLBAR = 0;
+    Atom _NET_WM_WINDOW_TYPE_UTILITY = 0;
+    Atom _NET_WM_WINDOW_TYPE_SPLASH = 0;
+    Atom _NET_WM_WINDOW_TYPE_DIALOG = 0;
 };
 
 inline void  display::private_data::set_running(bool val)

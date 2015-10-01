@@ -68,7 +68,12 @@ public:
 
 public:
 
+    flexible_array(const flexible_array &) = delete;
+    flexible_array & operator=(const flexible_array &) = delete;
+
+
     flexible_array(std::size_t max_page_size = 4096, std::size_t min_page_size = 4096);
+
     virtual ~flexible_array();
 
     std::size_t min_page_size() const
@@ -269,6 +274,9 @@ public:
 
     friend class flexible_array<T, P>;
     friend class flexible_array<T, P>::iterator_base;
+
+    node(const node &) = delete;
+    node & operator= (const node &) = delete;
 
     inline node(std::size_t size)
         : m_parent(nullptr)
@@ -531,28 +539,24 @@ private:
 
 public:
     iterator_base()
-    {
-        m_tree = nullptr;
-        m_current_node = nullptr;
-
-        set_cur_pg_begin(nullptr);
-        set_cur_pg_end(nullptr);
-        m_cur = nullptr;
+        :
+        m_tree(nullptr),
+        m_current_node(nullptr),
+        m_cur(nullptr),
+        m_pg_begin(nullptr),
+        m_pg_end(nullptr)
 #ifdef ITERATOR_BASE_HAVE_OFFSET_MEMBER
-        m_node_offset = 0;
+        , m_node_offset(0)
 #endif
+    {
     }
 
+
+
     iterator_base(const iterator_base & from)
+        :
+        iterator_base::iterator_base()
     {
-        m_tree = nullptr;
-        m_current_node = nullptr;
-        m_cur = nullptr;
-        set_cur_pg_begin(nullptr);
-        set_cur_pg_end(nullptr);
-#ifdef ITERATOR_BASE_HAVE_OFFSET_MEMBER
-        m_node_offset = 0;
-#endif
         (*this) = from;
     }
 
@@ -1000,16 +1004,18 @@ public:
         return *this;
     }
 
-    inline reverse_iterator & operator ++ (int)
+    inline reverse_iterator operator ++ (int)
     {
         reverse_iterator out;
+        out = *this;
         iterator_base::operator -- ();
         return out;
     }
 
-    inline reverse_iterator & operator -- (int)
+    inline reverse_iterator operator -- (int)
     {
         reverse_iterator out;
+        out = *this;
         iterator_base::operator ++ ();
         return out;
     }
@@ -1278,11 +1284,28 @@ inline typename flexible_array<T, P>::node * flexible_array<T, P>::find(node * r
         u64    m_local_offset;
         node * m_find_node;
 
-        walk_function_object_s(node * _root_node, const u64 _offset)
+        walk_function_object_s(const walk_function_object_s & from)
+            :
+            m_root_node(from.m_root_node),
+            m_local_offset(from.m_local_offset),
+            m_find_node(from.m_find_node)
         {
-            m_root_node    = _root_node;
-            m_local_offset = _offset;
-            m_find_node    = nullptr;
+        }
+
+        walk_function_object_s & operator= (const walk_function_object_s & from)
+        {
+            m_root_node    = from.m_root_node;
+            m_local_offset = from.m_local_offset;
+            m_find_node    = from.m_find_node;
+            return *this;
+        }
+
+        walk_function_object_s(node * _root_node, const u64 _offset)
+            :
+            m_root_node(_root_node),
+            m_local_offset(_offset),
+            m_find_node(nullptr)
+        {
         }
 
         ~walk_function_object_s()

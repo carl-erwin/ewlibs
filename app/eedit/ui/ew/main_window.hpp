@@ -33,6 +33,9 @@ class main_window : public ew::graphics::gui::window
     class main_window_private * m_priv;
 
 public:
+    main_window(const main_window &) = delete;
+    main_window & operator = (const main_window &) = delete;
+
     main_window(ew::graphics::gui::display * dpy,
                 ew::graphics::gui::window_properties & properties);
 

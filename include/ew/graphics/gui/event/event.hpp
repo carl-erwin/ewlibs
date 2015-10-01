@@ -120,15 +120,15 @@ inline const char * event_type_to_c_string(event_type type)
 struct event {
     virtual ~event() {}
 
-    event_type type; // we can cast by reading this
-    ew::graphics::gui::widget  *  widget;
-    ew::graphics::gui::display  *  display;
-    u32        time;
-    u32        pending;
+    event_type type = Unknow; // we can cast by reading this
+    ew::graphics::gui::widget  *  widget   = nullptr;
+    ew::graphics::gui::display  *  display = nullptr;
+    u32        time = 0;
+    u32        pending = 0;
 
 
-    s32  x; // pointer coords
-    s32  y; // pointer coords
+    s32  x = -1; // pointer coords
+    s32  y = -1; // pointer coords
     // u32  dev_idx; // pointer deveice index
 };
 
@@ -136,8 +136,24 @@ struct event {
 
 struct keyboard_event : public event {
 
-    keys::key_value  key;
-    u32  unicode;
+    keyboard_event()
+        :
+        ctrl(false),
+        altL(false),
+        altR(false),
+        shift(false),
+        capslock(false),
+        button1(false),
+        button2(false),
+        button3(false),
+        button4(false),
+        button5(false)
+    {
+
+    }
+
+    keys::key_value  key = keys::NO_KEY;
+    u32  unicode = 0;
 
     bool ctrl: 1;
     bool altL: 1;
@@ -154,7 +170,7 @@ struct keyboard_event : public event {
 
 
 struct button_event : public event {
-    u32        button;
+    u32        button = 0;
 };
 
 struct pointer_event : public event {
@@ -165,8 +181,8 @@ struct widget_event_ctx {
 };
 
 struct widget_event : public event {
-    u32 width;
-    u32 height;
+    u32 width  = 0;
+    u32 height = 0;
     widget_event_ctx * ctx = nullptr;
 };
 
@@ -177,6 +193,10 @@ struct widget_event : public event {
 class EW_GRAPHICS_EXPORT event_dispatcher
 {
 public:
+    event_dispatcher(const event_dispatcher &);
+    event_dispatcher & operator = (const event_dispatcher &);
+
+
     event_dispatcher(ew::graphics::gui::display * dpy);
     virtual ~event_dispatcher();
 

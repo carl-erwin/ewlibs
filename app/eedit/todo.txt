@@ -811,7 +811,7 @@ always use indirect calls
  |
 
 (editor CORE APIs in "C"  (allow plugins to push app events, acces to core, (load/unload/inject) new apis ()) )
-     ( app events: key / mouse / timers / signals / thread / process / plugin / network ] )
+     ( app events: key / mouse / timers / signals / thread / process / plugin ] )
  {
    app event dispatcher
     map event to api calls (internal or external)
@@ -847,7 +847,6 @@ always use indirect calls
                provide audio_buffer
           OpenAL wrapper
 
-        network      apis
         filesystem   apis
  }
  |
@@ -991,7 +990,7 @@ The diffrent task can be merged in on process + threads
 [ eedit::process:buffer_manager ]
             ^
             |
-[ low level medium: disk / network ]
+[ low level medium: disk ]
 
 -------------------------------------
 
@@ -1050,9 +1049,6 @@ Have a timer list per thread
 A global time/date/timer thread that dispatch timer event to the coresponding thread event queue
 or takes the action directly
 it can be instancied many time
-
-will be responsible for
-network event ?
 
 ---------------------------------------------------------------------------------
 must divide editor impl

@@ -15,6 +15,9 @@ class line_number_view : public ew::graphics::gui::widget
 public:
     text_view * m_txt_view = nullptr;
 
+    line_number_view(const line_number_view &)= delete;
+    line_number_view & operator = (const line_number_view &)= delete;
+
     line_number_view(ew::graphics::gui::widget * parent)
     {
         set_parent(parent);

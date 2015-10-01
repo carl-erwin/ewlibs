@@ -75,6 +75,8 @@ void editor_event_free(struct editor_message_s * ev)
 
     switch (ev->type) {
     case EDITOR_RPC_CALL_EVENT:
+        release_args(ev->rpc.ac, ev->rpc.av);
+        break;
     case EDITOR_RPC_ANSWER_EVENT:
         release_args(ev->rpc.ac, ev->rpc.av);
         break;

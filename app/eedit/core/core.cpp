@@ -472,7 +472,7 @@ void main(std::shared_ptr<application> app)
             msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
             process_editor_message(&core_ctx, msg);
-	    editor_event_free(msg);
+            editor_event_free(msg);
             // --nr;
             nr = editor_event_queue_size(core_ctx.m_msg_queue);
         }

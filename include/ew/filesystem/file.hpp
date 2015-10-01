@@ -60,12 +60,15 @@ class EW_FILESYSTEM_EXPORT file
     :
     public ew::core::object,
     public ew::core::objects::stream_object,
-    public ew::core::objects::lock_interface,
     public ew::core::objects::read_interface,
     public ew::core::objects::write_interface
 {
 public:
     file(const char * fileName = 0);
+    file(const file &) = delete;
+    file & operator = (const file &) = delete;
+
+
     virtual ~file();
 
     // Object
@@ -78,11 +81,6 @@ public:
     virtual open_mode get_open_mode();
     virtual bool  is_opened();
     virtual bool  is_closed();
-
-    // ILockableObject // thread lock (not file content)
-    virtual bool lock();
-    virtual bool unlock();
-    virtual bool trylock();
 
     // in stream ?
     // bool lockRegion(u64 start, u64 end);

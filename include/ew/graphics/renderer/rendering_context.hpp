@@ -38,11 +38,14 @@ namespace rendering
 class  EW_GRAPHICS_EXPORT rendering_context : public ew::core::object
 {
 public:
+    rendering_context(const rendering_context &) = delete;
+    rendering_context & operator = (const rendering_context &) = delete;
+
     rendering_context(ew::graphics::gui::window * window);
     virtual ~rendering_context();
 
-    virtual bool lock();
-    virtual bool unlock();
+    virtual void lock();
+    virtual void unlock();
     virtual bool trylock();
 
     //  virtual bool isAvailable();

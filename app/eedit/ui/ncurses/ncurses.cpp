@@ -79,6 +79,12 @@ enum ui_state_e {
 
 
 struct ncurses_ui_interface : public user_interface {
+
+    ncurses_ui_interface(const ncurses_ui_interface & ) = delete;
+    ncurses_ui_interface operator = (const ncurses_ui_interface & ) = delete;
+
+    ncurses_ui_interface() : last_screen_dimension() {}
+
     virtual ~ncurses_ui_interface();
     virtual bool setup(application * app);
     virtual bool main_loop();
@@ -291,6 +297,8 @@ bool ncurses_ui_interface::main_loop()
 
     endwin();
     resetty();
+
+    editor_event_queue_delete(m_event_queue);
 
     return true;
 }
@@ -712,6 +720,8 @@ bool ncurses_ui_interface::quit()
 bool ncurses_ui_interface::process_editor_ui_event(struct editor_message_s * msg)
 {
     bool ret = false;
+
+    app_log(-1, " %s msg->type %u", __PRETTY_FUNCTION__, msg->type);
 
     switch (msg->type) {
     case EDITOR_LAYOUT_NOTIFICATION_EVENT: {

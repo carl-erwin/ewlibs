@@ -76,11 +76,14 @@ class main_window::main_window_private
 {
 public:
     //
-    main_window_private(main_window * owner)
-    {
-        assert(owner);
-        m_owner = owner;
+    main_window_private(const main_window_private &) = delete;
+    main_window_private & operator = (const main_window_private &) = delete;
 
+
+    main_window_private(main_window * owner)
+        :
+        m_owner(owner)
+    {
         m_tab_bar     = new tab_bar(m_owner);
         m_buffer_view = new buffer_view(m_owner);
         m_status_bar  = new status_bar(m_owner);
@@ -113,26 +116,25 @@ public:
     buffer_view * m_buffer_view = nullptr;
     status_bar  * m_status_bar  = nullptr;
 
-    std::shared_ptr<ew::graphics::fonts::font> m_font;
+    std::shared_ptr<ew::graphics::fonts::font> m_font = nullptr;
 
     struct editor_event_queue_s * m_event_queue = nullptr;
 
     // ?
-    double bg_r;
-    double bg_g;
-    double bg_b;
-    double bg_a;
+    double bg_r = 0.0;
+    double bg_g = 0.0;
+    double bg_b = 0.0;
+    double bg_a = 0.0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 main_window::main_window(ew::graphics::gui::display * dpy, window_properties & properties)
     :
-    window(dpy, nullptr /* parent */, properties)
+    window(dpy, nullptr /* parent */, properties),
+    m_priv(new main_window_private(this))
 {
     set_name("main_window");
-
-    m_priv                = new main_window_private(this);
 }
 
 main_window::~main_window()

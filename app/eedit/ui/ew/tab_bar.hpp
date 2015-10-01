@@ -32,10 +32,14 @@ public:
     ew::core::object  * m_context = nullptr;
 
 public:
+    tab_bar(const tab_bar & ) = delete;
+    tab_bar & operator = (const tab_bar & ) = delete;
+
     tab_bar(ew::graphics::gui::widget * parent)
+        :
+        button_list()
     {
         set_name("tab_bar");
-
         assert(parent);
         parent->add_widget(this);
     }

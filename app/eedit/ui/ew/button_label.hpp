@@ -11,11 +11,13 @@ class button_label : public ew::graphics::gui::widget
 {
     label * m_label = nullptr;
 public:
-
+    button_label(const button_label &) = delete;
+    button_label & operator = (const button_label &) = delete;
 
     button_label(ew::graphics::gui::widget * parent)
+        :
+        m_label(new label())
     {
-        m_label = new label;
         add_widget(m_label);
 
         set_name("button_label");

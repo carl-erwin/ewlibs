@@ -129,20 +129,6 @@ public:
         return "";
     }
 
-    // ILockableObject
-    virtual bool lock()
-    {
-        return false;
-    }
-    virtual bool trylock()
-    {
-        return false;
-    }
-    virtual bool unlock()
-    {
-        return false;
-    }
-
     // env info
     // display
     virtual ew::graphics::gui::display * display() const
@@ -165,13 +151,11 @@ public:
     {
         return false;
     }
-    virtual bool lockDrawingContext()
+    virtual void lockDrawingContext()
     {
-        return false;
     }
-    virtual bool unlockDrawingContext()
+    virtual void unlockDrawingContext()
     {
-        return false;
     }
     virtual bool swapBuffers()
     {
@@ -443,7 +427,7 @@ class main_window : public ew::graphics::gui::window
 {
 public:
     bool loop;
-    mutex quit_mtx;
+    std::mutex quit_mtx;
     std::condition_variable quit_cond;
 
     int nb_slider;

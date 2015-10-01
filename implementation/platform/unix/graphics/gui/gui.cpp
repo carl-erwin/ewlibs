@@ -30,7 +30,7 @@ bool  init()
     std::lock_guard<std::mutex> mTxLock(gui_mtx);
 
     if (wasInit == true)
-        return false;
+        return true;
 
     load_libX11_dll();
     load_libGLX_dll();

@@ -31,10 +31,13 @@ using namespace ew::user;
 
 
 class EW_GRAPHICS_EXPORT display :
-    public ew::core::object,
-    public ew::core::objects::lock_interface
+    public ew::core::object
 {
 public:
+
+    display(const display &) = delete;
+    display & operator = (const display &) = delete;
+
     display();
     virtual ~display();
 
@@ -58,8 +61,8 @@ public:
     virtual void release_user_input_interface(user_input_interface * iuser_inputInterface) ;
 
     // ILockableObject
-    virtual bool lock();
-    virtual bool unlock();
+    virtual void lock();
+    virtual void unlock();
     virtual bool trylock()
     {
         return false;

@@ -124,8 +124,6 @@ public:
     uint32_t font_width = DEFAULT_FONT_SIZE;
     uint32_t font_height = DEFAULT_FONT_SIZE;
 
-    std::shared_ptr<ew::graphics::fonts::font> font;
-
     std::list<std::string> m_files_list;
     std::list<editor_buffer_id_t> m_buffer_desc_list;
 public:
@@ -147,7 +145,8 @@ application::application_private::  application_private()
 std::shared_ptr<application> app;
 
 // move to application.cpp
-std::shared_ptr<application> create_application() {
+std::shared_ptr<application> create_application()
+{
     auto new_app = std::make_shared<application>();
     set_application(new_app);
     return new_app;
@@ -601,18 +600,16 @@ bool application::application_private::setup_buffers()
 
     // replace : ft = font_family->normal()
     // have ft = ft->italic(1|0)->bold(1|0)
-
-    auto ft = std::make_shared<ew::graphics::fonts::font>(get_application()->font_file_name().c_str(),
+    // check font availability
+    auto ft = std::make_unique<ew::graphics::fonts::font>(get_application()->font_file_name().c_str(),
               get_application()->font_width(),
               get_application()->font_height());
-    this->font = ft;
-    if (ft->open() == false) {
-        assert(0);
+
+    if (!ft || ft->open() == false) {
         return false;
     }
 
-
-     // FIXME:
+    // FIXME:
     // init log/message/scratch
 
 
@@ -780,6 +777,11 @@ bool  quit_subsystems(application * app)
 
     if (ew::core::time::quit() == false) {
         cerr << "ew::core::time::quit() :: error" << "\n";
+        return false;
+    }
+
+    if (ew::graphics::gui::quit() == false) {
+        app_logln(-1, "ew::graphics::gui::quit() :: error");
         return false;
     }
 

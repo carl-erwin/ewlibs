@@ -44,12 +44,12 @@ namespace gui
 class pixel_format_descriptor
 {
 public:
-    s32 bpp;
-    s32 depthSize;
-    s32 redSize;
-    s32 greenSize;
-    s32 blueSize;
-    s32 alphaSize;
+    s32 bpp = 0;
+    s32 depthSize = 0;
+    s32 redSize = 0;
+    s32 greenSize = 0;
+    s32 blueSize = 0;
+    s32 alphaSize = 0;
 };
 
 
@@ -86,21 +86,21 @@ public:
     ::XVisualInfo * _x11_visualInfo;
 
     // input
-    ::XIM _x11_InputMethod;
-    ::XIC _x11_InputContext;
+    ::XIM _x11_InputMethod = 0;
+    ::XIC _x11_InputContext = 0;
 
     rendering_context * _rdr_ctx;
-    ew::graphics::gui::pixmap * _offscreen_pixmap;
-    ew::graphics::gui::pixmap * _background_pixmap; // TODO: add Window:setBackgroundPixmap(Pixmap *);
+    ew::graphics::gui::pixmap * _offscreen_pixmap = nullptr;
+    ew::graphics::gui::pixmap * _background_pixmap = nullptr; // TODO: add Window:setBackgroundPixmap(Pixmap *);
 
     pixel_format_descriptor pfd;
-    int haveDoubleBuffer; // glxSwapBuffers
+    int haveDoubleBuffer = 0; // glxSwapBuffers
 
     window_properties _properties;
 
     ew::graphics::gui::display * _guiDpy;
 
-    u32 _lastResize_time;
+    u32 _lastResize_time = 0;
 };
 
 }

@@ -89,7 +89,7 @@ static void index_text_buffer(text_buffer * text_buff)
     text_buffer_indexer::build_index(text_buff);
 }
 
-class text_buffer : public mutex
+class text_buffer : public std::mutex
 {
 public:
     class iterator;

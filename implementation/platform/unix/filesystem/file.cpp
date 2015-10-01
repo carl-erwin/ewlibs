@@ -37,7 +37,11 @@ class file::private_data
 {
 
 public:
-    private_data() : fd(-1), openMode(mode::invalid_mode) { }
+    private_data() :
+        fd(-1),
+        stat_buff(),
+        openMode(mode::invalid_mode)
+    { }
 
     int fd;
     struct stat stat_buff;
@@ -199,23 +203,6 @@ bool file::is_opened()
 bool file::is_closed()
 {
     return !is_opened();
-}
-
-// ILockableObject // thread lock (not file content) ???
-
-bool file::lock()
-{
-    return false;
-}
-
-bool file::unlock()
-{
-    return false;
-}
-
-bool file::trylock()
-{
-    return false;
 }
 
 //ew::core::objects::read_interface

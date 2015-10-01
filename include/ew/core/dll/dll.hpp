@@ -20,6 +20,9 @@ EW_CORE_DLL_EXPORT bool quit(void);
 class EW_CORE_DLL_EXPORT dll : public ew::core::objects::loadable_object
 {
 public:
+    dll(const dll &) = delete;
+    dll & operator= (const dll &) = delete;
+
     dll(const char * fileName);
     virtual ~dll();
 

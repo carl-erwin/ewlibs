@@ -17,6 +17,8 @@ class label : public ew::graphics::gui::widget
 public:
 
     label()
+        :
+        text()
     {
         horizontal_policy().type()  = alignment::relative;
         horizontal_policy().ratio() = 100;
