@@ -33,7 +33,7 @@ public:
     application();
     virtual ~application();
 
-    bool parse_command_line(int ac, char ** av);
+    bool parse_command_line(int ac, char * av[]);
 
     bool set_ui_name(const char * ui_name);
     const std::string &  ui_name() const;

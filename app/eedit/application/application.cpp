@@ -231,7 +231,7 @@ user_interface * application::ui() const
 //    build option list
 //    build file list + file options
 
-bool application::parse_command_line(int ac, char ** av)
+bool application::parse_command_line(int ac, char * av[])
 {
     // --- default ---
     char * home_dir = ew::core::program::getenv("HOME");
@@ -739,6 +739,12 @@ bool init_subsystems(application * app)
     // init ui
     if (init_ui(app) == false) {
         cerr << "cannot ew::graphics::gui::init() :: error" << "\n";
+        exit(1);
+    }
+
+    // font depends on graphics
+    if (ew::graphics::gui::init() == false) {
+        app_logln(-1, "ew::graphics::gui::init() :: error");
         exit(1);
     }
 

@@ -9,7 +9,7 @@
 #include "core/log/log.hpp"
 
 
-int main(int ac, char ** av)
+int main(int ac, char * av[])
 {
     bool ret;
     int status = EXIT_SUCCESS;
@@ -21,7 +21,6 @@ int main(int ac, char ** av)
     auto app = eedit::create_application();
     ret = app->run(ac, av);
     if (ret != true) {
-        assert(0);
         status = EXIT_FAILURE;
     }
 
