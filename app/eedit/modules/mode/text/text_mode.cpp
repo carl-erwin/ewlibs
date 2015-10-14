@@ -558,7 +558,7 @@ int scroll_up_N_lines(struct editor_message_s * msg, uint64_t N)
 
 //    fprintf(stderr, " until_offset = [%lu]\n", until_offset);
 
-    size_t nr_cp = 0;
+
 
     // start_offset = get_beginning_of_previous_N_lines( previous_cp(offset), N)
     {
@@ -578,51 +578,21 @@ int scroll_up_N_lines(struct editor_message_s * msg, uint64_t N)
 
         };
 
-        for (size_t n = 0; n < N; ++n) {
 
-            // resync here
-            text_codec_io_s iovc;
-            iovc.offset = start_offset;
-            iovc.size = 0;
-
-            int ret;
-
-            // goto end of previous line
-            ret = text_codec_read_backward(&io_ctx, &iovc, 1);
-            if (ret) {
-            }
-
-            //       fprintf(stderr, " read backward(%lu) -> [%lu]\n", start_offset, iovc.offset);
-
-            start_offset = iovc.offset;
+        {
+            // FIXME:
+            // must build a screen list from the new offset
+            // if size(list) < N
+            // restart with new N = size(list) - N
+            if (start_offset > scr_dim.c * N * 2)
+                start_offset -= scr_dim.c * N * 2;
+            else
+                start_offset = 0;
 
             // goto beginnning of line
-            ret = text_codec_sync_line(&io_ctx, start_offset, -1, &tmp_offset);
+            text_codec_sync_line(&io_ctx, start_offset, -1, &tmp_offset);
             // TODO: must return the number of decoded code points
             //        fprintf(stderr, " text_codec_sync_line -> [%d]\n", ret);
-
-            if (ret > 0) {
-                nr_cp += ret;
-            }
-
-            if (nr_cp >= (scr_dim.c * N)) {
-                //              fprintf(stderr, " long line DETECTED\n"); // should  break
-                start_offset = tmp_offset;
-                break;
-            }
-
-            if (start_offset) {
-                if (ret <= 0) {
-                    // abort();
-                }
-            }
-
-            if (ret) {
-
-            }
-
-//            fprintf(stderr, " n(%lu) goto beginning of line (%lu) -> [%lu]\n", n, start_offset, tmp_offset);
-
             start_offset = tmp_offset;
         }
 
