@@ -152,7 +152,7 @@ void display::release_user_input_interface(user_input_interface * iuser_input_in
 
 void display::lock()
 {
-  //    static_cast<ew::core::object *>(this)->lock();
+    //    static_cast<ew::core::object *>(this)->lock();
     assert(d->_dpy_owner != std::this_thread::get_id());
     d->_dpy_owner = std::this_thread::get_id();
     XLockDisplay(d->_x11_dpy);

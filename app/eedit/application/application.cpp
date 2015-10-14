@@ -256,7 +256,6 @@ bool application::parse_command_line(int ac, char * av[])
             cerr << "cannot open = '" << fontfile->name() << "'\n";
             exit(0);
         }
-        fontfile->close();
         delete fontfile;
     }
 

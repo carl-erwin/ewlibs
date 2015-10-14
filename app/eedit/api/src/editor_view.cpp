@@ -29,17 +29,13 @@ editor_view::editor_view(editor_view_id_t view_id_, editor_buffer_id_t editor_bu
     start_cpi.used      = 1;
 
     app_logln(-1, "set default text codec");
-    //
     codec_id = codec_get_by_name("text/ascii");
-
-    //    setup_default_input_map(input_event_table);
 
     auto app = eedit::get_application();
 
     ew::graphics::fonts::init();
 
     app_logln(-1, " font filename '%s'", app->font_file_name().c_str());
-
     font.ft = new ew::graphics::fonts::font(app->font_file_name().c_str(), app->font_width(), app->font_height());
     font.ft->open();
 }
