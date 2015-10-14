@@ -457,24 +457,30 @@ void main(std::shared_ptr<application> app)
     // text_mode_register_modules_function(); // move away : config file
     // mark_mode_register_modules_function(); // move away : config file
 
+    
     static size_t default_wait_time = 1000;
     size_t wait_time = default_wait_time;
     while (core_ctx.core_running == true) {
-//		auto w0 = get_ticks();
+        using ew::core::time::get_ticks;
+      
+	auto w0 = get_ticks();
         editor_event_queue_wait(core_ctx.m_msg_queue, wait_time);
-//		auto w1 = get_ticks();
-//		app_log << "["<<w1<<"] wait time (" << w1 - w0 << ")\n";
-
+	auto w1 = get_ticks();
+	app_log(-1, " wait time %u", w1 - w0);
+    
         auto nr = editor_event_queue_size(core_ctx.m_msg_queue);
         while (nr) {
             struct editor_message_s * msg = nullptr;
 
             msg = editor_event_queue_get(core_ctx.m_msg_queue);
             assert(msg);
+	    auto p0 = get_ticks();
             process_editor_message(&core_ctx, msg);
+	    auto p1 = get_ticks();
+	    	app_log(-1, " time to process event %u", p1 - p0);
             editor_event_free(msg);
-            // --nr;
-            nr = editor_event_queue_size(core_ctx.m_msg_queue);
+            --nr;
+            // nr = editor_event_queue_size(core_ctx.m_msg_queue);
         }
     }
 

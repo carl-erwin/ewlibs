@@ -23,7 +23,7 @@ using namespace ew::core::types;
 class object::private_data
 {
 public:
-    std::mutex  _mtx;
+    std::recursive_mutex  _mtx;
     std::string _name;
     object  * _parent;
     size_t    _parent_index;
@@ -90,7 +90,7 @@ object::object()
 object::~object()
 {
     {
-        std::lock_guard<std::mutex> locker(d->_mtx);
+        std::lock_guard<std::recursive_mutex> locker(d->_mtx);
 
         // TODO: add to prevent usage
         // this->d->valid = true;
@@ -169,12 +169,12 @@ bool object::set_parent(object * obj)
     if (this == obj)
         return false;
 
-    std::lock_guard<std::mutex> child_locker(d->_mtx);
+    std::lock_guard<std::recursive_mutex> child_locker(d->_mtx);
 
     // remove previous parent
     object * parent = d->_parent;
     if (parent) {
-        std::lock_guard<std::mutex> parent_locker(parent->d->_mtx);
+        std::lock_guard<std::recursive_mutex> parent_locker(parent->d->_mtx);
 
         parent->d->children_array()[ d->_parent_index ] = nullptr;
         --parent->d->_nrChildren;
@@ -186,7 +186,7 @@ bool object::set_parent(object * obj)
 
     // select new parent
     parent = obj;
-    std::lock_guard<std::mutex> parent_locker(parent->d->_mtx);
+    std::lock_guard<std::recursive_mutex> parent_locker(parent->d->_mtx);
 
     if (parent->d->_children_vec == nullptr) {
         // parent->d->_children_vec = new ew::core::container::simple_array<object *>();
@@ -257,7 +257,7 @@ size_t  object::number_of_children() const
 
 object * object::get_child(u64 nr) const
 {
-    std::lock_guard<std::mutex> me(d->_mtx);          // needed ?
+    std::lock_guard<std::recursive_mutex> me(d->_mtx);          // needed ?
 
     if (has_children() == false) {
         return nullptr;
@@ -285,24 +285,24 @@ bool object::remove_child(object * child)
 
 bool object::is_parent_of(object * obj)
 {
-    std::lock_guard<std::mutex> me(d->_mtx);         // needed ?
-    std::lock_guard<std::mutex> child(obj->d->_mtx); // needed ?
+    std::lock_guard<std::recursive_mutex> me(d->_mtx);         // needed ?
+    std::lock_guard<std::recursive_mutex> child(obj->d->_mtx); // needed ?
 
     return (this == obj->d->_parent);
 }
 
 bool object::is_child_of(object * obj)
 {
-    std::lock_guard<std::mutex> me(d->_mtx);          // needed ?
-    std::lock_guard<std::mutex> parent(obj->d->_mtx); // needed ?
+    std::lock_guard<std::recursive_mutex> me(d->_mtx);          // needed ?
+    std::lock_guard<std::recursive_mutex> parent(obj->d->_mtx); // needed ?
 
     return (d->_parent == obj);
 }
 
 bool object::is_sibling_of(object * obj)
 {
-    std::lock_guard<std::mutex> me(d->_mtx);            // needed ?
-    std::lock_guard<std::mutex> sibling(obj->d->_mtx);  // needed ?
+    std::lock_guard<std::recursive_mutex> me(d->_mtx);            // needed ?
+    std::lock_guard<std::recursive_mutex> sibling(obj->d->_mtx);  // needed ?
 
     return (this->d->_parent == obj->d->_parent);
 }

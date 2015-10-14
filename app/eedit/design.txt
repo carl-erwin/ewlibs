@@ -2,9 +2,19 @@
 
 [Index]:
 
+- Goals
 - Vocabulary
 - Startup
+- Behavior
 - Apis
+
+
+--------------------------------------------------------------------------------
+
+[Goals]
+ultimately remove all limitations found in common editors
+(first one is file size)
+
 
 --------------------------------------------------------------------------------
 
@@ -123,10 +133,30 @@ editor_event -> (TODO)
 [Startup]
 
 - parse command line arguments
-- store special options flags
-- create/restore/merge file list ()
-- start core
-- start ui(s)
+  *) store special options flags
+- init sub systems
+- setup modules/plugins
+- create/restore/merge file/buffer list
+- start core thread
+- start/run select ui main loop (in the main thread)
+
+[Ui main loop]
+- the ui(s) request the list of opened buffers
+- and from there th ui can request layout for a given buffer
+
+--------------------------------------------------------------------------------
+
+[Behavior (not yet started)]
+
+We want the ui (the view) to pilot the core (model/controller):
+
+ie:
+  the view request layout for a given buffer
+  the core can send notifications:
+    *) popup messages (+geometry hints)
+    *) msg + yes/no   (quit)
+    *) task status (unknown/running/paused/terminated/unresponsive)
+    *) notifiy a specific ui target (by view id)
 
 --------------------------------------------------------------------------------
 

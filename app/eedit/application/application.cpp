@@ -107,7 +107,7 @@ public:
     bool debug                 = false;
     bool offscreen_buffer_flag = false;
     bool build_index_flag      = true;
-    uint32_t  nrthreads             = 0;
+    uint32_t  nrthreads        = 0;
 
     std::mutex nr_running_threads_mtx;
     uint32_t   nr_running_threads = 0;
