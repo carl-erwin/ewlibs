@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream>
+#include <vector>
 #include <algorithm>
 #include <cstring>
 #include <alloca.h>

@@ -1,7 +1,7 @@
 #include <map>
 #include <memory>
 #include <algorithm>
-
+#include <vector>
 
 #include "core.hpp"// FIXME: C apis
 #include "text_layout/text_layout.hpp"   // FIXME: C apis
