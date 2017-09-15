@@ -75,6 +75,7 @@ void print_helper(Tup & all_args, const char *s)
             if (*(s + 1) == '}') {
                 print_tuple_value(all_args, cur_index++);
                 s += 2;
+		continue;
             }
         }
 
