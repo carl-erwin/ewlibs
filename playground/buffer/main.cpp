@@ -29,13 +29,11 @@ namespace container
 
 u64 nrPages = PAGE_MEGA(1); // move to env
 
+
 void do_buffer_cat(mapped_file * buff)
 {
-    u64 off = 0;
-    u64 n = buff->size();
-
     u8 * d = 0;
-    u64 dsz = 4096 * PAGE_MEGA(64);
+    u64 dsz = 4096 * 16;
     d = new u8 [dsz + 1];
 
 #if 0
@@ -53,8 +51,23 @@ void do_buffer_cat(mapped_file * buff)
     std::cerr << "END\n";
 #endif
 
+#if 0
+size_t count = 0;
     // std::cerr << "buff->size() = " << buff->size() << "\n";
+    mapped_file::iterator it = buff->begin();
+    mapped_file::iterator it_end = buff->end();
+    while (it != it_end) {
 
+//        std::cout << *it;
+         count += *it;
+         ++it;
+    }
+    std::cout << "count = " << count << "\n";
+#endif
+
+#if 1
+    u64 n = buff->size();
+    u64 off = 0;
     while (n) {
         u64 nrRead;
 
@@ -71,6 +84,7 @@ void do_buffer_cat(mapped_file * buff)
         // std::cerr << "n   = " << n << "\n";
         // std::cerr << "off = " << off << "\n";
     }
+#endif
 
     delete [] d;
 }
@@ -536,8 +550,8 @@ int main(int ac, char ** av)
 {
 //	test_delete_while_mapped(ac, av);
     // test_base(ac, av);
-    // test_cat(ac, av);
-    test_wc_mapped(ac, av);
+    test_cat(ac, av);
+    // test_wc_mapped(ac, av);
     // test_read_write(ac, av);
     // test_insert(ac, av);
     // test_cp(ac, av);
