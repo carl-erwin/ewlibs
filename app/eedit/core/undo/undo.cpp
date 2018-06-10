@@ -19,7 +19,7 @@ int buffer_undo(struct editor_message_s * msg)
 {
     buffer_log_id_t        log = -1;
     buffer_commit_rev_t    rev = -1;
-    buffer_log_commit_data_t ci_data{ buffer_log_nop, 0, nullptr, 0 };
+    buffer_log_commit_data_t ci_data{ buffer_log_operation_e::buffer_log_nop, 0, nullptr, 0 };
 
 
     assert(0);
@@ -32,7 +32,7 @@ int buffer_undo(struct editor_message_s * msg)
     // app_log << "offset = " << offset << "\n";
 
     switch (ci_data.op) {
-    case buffer_log_insert_op: {
+    case buffer_log_operation_e::buffer_log_insert_op: {
         // app_log << "undo insert @ " << offset << "\n";
 
         // FIXME //auto b = buff->txt_buffer()->buffer()->begin() + offset;
@@ -41,7 +41,7 @@ int buffer_undo(struct editor_message_s * msg)
     }
     break;
 
-    case buffer_log_remove_op: {
+    case buffer_log_operation_e::buffer_log_remove_op: {
         // app_log << "undo remove @ " << offset << "\n";
         // FIXME: // buff->cursor_it() = offset;
         // FIXME: // uint64_t nrWritten = 0;
@@ -73,7 +73,7 @@ int buffer_redo(struct editor_message_s * msg)
     buffer_commit_rev_t rev = -1;
     buffer_commit_rev_t oldrev = -1;
 
-    buffer_log_commit_data_t ci_data{ buffer_log_nop, 0, nullptr, 0 };
+    buffer_log_commit_data_t ci_data{ buffer_log_operation_e::buffer_log_nop, 0, nullptr, 0 };
 
     assert(0);
     // log = buff->txt_buffer()->log_id();
@@ -92,7 +92,7 @@ int buffer_redo(struct editor_message_s * msg)
     // app_log << "offset = " << offset << "\n";
 
     switch (ci_data.op) {
-    case buffer_log_remove_op: {
+    case buffer_log_operation_e::buffer_log_remove_op: {
         // app_log << "do remove @ " << offset << "\n";
         assert(0);
         //FIXME// auto b = buff->txt_buffer()->buffer()->begin() + offset;
@@ -102,7 +102,7 @@ int buffer_redo(struct editor_message_s * msg)
     }
     break;
 
-    case buffer_log_insert_op: {
+    case buffer_log_operation_e::buffer_log_insert_op: {
         // app_log << "do insert @ " << offset << "\n";
 
         assert(0);

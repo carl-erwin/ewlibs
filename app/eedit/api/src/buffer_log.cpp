@@ -17,7 +17,7 @@ struct buffer_commit {
     buffer_commit * prev  = nullptr; // time sorted
     buffer_commit * next  = nullptr; // time sorted
 
-    buffer_log_operation_t op = buffer_log_nop;
+    buffer_log_operation_t op = buffer_log_operation_e::buffer_log_nop;
 
     // payload
     uint64_t  offset = 0;
@@ -171,7 +171,11 @@ extern "C" {
         std::list<buffer_commit *> ci_list;
         while (b != e) {
             buffer_commit * ci = new buffer_commit;
-            ci->op = (b->op == buffer_log_insert_op ? buffer_log_remove_op : buffer_log_insert_op);
+            if (b->op == buffer_log_operation_e::buffer_log_insert_op) {
+                ci->op = buffer_log_operation_e::buffer_log_remove_op;
+            } else {
+                ci->op = buffer_log_operation_e::buffer_log_insert_op;
+            }
             ci->offset = b->offset;
             ci->size   = b->size;
             ci->data   = b->data;
@@ -206,12 +210,12 @@ extern "C" {
 
     int buffer_log_insert(buffer_log_id_t log_id, uint64_t offset, const uint8_t * data, size_t size, buffer_commit_rev_t * rev)
     {
-        return buffer_log_insert_commit(log_id, buffer_log_insert_op, offset, data, size, rev);
+        return buffer_log_insert_commit(log_id, buffer_log_operation_e::buffer_log_insert_op, offset, data, size, rev);
     }
 
     int buffer_log_remove(buffer_log_id_t log, uint64_t offset, const uint8_t * data, size_t size, buffer_commit_rev_t * rev)
     {
-        return buffer_log_insert_commit(log, buffer_log_remove_op, offset, data, size, rev);
+        return buffer_log_insert_commit(log, buffer_log_operation_e::buffer_log_remove_op, offset, data, size, rev);
     }
 
 // helper

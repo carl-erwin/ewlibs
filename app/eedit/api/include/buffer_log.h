@@ -27,11 +27,12 @@ extern "C" {
 #endif
 
 
-typedef enum buffer_log_operation_e {
+enum class buffer_log_operation_e {
     buffer_log_nop = -1,
     buffer_log_insert_op,
     buffer_log_remove_op,
-} buffer_log_operation_t;
+};
+typedef buffer_log_operation_e buffer_log_operation_t;
 
 typedef struct buffer_log_commit_data_s {
     buffer_log_operation_t op;
