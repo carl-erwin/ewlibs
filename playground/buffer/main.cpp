@@ -52,15 +52,15 @@ void do_buffer_cat(mapped_file * buff)
 #endif
 
 #if 0
-size_t count = 0;
+    size_t count = 0;
     // std::cerr << "buff->size() = " << buff->size() << "\n";
     mapped_file::iterator it = buff->begin();
     mapped_file::iterator it_end = buff->end();
     while (it != it_end) {
 
 //        std::cout << *it;
-         count += *it;
-         ++it;
+        count += *it;
+        ++it;
     }
     std::cout << "count = " << count << "\n";
 #endif
