@@ -23,11 +23,8 @@ typedef int16_t s16;   /** signed 16 bits integer */
 typedef int32_t s32;   /** signed 32 bits integer */
 typedef int64_t s64;   /** signed 64 bits integer */
 
-typedef float f32;     /** portable ? */
-
-typedef double Double;
-
-typedef long double Real;
+typedef float   f32;   /** 32 bits floating point */
+typedef double  f64;    /** 64 bits floating point */
 
 }
 }
