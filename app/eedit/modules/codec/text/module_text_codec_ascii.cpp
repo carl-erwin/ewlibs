@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 #include "ew/ew_config.hpp"
 #include "./api/include/module.h"
