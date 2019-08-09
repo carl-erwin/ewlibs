@@ -21,7 +21,7 @@ static dll * _libGLX;
 
 ew::core::dll::symbol _libGLX_symbol_table[] = {
 #include "x11_libGLX_sym_tab_entries.hpp"
-    {0 , 0 }
+    {0, 0 }
 };
 
 bool load_libGLX_dll()

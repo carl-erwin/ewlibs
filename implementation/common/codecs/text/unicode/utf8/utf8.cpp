@@ -477,7 +477,7 @@ s32 utf8_codec::rget_cp(const ew::core::objects::buffer::iterator & rend,
     ew::core::objects::buffer::iterator in(_in);
     --in;
 
-    static size_t shift_table[] = { 0 , 6 , 12 , 18 };
+    static size_t shift_table[] = { 0, 6, 12, 18 };
     size_t shift_index = 0;
 
     // transform in do { } while (...);

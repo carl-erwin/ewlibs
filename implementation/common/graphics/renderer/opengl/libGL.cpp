@@ -25,7 +25,7 @@ static ew::core::dll * _libGL = 0; //
 
 ew::core::dll::symbol _libGL_symbol_table[] = {
 #include "libGL_sym_tab_entries.hpp"
-    {0 , 0 }
+    {0, 0 }
 };
 
 bool load_libGL_dll()

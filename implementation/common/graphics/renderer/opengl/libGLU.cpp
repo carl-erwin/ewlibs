@@ -37,7 +37,7 @@ static dll * _libGLU = 0;
 
 dll::symbol _libGLU_symbol_table[] = {
 #include "libGLU_sym_tab_entries.hpp"
-    {0 , 0 }
+    {0, 0 }
 };
 
 bool load_libGLU_dll()

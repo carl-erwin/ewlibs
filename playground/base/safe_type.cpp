@@ -417,7 +417,7 @@ std::ostream & operator<<(std::ostream & stream, const S64 & val)
 
 //////
 
-S32 Memory_Block[  ] = {0, 1 , 2, 3, 4, 5, 6, 7, 8, 9};
+S32 Memory_Block[  ] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 #define SIZE (sizeof(Memory_Block)/sizeof(Memory_Block[0]))
 
 int main(int ac, char ** av)

@@ -88,7 +88,7 @@ public:
     // bool unlockRegion(u64 start, u64 end);
 
     //ew::core::objects::read_interface
-    virtual bool read(u8 * buffer, u64 nrToRead , u64 * nrRead);
+    virtual bool read(u8 * buffer, u64 nrToRead, u64 * nrRead);
 
     // IWriteableObject
     virtual bool write(const u8 * buffer, u64 nrToWrite, u64 * nrWritten);

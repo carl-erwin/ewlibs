@@ -47,7 +47,7 @@ public:
     virtual bool (put_cp)(const s32 codepoint, u8 * out, u32 * out_size) = 0;
 
     // REMOVE THIS
-    virtual s32  rget_cp(const buffer::iterator & start,  const buffer::iterator & in , buffer::iterator * out) = 0;
+    virtual s32  rget_cp(const buffer::iterator & start,  const buffer::iterator & in, buffer::iterator * out) = 0;
 
 
     // TODO: remove this

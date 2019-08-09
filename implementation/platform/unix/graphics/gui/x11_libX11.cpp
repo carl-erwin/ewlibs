@@ -19,7 +19,7 @@ static dll * _libX11 = 0;
 
 dll::symbol x11_dll_symbol_table[] = {
 #include "libX11_sym_tab_entries.hpp"
-    {0 , 0 }
+    {0, 0 }
 };
 
 bool load_libX11_dll()

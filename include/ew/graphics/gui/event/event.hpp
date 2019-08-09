@@ -21,24 +21,24 @@ using namespace ew::core::types;
 
 typedef   enum event_type {
     Unknow = 0,
-    KeyPressEvent       ,
-    KeyReleaseEvent     ,
-    ButtonPressEvent    ,
-    ButtonReleaseEvent  ,
-    WidgetCloseEvent    ,
-    WidgetResizeEvent   ,
-    WidgetMotionEvent   ,
-    WidgetFocusInEvent  ,
-    WidgetFocusOutEvent ,
-    WidgetDrawEvent     ,
-    WidgetEnterEvent    ,
-    WidgetLeaveEvent    ,
-    WidgetCreateEvent   ,
-    WidgetMapEvent      ,
-    WidgetDestroyEvent  ,
-    PointerMotionEvent  ,
-    PointerEnterEvent   ,
-    PointerLeaveEvent   ,
+    KeyPressEvent,
+    KeyReleaseEvent,
+    ButtonPressEvent,
+    ButtonReleaseEvent,
+    WidgetCloseEvent,
+    WidgetResizeEvent,
+    WidgetMotionEvent,
+    WidgetFocusInEvent,
+    WidgetFocusOutEvent,
+    WidgetDrawEvent,
+    WidgetEnterEvent,
+    WidgetLeaveEvent,
+    WidgetCreateEvent,
+    WidgetMapEvent,
+    WidgetDestroyEvent,
+    PointerMotionEvent,
+    PointerEnterEvent,
+    PointerLeaveEvent,
     //    WidgetUnmapEvent,
     //    WidgetVisibilityChangeEvent, ???
     //    Destroywidget_event, //
@@ -211,7 +211,7 @@ public:
     bool dispatch_event(ew::graphics::gui::events::event * event);
     bool remove_widget_events(ew::graphics::gui::widget * widget);
     u32  get_nr_pending_events(event_type type) const;
-    bool drop_events_before_tick(event_type type , u32 tick);
+    bool drop_events_before_tick(event_type type, u32 tick);
 
     // only for thread
     // bool start();

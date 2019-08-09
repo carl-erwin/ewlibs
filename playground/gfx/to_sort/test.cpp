@@ -351,7 +351,7 @@ void * dpy_thread_func(void * arg)
             FD_SET(local_dpy->fd, &read_fdset);
 
             struct timeval tv = {
-                0 , 250000
+                0, 250000
             };
 
             ret = select(local_dpy->fd + 1,
@@ -663,7 +663,7 @@ void * window_thread_func(void * arg)
 
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                     GLfloat h = (GLfloat) eW->height / (GLfloat) eW->width;
-                    glViewport(0, 0, (GLint)  eW->width , (GLint) eW->height);
+                    glViewport(0, 0, (GLint)  eW->width, (GLint) eW->height);
                     glMatrixMode(GL_PROJECTION);
                     glLoadIdentity();
                     glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);

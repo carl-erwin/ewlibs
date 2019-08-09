@@ -87,7 +87,7 @@ public:
     // buffer::iteartor insteat of pointers
     ////////////////////////////////////////////////////////////////////////////////
     //virtual s32(get_cp)(const buffer::iterator & end,  const buffer::iterator & in , buffer::iterator * next);
-    virtual s32  rget_cp(const buffer::iterator & start,  const buffer::iterator & in , buffer::iterator * out);
+    virtual s32  rget_cp(const buffer::iterator & start,  const buffer::iterator & in, buffer::iterator * out);
 
     virtual int  search_n(int n, const buffer::iterator & itb, const buffer::iterator  & itb_end, s32 cp, u64 * nr_cp, u64 * nr_ok, u64 * nr_err,
                           buffer::iterator * out, buffer::iterator * next);

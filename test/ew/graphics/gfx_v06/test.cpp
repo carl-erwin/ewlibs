@@ -538,7 +538,7 @@ public:
         return true;
     }
 
-    virtual bool resize(u32 w , u32 h)
+    virtual bool resize(u32 w, u32 h)
     {
 
         //     clear the window

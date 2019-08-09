@@ -71,7 +71,7 @@ void  Window::private_data::widgetthread(Window * widget)
     WNDCLASSEX wc = {
         sizeof(WNDCLASSEX),
         CS_HREDRAW | CS_VREDRAW /* | CS_OWNDC */,
-        Win32_MsgProc ,
+        Win32_MsgProc,
         0L, 0L,
         GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
         "ew::graphics::gui::window", NULL
@@ -118,9 +118,9 @@ void  Window::private_data::widgetthread(Window * widget)
                      "Ew OGL",
                      WS_OVERLAPPEDWINDOW,
                      widget->d->windowRect.top,
-                     widget->d->windowRect.left ,
+                     widget->d->windowRect.left,
                      widget->d->windowRect.right,
-                     widget->d->windowRect.bottom ,
+                     widget->d->windowRect.bottom,
                      NULL,   // GetDesktopWindow(), /* parent */
                      NULL,
                      wc.hInstance,
