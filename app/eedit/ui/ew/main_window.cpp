@@ -54,9 +54,9 @@ namespace  eedit
 
 #if 0
 
-void ignore_event_type_befor_tick(event_type type , uint32_t tick)
+void ignore_event_type_befor_tick(event_type type, uint32_t tick)
 {
-    get_application()->display()->get_event_dispatcher()->drop_events_before_tick(type , tick);
+    get_application()->display()->get_event_dispatcher()->drop_events_before_tick(type, tick);
 }
 
 void push_draw_event(ew::graphics::gui::widget * widget)

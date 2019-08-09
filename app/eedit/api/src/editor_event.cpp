@@ -10,7 +10,6 @@ extern "C"
 struct editor_message_s * editor_event_alloc()
 {
     struct editor_message_s * ev = static_cast<struct editor_message_s *>(::operator new (sizeof (struct editor_message_s)));
-    memset(ev, 0, sizeof (struct editor_message_s));
     return ev;
 }
 

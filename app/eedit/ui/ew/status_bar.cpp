@@ -59,12 +59,12 @@ bool status_bar::render()
     glBegin(GL_LINES);
     {
         //up
-        glVertex2i(0          , 0);    // left
+        glVertex2i(0, 0);              // left
         glVertex2i(0 + width(), 0);    // right
 
         //down
         glVertex2i(0 + width(), height());    // right
-        glVertex2i(0          , height());    // left
+        glVertex2i(0, height());              // left
     }
     glEnd();
 

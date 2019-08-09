@@ -88,9 +88,9 @@ bool process_editor_message(core_context_t * core_ctx, struct editor_message_s *
         editor_view_get_start_cpi(view, &start_cpi_ref);
         if (start_cpi_ref.used) {
             start_cpi = &start_cpi_ref;
-            app_logln(-1, "  start_cpi->offset      = %lu" ,start_cpi->offset);
-            app_logln(-1, "  start_cpi->split_count = %u"  ,start_cpi->split_count);
-            app_logln(-1, "  start_cpi->split_flag  = %u"  ,start_cpi->split_flag );
+            app_logln(-1, "  start_cpi->offset      = %lu",start_cpi->offset);
+            app_logln(-1, "  start_cpi->split_count = %u",start_cpi->split_count);
+            app_logln(-1, "  start_cpi->split_flag  = %u",start_cpi->split_flag );
 
             assert(start_cpi_ref.cp_index != uint64_t(-1));
         }

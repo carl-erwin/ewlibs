@@ -148,7 +148,7 @@ extern "C" {
         log->cur  = ci;
         log->last = ci;
 
-        app_log(-1, "%s op , @%lu '%s', size %u, : rev = %u", __FUNCTION__ , op, offset, (char *)ci->data, size, *rev);
+        app_log(-1, "%s op , @%lu '%s', size %u, : rev = %u", __FUNCTION__, op, offset, (char *)ci->data, size, *rev);
 
         return 0;
     }

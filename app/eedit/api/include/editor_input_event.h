@@ -79,21 +79,21 @@ typedef enum {
 } editor_input_event_mod_mask_e;
 
 typedef struct  editor_input_event_s {
-    editor_input_event_type_e type;
-    uint32_t     device_index; // no used yet
-    editor_key_e key;
-    bool         is_range;
-    uint32_t     start_value;
-    uint32_t     end_value;
-    bool         ctrl;
-    bool         shift;
-    bool         altL;
-    bool         altR;
-    bool         oskey; // "windows key"
+    editor_input_event_type_e type = invalid_input_event;
+    uint32_t     device_index = 0; // no used yet
+    editor_key_e key = NO_KEY;
+    bool         is_range = false;
+    uint32_t     start_value = 0;
+    uint32_t     end_value = 0;
+    bool         ctrl = false;
+    bool         shift = false;
+    bool         altL = false;
+    bool         altR = false;
+    bool         oskey = false; // "windows key"
 
     uint32_t button_press_mask  = 0; // button_press mask 32 buttons :-)
-    int32_t  x; //! pointer horizontal coordinate at time of event
-    int32_t  y; //! pointer vertical coordinate at time of event
+    int32_t  x = -1; //! pointer horizontal coordinate at time of event
+    int32_t  y = -1; //! pointer vertical coordinate at time of event
 
 } editor_input_event_s;
 

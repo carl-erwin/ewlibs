@@ -187,8 +187,8 @@ screen_dimension_t ncurses_ui_interface::get_screen_dimension()
 
     app_logln(-1, " screen row = %u", row);
     app_logln(-1, " screen col = %u", col);
-    app_logln(-1, " vscreen w  = %u" , col * get_application()->font_width() );
-    app_logln(-1, " vscreen h  = %u" , row * get_application()->font_height());
+    app_logln(-1, " vscreen w  = %u", col * get_application()->font_width() );
+    app_logln(-1, " vscreen h  = %u", row * get_application()->font_height());
 
     screen_dimension_t scr_dim {
         uint32_t(row),
@@ -332,8 +332,6 @@ eedit::user_interface * new_ncurses_ui()
 struct editor_message_s * ncurses_ui_interface::ncurses_event_to_editor_message(int keycode)
 {
     struct editor_message_s * ev = editor_event_alloc();
-    memset(ev, 0, sizeof (*ev));
-
 
     ev->screen_dim = last_screen_dimension;
 

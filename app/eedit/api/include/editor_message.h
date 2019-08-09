@@ -65,27 +65,27 @@ typedef enum editor_actor_kind_e {
 
 ///
 struct editor_event_address_s {
-    editor_actor_kind_e kind;     // EDITOR_ACTOR_INVALID_KIND;
-    editor_event_queue_s * queue; // = nullptr;
+    editor_actor_kind_e kind = EDITOR_ACTOR_INVALID_KIND;
+    editor_event_queue_s * queue = nullptr;
 };
 
 struct editor_message_s {
-    editor_message_type_e type; // INVALID_EDITOR_EVENT;
+    editor_message_type_e type = INVALID_EDITOR_EVENT;
 
-    uint32_t            id;   // used in eventual answer
+    uint32_t            id = 0;   // used in eventual answer
 
     editor_event_address_s       src;
     editor_event_address_s       dst;
 
-    editor_buffer_id_t  editor_buffer_id;
-    byte_buffer_id_t    byte_buffer_id;
-    editor_view_id_t    view_id;
+    editor_buffer_id_t  editor_buffer_id = 0;
+    byte_buffer_id_t    byte_buffer_id = 0;
+    editor_view_id_t    view_id = 0;
 
     screen_dimension_t             screen_dim; // layout/input
 
     union {
         struct {
-            screen_t * screen;
+            screen_t * screen = nullptr;
         } layout;
 
         struct {
@@ -93,8 +93,8 @@ struct editor_message_s {
         } input;
 
         struct {
-            int     ac;
-            char ** av;
+            int     ac = 0;
+            char ** av = nullptr;
         } rpc;
     };
 };

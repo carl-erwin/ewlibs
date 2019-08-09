@@ -19,7 +19,6 @@ editor_input_event_new(editor_input_event_type_e type,
                        int32_t x, int32_t y, uint32_t button_mask)
 {
     auto ev = new editor_input_event_s;
-    ::memset(ev, 0, sizeof (editor_input_event_s));
 
     ev->type = type;
 
