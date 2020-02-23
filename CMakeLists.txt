@@ -247,7 +247,10 @@ ENDIF(CXX_HAVE_OPT_Werror)
    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstrict-aliasing")
  ENDIF(CXX_HAVE_OPT_fstrict_aliasing)
 
-
+ CHECK_CXX_COMPILER_FLAG(-Wno-deprecated-copy CXX_HAVE_OPT_Wno_deprecated_copy)
+ IF (CXX_HAVE_OPT_Wno_deprecated_copy)
+   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy")
+ ENDIF(CXX_HAVE_OPT_Wno_deprecated_copy)
 
 
 # MUST allow private ctor/dtor for noncopyable_object
