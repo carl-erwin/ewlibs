@@ -516,6 +516,8 @@ void test_insert(flexarray_file * flex_array)
     std::cerr << __FUNCTION__ << "\n";
 
     str = new char[STR_SIZE];
+    memset(str,0, STR_SIZE);
+
     const char * hello = "\n\n\n\n\n\n\n\n\n\n123456789!";
     size_t len = strlen(hello);
 

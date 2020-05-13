@@ -20,9 +20,9 @@ usage : $0 [options]
 -v|--verbose
 -rs|--minsize_release
 -ru|--release_unstripped
---ekopath
 --clang
 --check_memory
+--clang-tidy
 " >&2
 }
 
@@ -67,12 +67,6 @@ case $1 in
 		VERBOSE=1
 	;;
 
-
-	--ekopath)
-		export CC=pathcc
-		export CXX=pathCC
-	;;
-
 	--clang)
 		export CC=clang
 		export CXX=clang++
@@ -82,7 +76,9 @@ case $1 in
 		CMAKE_DEFINES="${CMAKE_DEFINES} -DEW_CHECK_MEMORY=1"
 	;;
 
-
+	--clang-tidy)
+	    CLANG_TIDY="-DCMAKE_CXX_CLANG_TIDY=/usr/bin/clang-tidy;-checks=*"
+	 ;;
 
     *)
 	echo "warning unknown option $1" >&2
@@ -98,4 +94,4 @@ src_dir=$PWD
 cd $build_dir
 
 
-cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_VERBOSE_MAKEFILE="${VERBOSE}" -DCMAKE_INSTALL_PREFIX=$prefix ${CMAKE_DEFINES} $src_dir
+cmake ${CLANG_TIDY} -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_VERBOSE_MAKEFILE="${VERBOSE}" -DCMAKE_INSTALL_PREFIX=$prefix ${CMAKE_DEFINES} $src_dir
