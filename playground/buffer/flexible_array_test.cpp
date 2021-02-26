@@ -516,12 +516,12 @@ void test_insert(flexarray_file * flex_array)
     std::cerr << __FUNCTION__ << "\n";
 
     str = new char[STR_SIZE];
-    memset(str,0, STR_SIZE);
+    memset(str, 0, STR_SIZE);
 
-    const char * hello = "\n\n\n\n\n\n\n\n\n\n123456789!";
+    const char * hello = "\n\n\n\n\n\n\n\n\n\n123456789!\0";
     size_t len = strlen(hello);
 
-    ::strncpy(str, hello, len);
+    memcpy(str, hello, len);
 
     std::cerr << "sizeof (str) = " <<  STR_SIZE << "\n";
     size_t before_sz = flex_array->size();
