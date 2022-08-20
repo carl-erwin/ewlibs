@@ -630,7 +630,7 @@ bool application::application_private::setup_buffers()
         // TODO: file path check/line/column
 
         // move this to editor_buffer_info ctor
-        auto filename = "dev/null";
+        auto filename = "/dev/null";
         auto buffer_name = "dummy";
 
         editor_buffer_id_t editor_buffer_id = editor_buffer_open(filename, buffer_name); // TODO "basename - [N]"

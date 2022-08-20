@@ -458,7 +458,7 @@ int screen_get_codepoint_by_coords(screen_t * scr, int32_t x, int32_t y, const s
     return 0;
 }
 
-
+SHOW_SYMBOL
 int     screen_contains_offset(const screen_t * scr, const uint64_t offset)
 {
     static int debug = 0;

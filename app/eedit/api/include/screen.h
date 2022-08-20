@@ -45,8 +45,12 @@ int                screen_line_resize(screen_line_t * l, size_t nr_cp);
 EDITOR_EXPORT
 int                screen_line_get_cpinfo(const screen_line_t * l, uint32_t column, const codepoint_info_s ** cpi, screen_line_hints h /* no_fix */);
 
+EDITOR_EXPORT
 int                screen_line_get_first_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index);
+
+EDITOR_EXPORT
 int                screen_line_get_last_cpinfo(const screen_line_t * l, const codepoint_info_s ** cpi, size_t * column_index);
+
 size_t             screen_line_capacity(const screen_t * scr);
 size_t             screen_line_get_number_of_used_columns(const screen_line_t * l);
 void               screen_line_set_number_of_used_columns(screen_line_t * l, size_t nr);
@@ -81,6 +85,7 @@ uint64_t           screen_get_start_offset(screen_t * scr);
 EDITOR_EXPORT
 int                screen_alloc_with_dimension(screen_t ** scr, const char * called_by, const screen_dimension_t * dim);
 
+EDITOR_EXPORT
 screen_dimension_t screen_get_dimension(const screen_t * scr);
 
 // internal
@@ -102,6 +107,8 @@ uint32_t           screen_get_number_of_used_lines(const screen_t * scr);
 int                screen_get_line(const screen_t * scr, uint32_t line_index, const screen_line_t ** l);
 int                screen_get_last_line(const screen_t * scr, const screen_line_t ** l, size_t * index);
 int                screen_get_codepoint_by_coords(int32_t x, int32_t y, struct codepoint_info_s ** out_cpi);
+
+EDITOR_EXPORT
 int                screen_get_line_by_offset(const screen_t * scr, const uint64_t offset, const screen_line_t ** l, size_t * scr_line_index, size_t * scr_col_index);
 int                screen_get_codepoint_info(const screen_t * scr, uint32_t line, uint32_t column, const screen_line_t ** l_, const codepoint_info_s ** cpi, screen_line_hints h);
 int                screen_get_line_by_coords(screen_t * scr, uint32_t line, uint32_t column, const screen_line_t ** l_, const codepoint_info_s ** cpi);

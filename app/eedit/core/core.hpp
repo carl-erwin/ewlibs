@@ -82,6 +82,7 @@ screen_t * get_last_screen(u64 id);
 
 bool notify_buffer_changes(event * msg, codepoint_info_s * start_cpi, bool send_screen = false);
 
+EDITOR_EXPORT
 screen_t * get_previous_screen_by_id(u64 id);
 
 screen_t * get_new_screen_by_id(u64 screen_id);
