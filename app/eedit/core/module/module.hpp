@@ -43,7 +43,7 @@ struct editor_event_s {
 
 extern "C" {
 
-    typedef int (*module_fn)(void * event); // FIXME: move to editor_event_s * event
+    typedef bool (*module_fn)(void * event); // FIXME: move to editor_event_s * event
 
     SHOW_SYMBOL
     int       editor_register_module_function(const char * name, module_fn);

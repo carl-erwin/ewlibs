@@ -828,8 +828,8 @@ bool widget::private_data::dispatch_event(ew::graphics::gui::widget * self, ew::
         wid->on_resize(ev);
 
         // user hint : paint_after_resize ?
-        struct widget_event evdraw = *ev;
-        evdraw.type = WidgetDrawEvent;
+        //struct widget_event evdraw = *ev;
+        // evdraw.type = WidgetDrawEvent;
         force_redraw = true;
     }
     break;

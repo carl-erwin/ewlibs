@@ -71,6 +71,8 @@ public:
     inline Matrix(void);
     inline Matrix(const T & x);
     inline Matrix(const T * m);
+    inline Matrix(const Matrix <T, M, N> & m);
+
     inline const T & operator[](const u32 i) const;
     inline const T & operator()(const u32 i, const u32 j) const;
     inline T & operator[](const u32 i);
@@ -91,7 +93,7 @@ public:
     inline Matrix< T, M, N > & operator-=(const T & val);
     inline Matrix< T, M, N > & Zero(void);
 
-    inline const Matrix< T, M, N > Transpose(void) const;
+    inline Matrix< T, M, N > Transpose(void) const;
 
     inline Matrix< T, M, N > & LoadIdentity(void);
 
@@ -113,6 +115,8 @@ public:
     Matrix<T, 4, 4>(void);
     Matrix<T, 4, 4>(const T & x);
     Matrix<T, 4, 4>(const T * m);
+    Matrix<T, 4, 4>(const Matrix<T, 4, 4> & m);
+
     Matrix(const Matrix< T, 3, 3 > & mat_33);
 
     const T & operator[](const u32 i) const;
@@ -132,7 +136,7 @@ public:
     Matrix< T, 4, 4 > & operator-=(const T & val);
     Matrix< T, 4, 4 > & Zero(void);
 
-    const Matrix< T, 4, 4 > Transpose(void) const;
+    Matrix< T, 4, 4 > Transpose(void) const;
     Matrix<T, 4, 4> & LoadIdentity(void);
     Matrix<T, 4, 4> Inverse(void);
 

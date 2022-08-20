@@ -97,14 +97,12 @@ INCLUDE(CheckCXXCompilerFlag)
 
 INCLUDE(FindDoxygen)
 INCLUDE(FindOpenGL)
-INCLUDE(FindQt)
-
 
 IF(UNIX)
 FIND_PACKAGE(X11 REQUIRED)
 
-INCLUDE_DIRECTORIES(/usr/include/qt5)
-INCLUDE_DIRECTORIES(/usr/include/x86_64-linux-gnu/qt5)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+INCLUDE_DIRECTORIES(${Qt6Core_INCLUDE_DIRS})
 
 MESSAGE("X11_INCLUDE_DIR is set to '${X11_INCLUDE_DIR}'")
 INCLUDE_DIRECTORIES(${X11_INCLUDE_DIR})
@@ -176,15 +174,15 @@ IF (CXX_HAVE_OPT_pipe)
 ENDIF(CXX_HAVE_OPT_pipe)
 
 
-# check c++14 support
-CHECK_CXX_COMPILER_FLAG(-std=c++14 CXX_HAVE_OPT_stdcplusplus14)
-IF (CXX_HAVE_OPT_stdcplusplus14)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-  ADD_DEFINITIONS(-D_EW_STD_CPP=2014)
-  SET(EW_STD_CPP 2014)
-ELSE(CXX_HAVE_OPT_stdcplusplus14)
-  MESSAGE(FATAL_ERROR "your compiler must support c++14")
-ENDIF(CXX_HAVE_OPT_stdcplusplus14)
+# check c++17 support
+CHECK_CXX_COMPILER_FLAG(-std=c++17 CXX_HAVE_OPT_stdcplusplus17)
+IF (CXX_HAVE_OPT_stdcplusplus17)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+  ADD_DEFINITIONS(-D_EW_STD_CPP=2017)
+  SET(EW_STD_CPP 2017)
+ELSE(CXX_HAVE_OPT_stdcplusplus17)
+  MESSAGE(FATAL_ERROR "your compiler must support c++17")
+ENDIF(CXX_HAVE_OPT_stdcplusplus17)
 
 
 # OPTIM

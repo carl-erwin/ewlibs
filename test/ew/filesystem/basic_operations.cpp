@@ -166,7 +166,7 @@ void do_test(const char * filename)
             }
         }
 
-        catch (::ew::core::exception e) {
+        catch (::ew::core::exception & e) {
             cerr << "catch exception " << e.what() << "\n";
             cerr << "\n";
         }

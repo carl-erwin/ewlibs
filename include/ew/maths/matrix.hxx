@@ -18,6 +18,11 @@ namespace ew
             memset(data, x, sizeof(T) * M * N);
         }
 
+        template <typename T, u32 M, u32 N > inline Matrix<T, M, N>::Matrix(const Matrix<T, M, N> & m)
+        {
+            this->data = m.data;
+        }
+
         template <typename T, u32 M, u32 N > inline Matrix<T, M, N>::Matrix(const T * m)
         {
             memcpy(data, m, sizeof(T) * M * N);
@@ -128,7 +133,7 @@ namespace ew
         }
 
         template <typename T, u32 M, u32 N >
-        inline const Matrix< T, M, N > Matrix<T, M, N>::Transpose(void) const
+        inline Matrix< T, M, N > Matrix<T, M, N>::Transpose(void) const
         {
             Matrix<T, N, M> result;
 
@@ -419,14 +424,15 @@ namespace ew
         }
 
         template <typename T>
-        const Matrix< T, 4, 4 > Matrix<T, 4, 4>::Transpose(void) const
+        Matrix< T, 4, 4 > Matrix<T, 4, 4>::Transpose(void) const
         {
             Matrix<T, 4, 4> result;
 
             for (u32 j = 0; j < 4; ++j)
                 for (u32 i = 0; i < 4; ++i)
                     result(i, j) = this->operator()(j, i);
-            return (result);
+
+            return result;
         }
 
         template <typename T>

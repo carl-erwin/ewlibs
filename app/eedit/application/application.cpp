@@ -413,7 +413,7 @@ std::vector<std::string> split(std::string str, const char c)
         start = end + 1;
     }
 
-    return std::move(res);
+    return res;
 }
 
 

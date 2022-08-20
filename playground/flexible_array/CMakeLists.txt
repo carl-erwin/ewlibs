@@ -79,7 +79,7 @@ TARGET_LINK_LIBRARIES(test_qtVector
 ew.core.object
 ew.core.exception
 ew.core.time
-Qt5Core
+Qt6Core
 )
 
 
@@ -109,7 +109,7 @@ ew.core.object
 ew.core.exception
 ew.core.time
 ew.filesystem
-Qt5Core
+Qt6Core
 )
 
 
