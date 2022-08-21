@@ -79,14 +79,18 @@ extern "C" {
     SHOW_SYMBOL
     int     byte_buffer_size(const byte_buffer_id_t bid, size_t * sz)
     {
+        if (not sz) {
+            return -1;
+        }
+
+        *sz = 0;
         auto file = table.get(bid);
         if (file == nullptr)
-            return 0;
+            return -1;
 
-        if (sz) {
-            assert(file->fd);
-            *sz = file->fd->size();
-        }
+        assert(file->fd);
+        *sz = file->fd->size();
+
         return 0;
     }
 
