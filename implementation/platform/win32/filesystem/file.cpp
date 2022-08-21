@@ -116,7 +116,7 @@ bool File::trylock()
 }
 
 //ew::core::objects::read_interface
-bool File::read(u8 * buffer, u64 nrToRead , u64 * nrRead)
+bool File::read(u8 * buffer, u64 nrToRead, u64 * nrRead)
 {
     return false;
 }

@@ -844,10 +844,10 @@ int tftp_client_process_command(bool * loop, tftp_connection * conn, char * cmd,
     };
 
     cmd_desc cmd_tab[] = {
-        { "get" , 3, tftp_client_process_read },
+        { "get", 3, tftp_client_process_read },
         { "put", 3, tftp_client_process_write },
         { "quit",  4, tftp_client_process_quit },
-        { nullptr , 0, nullptr }
+        { nullptr, 0, nullptr }
     };
 
     std::cerr << " your command is '" << cmd << "'\n";

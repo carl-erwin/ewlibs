@@ -12,7 +12,8 @@ namespace eedit
 {
 
 // move to application.cpp
-auto create_application() -> std::shared_ptr<application> {
+auto create_application() -> std::shared_ptr<application>
+{
     auto app = std::make_shared<application>();
     set_application(app);
     return app;

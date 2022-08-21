@@ -14,7 +14,7 @@ protected:
 public:
     Counter(): m_val(0) {}
 
-    DECL_SIGNAL_SLOT(void , Counter, setValue, int) = 0;
+    DECL_SIGNAL_SLOT(void, Counter, setValue, int) = 0;
 
     DECL_VOID_SIGNAL_SLOT(int, Counter, getValue)
     {

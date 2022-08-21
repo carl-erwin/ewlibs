@@ -87,7 +87,7 @@ public:
         /* TODO: add comment */
         static int (*default_ioerror_handler_funcptr)(::Display *);
 
-        static int            display_error_handler(::Display * dpy , ::XErrorEvent * errorEvent);
+        static int            display_error_handler(::Display * dpy, ::XErrorEvent * errorEvent);
         static int            display_ioerror_handler(::Display * dpy);
 
         static int            get_event(::Display * dpy, ::XEvent * xevent);

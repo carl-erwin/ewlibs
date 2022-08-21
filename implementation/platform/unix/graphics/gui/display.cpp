@@ -88,7 +88,7 @@ display::pump_event()
 u32
 display::poll_events(bool block, u32 timeout)
 {
-    return private_data::X11::poll_events(this , block, timeout);
+    return private_data::X11::poll_events(this, block, timeout);
 }
 
 

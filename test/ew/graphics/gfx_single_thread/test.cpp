@@ -286,13 +286,13 @@ public:
             static float T = 1.0f;
 
             glTexCoord2f(T, T);
-            glVertex2i(max_width , max_height);
+            glVertex2i(max_width, max_height);
 
             glTexCoord2f(0.0f, T);
-            glVertex2i(x         , max_height);
+            glVertex2i(x, max_height);
 
             glTexCoord2f(0.0f, 0.0f);
-            glVertex2i(x     , y);
+            glVertex2i(x, y);
 
             glTexCoord2f(T, 0.f);
             glVertex2i(max_width, y);
@@ -402,7 +402,7 @@ public:
         return true;
     }
 
-    bool  resize(u32 width , u32 height)
+    bool  resize(u32 width, u32 height)
     {
 
         // offscreen->resize(w, h);
@@ -492,7 +492,7 @@ public:
             std::cerr << "width()  = " << width()  << "\n";
             std::cerr << "height() = " << height() << "\n";
 
-            resize(width() , height());
+            resize(width(), height());
 
         }
         break ;

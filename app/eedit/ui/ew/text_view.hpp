@@ -514,8 +514,8 @@ public:
             // if overwrite : shape lines
             glBegin(GL_POLYGON);
             {
-                glVertex2i(cX     , cY);       // up left
-                glVertex2i(cX     , cY + cH);  // down-left
+                glVertex2i(cX, cY);            // up left
+                glVertex2i(cX, cY + cH);       // down-left
                 glVertex2i(cX + cW, cY + cH);  // down-right
                 glVertex2i(cX + cW, cY);       // up-right
             }

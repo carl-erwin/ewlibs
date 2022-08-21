@@ -86,7 +86,7 @@ void test_cat(int ac, char ** av)
 }
 
 
-void word_count(const u8 * data, u64 data_size, u64 & nr_lines, u64 & nr_cp , int & in_word, u64 & nr_word)
+void word_count(const u8 * data, u64 data_size, u64 & nr_lines, u64 & nr_cp, int & in_word, u64 & nr_word)
 {
     const u8 * it = data;
     const u8 * it_end = data + data_size;
@@ -115,7 +115,7 @@ void word_count(const u8 * data, u64 data_size, u64 & nr_lines, u64 & nr_cp , in
     // min(X) = slimest line
 }
 
-void word_count_it(mapped_file::iterator & it, mapped_file::iterator & it_end, u64 & nr_lines, u64 & nr_cp , int & in_word, u64 & nr_word)
+void word_count_it(mapped_file::iterator & it, mapped_file::iterator & it_end, u64 & nr_lines, u64 & nr_cp, int & in_word, u64 & nr_word)
 {
 
     while (it != it_end) {
@@ -148,7 +148,7 @@ struct wc_func_obj {
 
     bool operator()(u8 * b, u8 * e)
     {
-        word_count(b, e - b , nr_lines, nr_cp , in_word, nr_word);
+        word_count(b, e - b, nr_lines, nr_cp, in_word, nr_word);
         return true;
     }
 
@@ -189,7 +189,7 @@ void test_wc_regular(int ac, char ** av)
             buff->read(bl->data, blocksize, &nrRead);
             bl->size = nrRead;
 
-            word_count(bl->data, bl->size, nr_lines, nr_cp , in_word, nr_word);
+            word_count(bl->data, bl->size, nr_lines, nr_cp, in_word, nr_word);
 
 
             if (nrRead == 0)
@@ -234,12 +234,12 @@ void test_wc_mapped(int ac, char ** av)
 
             buff->read(it.offset(), data, (size_t)sizeof(data), &nrRead);
             it += nrRead;
-            word_count(data, nrRead, nr_lines, nr_cp , in_word, nr_word);
+            word_count(data, nrRead, nr_lines, nr_cp, in_word, nr_word);
         }
 #endif
 
 #else
-        word_count_it(it, it_end, nr_lines, nr_cp , in_word, nr_word);
+        word_count_it(it, it_end, nr_lines, nr_cp, in_word, nr_word);
 #endif
         std::cout << " " << nr_lines << " " << nr_word << " " << nr_cp << " " << av[1] << "\n";
     }

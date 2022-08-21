@@ -51,7 +51,7 @@ bool display::private_data::X11::get_event_queue_size(ew::graphics::gui::display
 ////////////////////////////////////////////////////////////////////////////////
 // TODO: propagate waitTime to dpy->poll*...
 
-u32 display::private_data::X11::poll_events(ew::graphics::gui::display * dpy , bool block, u32 waitTime)
+u32 display::private_data::X11::poll_events(ew::graphics::gui::display * dpy, bool block, u32 waitTime)
 {
 
     auto evdispatch = dpy->get_event_dispatcher();

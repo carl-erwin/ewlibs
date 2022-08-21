@@ -194,8 +194,8 @@ bool vertical_scroll_bar::render()
     glBegin(GL_QUADS);
     {
         s32 wid_Y = 0;
-        glVertex2i(X    , wid_Y);           // up left
-        glVertex2i(X    , wid_Y + height());    // down left
+        glVertex2i(X, wid_Y);               // up left
+        glVertex2i(X, wid_Y + height());        // down left
         glVertex2i(X + W, wid_Y + height());    // down right
         glVertex2i(X + W, wid_Y);           // up right
     }
@@ -215,16 +215,16 @@ bool vertical_scroll_bar::render()
     glBegin(GL_QUADS);
     {
         // border
-        glVertex2i(X     , Y);           // up left
-        glVertex2i(X     , Y + H - 1);   // down left
+        glVertex2i(X, Y);                // up left
+        glVertex2i(X, Y + H - 1);        // down left
 
         glVertex2i(X  + W, Y);           // up right
         glVertex2i(X  + W, Y + H - 1);       // down right
 
-        glVertex2i(X    , Y);           // up left
+        glVertex2i(X, Y);               // up left
         glVertex2i(X + W, Y);           // up right
 
-        glVertex2i(X     , Y + H - 1);  // down left
+        glVertex2i(X, Y + H - 1);       // down left
         glVertex2i(X  + W, Y + H - 1);  // down right
 
         // 2,3 bar

@@ -500,13 +500,13 @@ bool widget::render()
                     static float T = 1.0f;
 
                     glTexCoord2f(T, T);
-                    glVertex2i(max_width , max_height);
+                    glVertex2i(max_width, max_height);
 
                     glTexCoord2f(0, T);
-                    glVertex2i(x         , max_height);
+                    glVertex2i(x, max_height);
 
                     glTexCoord2f(0, 0);
-                    glVertex2i(x     , y);
+                    glVertex2i(x, y);
 
                     glTexCoord2f(T, 0);
                     glVertex2i(max_width, y);

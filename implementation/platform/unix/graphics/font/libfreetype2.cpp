@@ -19,7 +19,7 @@ static dll * _libfreetype2;
 
 ew::core::dll::symbol _libfreetype2_symbol_table[] = {
 #include "libfreetype2_sym_tab_entries.hpp"
-    {0 , 0 }
+    {0, 0 }
 };
 
 bool load_libfreetype2_dll()

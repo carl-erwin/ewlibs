@@ -106,7 +106,7 @@ int screen_line_get_cpinfo(const screen_line_t * l, uint32_t column, const codep
         return 0;
     }
 
-    column = std::min<uint32_t>(column , (sz-1));
+    column = std::min<uint32_t>(column, (sz-1));
 
     *cpi = &l->m_cpinfo_array[column];
     return 1;

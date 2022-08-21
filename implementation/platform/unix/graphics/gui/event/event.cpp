@@ -139,7 +139,7 @@ u32 event_dispatcher::get_nr_pending_events(event_type type) const
     return ret;
 }
 
-bool event_dispatcher::drop_events_before_tick(event_type type , u32 tick)
+bool event_dispatcher::drop_events_before_tick(event_type type, u32 tick)
 {
     d->pending_event_ticks_filter[ type ] = tick;
     return true;

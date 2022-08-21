@@ -57,7 +57,7 @@ extern "C" {
 
         byte_buffer_s * file;
         byte_buffer_id_t bid = 0;
-        std::tie(file , bid) = table.construct(filename, fd);
+        std::tie(file, bid) = table.construct(filename, fd);
         if (bid == 0) {
             return 0;
         }

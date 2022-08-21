@@ -80,7 +80,7 @@ public:
 class EW_GRAPHICS_EXPORT font
 {
 public:
-    font(const char * filename , u32 pxWidth = 12, u32 pxHeight = 12);
+    font(const char * filename, u32 pxWidth = 12, u32 pxHeight = 12);
     virtual ~font();
 
     virtual bool open();

@@ -74,7 +74,7 @@ public:
 
             char * dbg_lvl = ew::core::program::getenv("EW_DEBUG_LEVEL");
             if (dbg_lvl) {
-                int lvl =  ew::maths::in_range((int)CONSOLE_LEVEL0 , ::atoi(dbg_lvl), (int)CONSOLE_LEVEL7);
+                int lvl =  ew::maths::in_range((int)CONSOLE_LEVEL0, ::atoi(dbg_lvl), (int)CONSOLE_LEVEL7);
                 cerr << "found DEBUG_LEVEL " << lvl << "\n";
                 if ((int)lvl <= (int)run_lvl) {
                     enable = true;

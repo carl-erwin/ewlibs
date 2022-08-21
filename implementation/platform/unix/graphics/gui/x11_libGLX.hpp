@@ -31,13 +31,13 @@ DECLARE_wrapper(glXGetProcAddress_ret_t, glXGetProcAddress, const GLubyte * proc
 
 DECLARE_wrapper(int, glXGetConfig, ::Display * dpy, ::XVisualInfo * vis, int attrib, int * value);
 
-DECLARE_wrapper(GLXContext , glXCreateContext, ::Display * dpy, ::XVisualInfo * vis, ::GLXContext shareList, Bool direct);
+DECLARE_wrapper(GLXContext, glXCreateContext, ::Display * dpy, ::XVisualInfo * vis, ::GLXContext shareList, Bool direct);
 
-DECLARE_wrapper(void , glXDestroyContext, ::Display * dpy, ::GLXContext ctx);
+DECLARE_wrapper(void, glXDestroyContext, ::Display * dpy, ::GLXContext ctx);
 
 DECLARE_wrapper(::XVisualInfo *, glXChooseVisual, ::Display * dpy, int screen, int * attribList);
 
-DECLARE_wrapper(Bool , glXMakeCurrent, ::Display * dpy, ::GLXDrawable drawable, ::GLXContext ctx);
+DECLARE_wrapper(Bool, glXMakeCurrent, ::Display * dpy, ::GLXDrawable drawable, ::GLXContext ctx);
 
 DECLARE_wrapper(void, glXSwapBuffers, ::Display * dpy, ::GLXDrawable drawable);
 

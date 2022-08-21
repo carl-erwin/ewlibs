@@ -19,7 +19,7 @@ public:
 
     }
 
-    virtual bool write(const u8 * buffer, u64 nr_to_write , u64 * nr_written) = 0;
+    virtual bool write(const u8 * buffer, u64 nr_to_write, u64 * nr_written) = 0;
 };
 
 }

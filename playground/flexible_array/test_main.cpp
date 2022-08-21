@@ -835,11 +835,11 @@ void test_range_insert(const char * Cname, const unsigned int pageSize, const un
         u32 elapse = test_t1 - test_t0;
         u32 insert_elapse = insert_t1 - insert_t0;
 
-        test_min = ew::maths::min(elapse , test_min);
+        test_min = ew::maths::min(elapse, test_min);
         test_max = ew::maths::max(elapse, test_max);
         test_sum += elapse;
 
-        insert_min = ew::maths::min(insert_elapse , insert_min);
+        insert_min = ew::maths::min(insert_elapse, insert_min);
         insert_max = ew::maths::max(insert_elapse, insert_max);
 
         max_size = ew::maths::max(max_size, (u32)array.size());

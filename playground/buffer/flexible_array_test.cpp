@@ -425,7 +425,7 @@ void offset_test(flexarray_file * flex_array)
     for (u64 off = 0; off < file_size; off += 1) {
         u32 t0 = ew::core::time::get_ticks();
         u64 local_offset = 0;
-        flexarray_file::node * n = flex_array->find(off , local_offset);
+        flexarray_file::node * n = flex_array->find(off, local_offset);
         u32 t1 = ew::core::time::get_ticks();
 
 

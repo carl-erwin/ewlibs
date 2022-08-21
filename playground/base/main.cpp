@@ -105,7 +105,7 @@ public:
 
         u64 sz = strlen(filename);
         _filename = new char [ sz + 1 ];
-        strncpy(_filename , filename, sz);
+        strncpy(_filename, filename, sz);
         _filename[ sz ] = 0;
     }
 

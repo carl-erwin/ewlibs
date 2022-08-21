@@ -145,7 +145,7 @@ void make_dlist(FT_Face face, char ch, GLuint list_base, GLuint * tex_base)
     ew_glVertex2f(bitmap.width, bitmap.rows);
     ew_glEnd();
     ew_glPopMatrix();
-    ew_glTranslatef(face->glyph->advance.x >> 6 , 0, 0);
+    ew_glTranslatef(face->glyph->advance.x >> 6, 0, 0);
 
 
     //increment the raster position as if we were a bitmap font.

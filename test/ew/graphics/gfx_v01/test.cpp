@@ -152,7 +152,7 @@ public:
         // draw axis
         glPushMatrix();
         {
-            glTranslatef(-2.0f , -2.0f, -10.0f);
+            glTranslatef(-2.0f, -2.0f, -10.0f);
             glColor3ub(0xff, 0xff, 0xff);
 
             f32 axisLenght = 10.0f;
@@ -179,7 +179,7 @@ public:
         {
             glScalef(0.75, 0.75, 0.75);
 
-            glTranslatef(-2.0f , -2.0f, -10.0f);
+            glTranslatef(-2.0f, -2.0f, -10.0f);
             glRotated(rot_x_angle, 1, 0, 0);
             glRotated(rot_y_angle, 0, 1, 0);
             glRotated(rot_z_angle, 0, 0, 1);

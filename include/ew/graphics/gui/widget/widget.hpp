@@ -136,7 +136,7 @@ public:
 };
 
 /* implement */
-class texture : public bindable_object , resizeable_2d_object
+class texture : public bindable_object, resizeable_2d_object
 {
 public:
     virtual      ~texture() { }

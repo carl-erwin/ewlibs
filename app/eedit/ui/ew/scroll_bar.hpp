@@ -192,16 +192,16 @@ public:
         ew_glColor4ub(border_color.r, border_color.g, border_color.b, border_color.a);
         glBegin(GL_LINES);
         {
-            glVertex2i(X     , Y);           // up left
-            glVertex2i(X     , Y + H - 1);   // down left
+            glVertex2i(X, Y);                // up left
+            glVertex2i(X, Y + H - 1);        // down left
 
             glVertex2i(X  + W, Y);           // up right
             glVertex2i(X  + W, Y + H - 1);       // down right
 
-            glVertex2i(X    , Y);           // up left
+            glVertex2i(X, Y);               // up left
             glVertex2i(X + W, Y);           // up right
 
-            glVertex2i(X     , Y + H - 1);  // down left
+            glVertex2i(X, Y + H - 1);       // down left
             glVertex2i(X  + W, Y + H - 1);  // down right
         }
         glEnd();
@@ -210,7 +210,7 @@ public:
 
         glBegin(GL_TRIANGLES);
         {
-            glVertex2i(X + W / 2       , Y + H / 2 - margin); // up
+            glVertex2i(X + W / 2, Y + H / 2 - margin);        // up
             glVertex2i(X + W / 2 - margin, H / 2 + margin); // down left
             glVertex2i(X + W / 2 + margin, H / 2 + margin); // down right
         }
@@ -341,16 +341,16 @@ public:
         // border
         glBegin(GL_LINES);
         {
-            glVertex2i(X     , Y);           // up left
-            glVertex2i(X     , Y + H - 1);   // down left
+            glVertex2i(X, Y);                // up left
+            glVertex2i(X, Y + H - 1);        // down left
 
             glVertex2i(X  + W, Y);           // up right
             glVertex2i(X  + W, Y + H - 1);       // down right
 
-            glVertex2i(X    , Y);           // up left
+            glVertex2i(X, Y);               // up left
             glVertex2i(X + W, Y);           // up right
 
-            glVertex2i(X     , Y + H - 1);  // down left
+            glVertex2i(X, Y + H - 1);       // down left
             glVertex2i(X  + W, Y + H - 1);  // down right
         }
         glEnd();
@@ -611,8 +611,8 @@ public:
         // borders
         glBegin(GL_LINES);
         {
-            glVertex2i(X    , Y);    // up
-            glVertex2i(X    , H);    // down
+            glVertex2i(X, Y);        // up
+            glVertex2i(X, H);        // down
 
             glVertex2i(X + W, Y);    // up
             glVertex2i(X + W, H);    // down

@@ -21,7 +21,7 @@ public:
 
     }
 
-    virtual bool read(u8 * buffer, u64 nrToRead , u64 * nrRead) = 0;
+    virtual bool read(u8 * buffer, u64 nrToRead, u64 * nrRead) = 0;
 };
 
 }

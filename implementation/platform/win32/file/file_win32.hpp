@@ -42,7 +42,7 @@ public:
 
     virtual bool write(u8 * buffer, u64 bufferSize);
     virtual bool read(u8 * buffer, u64 bufferSize);
-    virtual bool setPos(u64 ,
+    virtual bool setPos(u64,
                         ew::core::objects::STREAM::Location from,
                         ew::core::objects::STREAM::Direction dir);
     virtual u64  getPos(void);
