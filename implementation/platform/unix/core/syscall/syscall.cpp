@@ -598,7 +598,7 @@ int sys_pthread_setschedparam(::pthread_t thread, int policy, const struct sched
 EW_CORE_SYSCALL_EXPORT
 int sys_pthread_getschedparam(::pthread_t thread, int * policy, struct sched_param * param)
 {
-    return sys_pthread_getschedparam(thread, policy, param);
+    return ::pthread_getschedparam(thread, policy, param);
 }
 
 EW_CORE_SYSCALL_EXPORT
