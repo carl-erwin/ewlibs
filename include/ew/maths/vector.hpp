@@ -52,9 +52,9 @@ template <typename T, u32 size>
 class EW_MATHS_EXPORT Vector
 {
 public:
-    inline Vector<T, size>(void);
-    inline Vector<T, size>(const T * vec);
-    inline Vector<T, size>(const Vector<T, size> & vec);
+    inline Vector(void);
+    inline Vector(const T * vec);
+    inline Vector(const Vector<T, size> & vec);
 
     inline T * GetDataPtr(void);
 

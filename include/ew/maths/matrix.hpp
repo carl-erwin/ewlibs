@@ -112,10 +112,10 @@ class EW_EXPORT_SYM Matrix<T, 4, 4>
 {
 public:
 
-    Matrix<T, 4, 4>(void);
-    Matrix<T, 4, 4>(const T & x);
-    Matrix<T, 4, 4>(const T * m);
-    Matrix<T, 4, 4>(const Matrix<T, 4, 4> & m);
+    Matrix(void);
+    Matrix(const T & x);
+    Matrix(const T * m);
+    Matrix(const Matrix<T, 4, 4> & m);
 
     Matrix(const Matrix< T, 3, 3 > & mat_33);
 

@@ -52,10 +52,10 @@ template <typename T>
 class Color3
 {
 public:
-    inline Color3<T>(const T * color);
-    inline Color3<T>(const Color3<T> & color);
-    inline Color3<T>(const Color4<T> & color);
-    inline Color3<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0);
+    inline Color3(const T * color);
+    inline Color3(const Color3<T> & color);
+    inline Color3(const Color4<T> & color);
+    inline Color3(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0);
     inline const T & operator[](const u32 i) const;
     inline T & operator[](const u32 i);
     inline T * GetDataPtr(void);
@@ -93,10 +93,10 @@ template <typename T>
 class Color4
 {
 public:
-    inline Color4<T>(const T * color);
-    inline Color4<T>(const Color3<T> & color);
-    inline Color4<T>(const Color4<T> & color);
-    inline Color4<T>(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
+    inline Color4(const T * color);
+    inline Color4(const Color3<T> & color);
+    inline Color4(const Color4<T> & color);
+    inline Color4(const T & r_ = 0, const T & g_ = 0, const T & b_ = 0, const T & a_ = 1);
     inline T & operator[](const u32 i);
     inline T * GetDataPtr(void);
     inline s32 operator==(const Color4<T> & color) const;
